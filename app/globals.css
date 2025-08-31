@@ -1,0 +1,286 @@
+@import "tailwindcss";
+
+
+
+  
+
+  /* In globals.css */
+  
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/fonts/helvetica/Helvetica.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+.font-helvetica{
+  font-family: 'Helvetica' !important;
+}
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/fonts/helvetica/Helvetica-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/fonts/helvetica/Helvetica-Oblique.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/fonts/helvetica/Helvetica-BoldOblique.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('/fonts/helvetica/helvetica-light-587ebe5a59211.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Helvetica Rounded';
+  src: url('/fonts/helvetica/helvetica-rounded-bold-5871d05ead8de.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Helvetica Compressed';
+  src: url('/fonts/helvetica/helvetica-compressed-5871d14b6903a.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* You can then apply Poppins to your body or specific elements */
+body {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: medium !important;
+}
+
+
+  .bg-banner {
+    background-image: url('/bannner.jpg');
+    /* Place inside public/ folder */
+    background-size: cover;
+    background-position: center;
+  }
+
+  .bg-shadow-1 {
+    background: #000;
+    background: linear-gradient(3deg, #000 20%, rgba(0, 0, 0, .2) 68%);
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  /* app/globals.css or styles/globals.css */
+
+  /* Custom styles for Swiper navigation arrows */
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: #E22026 !important;
+    /* Red accent color */
+    width: 44px !important;
+    height: 44px !important;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    /* Keep a subtle shadow for the button */
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    background-color: #E22026;
+    /* Red on hover */
+    color: white !important;
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 22px !important;
+    font-weight: bold;
+  }
+
+  /* Position adjustments for arrows */
+  /* These values (-10px) place the arrows slightly outside the carousel's visible edge.
+   Adjust as needed if you want them further out or slightly inside. */
+  .swiper-button-prev {
+    left: -10px;
+  }
+
+  .swiper-button-next {
+    right: -10px;
+  }
+
+  @media (max-width: 640px) {
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      display: none !important;
+      /* Hide arrows on small screens for better mobile UX */
+    }
+  }
+
+  /* Ensure pagination dots are completely hidden */
+  .swiper-pagination-bullet {
+    display: none !important;
+  }
+
+  .swiper-pagination-bullet-active {
+    display: none !important;
+  }
+.slick-prev:before, .slick-prev:before, .slick-next:before, .slick-next:before {
+    display: none !important;
+}
+  .animate-scroll {
+    animation: scroll 30s linear infinite;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar for testimonials */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .slick-next {
+    right: 30px !important;
+}
+.slick-prev {
+    left: 12px !important;
+}
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #E22026;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #74BF44;
+  }
+
+  /* Focus styles for accessibility */
+  .focus\:ring-2:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px rgba(34, 32, 38, 0.2);
+  }
+
+  /* Hover effects for buttons */
+  .hover\:scale-105:hover {
+    transform: scale(1.05);
+  }
+
+  /* Custom utility classes */
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .bg-shadow {
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+  }
+
+  /* Loading spinner */
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  /* Form validation styles */
+  .field-error {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: none;
+  }
+
+  .input-error {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 1px #dc2626;
+  }
+
+  .success-message,
+  .error-message {
+    display: none;
+  }
+
+  .loading {
+    display: none;
+  }
+
+  /* WhatsApp hint styling */
+  .whatsapp-hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* Responsive design helpers */
+  @media (max-width: 768px) {
+    .tab-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background-color: white;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .step-buttons-container {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: white;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .tab-wrapper {
+      position: static;
+      top: auto;
+      z-index: auto;
+      box-shadow: none;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .step-buttons-container {
+      position: static;
+      top: auto;
+      z-index: auto;
+      box-shadow: none;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
