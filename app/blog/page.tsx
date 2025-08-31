@@ -89,7 +89,7 @@ export default function BlogPage() {
 
   const postsContainerRef = useRef<HTMLDivElement>(null)
 
-  const LIMIT = 9
+  const LIMIT = 12
 
   const fetchPosts = useCallback(
     async (pageToFetch: number) => {
