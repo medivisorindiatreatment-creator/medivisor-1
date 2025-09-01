@@ -222,7 +222,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
 
             if (typeof wixClient.posts.listPosts === 'function') {
               const relatedResponse = await wixClient.posts.listPosts({
-                paging: { limit: 4 },
+                paging: { limit: 12 },
               })
               relatedPostsData = (relatedResponse.posts || [])
                 .filter((p: any) => p._id !== fetchedPost._id)

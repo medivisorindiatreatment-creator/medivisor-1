@@ -1,37 +1,49 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { wixClient } from '@/lib/wixClient'
+import { NextResponse, type NextRequest } from "next/server"
+import { wixServerClient } from "@/lib/wixServer"
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { slug } = req.query
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
 
-  if (!slug || typeof slug !== 'string') {
-    return res.status(400).json({ error: 'Invalid slug' })
-  }
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const limit = Number.parseInt(searchParams.get("limit") || "12", 10)
+  const offset = Number.parseInt(searchParams.get("offset") || "0", 10)
+  const sort = searchParams.get("sort") || "PUBLISHED_DATE_DESC"
 
   try {
-    let post = null
+    const result = await wixServerClient.posts.listPosts({
+      paging: { limit, offset },
+      sort,
+    })
 
-    // Try getPostBySlug
-    if (typeof wixClient.posts.getPostBySlug === 'function') {
-      const response = await wixClient.posts.getPostBySlug(slug, {
-        fieldsets: ['CONTENT_TEXT', 'URL', 'RICH_CONTENT'],
-      })
-      post = response.post
-    }
+    const posts = result.posts ?? []
+    const total = result.metaData?.total ?? 0
 
-    // Fallback query
-    if (!post && typeof wixClient.posts.queryPosts === 'function') {
-      const response = await wixClient.posts.queryPosts().eq('slug', slug).find()
-      if (response.items.length > 0) post = response.items[0]
-    }
-
-    if (!post) {
-      return res.status(404).json({ error: 'Post not found' })
-    }
-
-    res.status(200).json(post)
-  } catch (error: any) {
-    console.error('Error fetching post:', error)
-    res.status(500).json({ error: error.message || 'Failed to fetch post' })
+    return NextResponse.json(
+      { posts, metaData: { total } }, 
+      { 
+        status: 200,
+        headers: corsHeaders,
+      }
+    )
+  } catch (error) {
+    console.error("[api/wix-posts] Error fetching posts:", error)
+    return NextResponse.json(
+      { error: "Failed to fetch blog posts." }, 
+      { 
+        status: 500,
+        headers: corsHeaders,
+      }
+    )
   }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: corsHeaders,
+  })
 }
