@@ -162,7 +162,7 @@ export default function BlogCarousel() {
 
   return (
     <section className="py-4 md:py-10">
-      <div className="container mx-auto md:px-0 px-4">
+      <div className="container mx-auto md:px-0 px-8">
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {Array.from({ length: 4 }).map((_, index) => (
@@ -253,7 +253,7 @@ export default function BlogCarousel() {
                               </Link>
                             </div>
                           </div>
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                          <span className="text-sm text-gray-600 dark:text-gray-600">
                             {post.firstPublishedDate &&
                               new Date(post.firstPublishedDate).toLocaleDateString("en-US", {
                                 year: "numeric",
@@ -263,7 +263,7 @@ export default function BlogCarousel() {
                           </span>
                           <div className="flex-grow pt-2">
                             {post.excerpt && (
-                              <p className="text-gray-600 dark:text-gray-300 text-base line-clamp-3">{post.excerpt}</p>
+                              <p className="text-gray-600 dark:text-gray-700 text-base line-clamp-3">{post.excerpt}</p>
                             )}
                           </div>
                           <div className="flex justify-between items-center pt-4 mt-auto">
@@ -282,7 +282,7 @@ export default function BlogCarousel() {
               </div>
             </div>
             <Button
-              className="absolute top-1/2 -translate-y-1/2 border-gray-200 cursor-pointer left-4 -ml-4 z-40 rounded-full bg-white w-10 h-10 p-0"
+              className="absolute top-2/5 -translate-y-1/2 border-gray-200 cursor-pointer left-4 -ml-4 z-40 rounded-full bg-white w-10 h-10 p-0"
               variant="outline"
               onClick={scrollPrev}
             >
@@ -290,7 +290,7 @@ export default function BlogCarousel() {
               <span className="sr-only">Previous slide</span>
             </Button>
             <Button
-              className="absolute top-1/2 -translate-y-1/2 border-gray-200 cursor-pointer right-4 -mr-4 z-10 rounded-full bg-white w-10 h-10 p-0"
+              className="absolute top-2/5 -translate-y-1/2 border-gray-200 cursor-pointer right-4 -mr-4 z-10 rounded-full bg-white w-10 h-10 p-0"
               variant="outline"
               onClick={scrollNext}
             >

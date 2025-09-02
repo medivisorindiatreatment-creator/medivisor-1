@@ -7,6 +7,8 @@ const ALLOWED_ORIGINS = [
   "https://www.medivisor-ujuu.vercel.app",
   "https://www.medivisor-ujuu.vercel.ap", 
 
+  "https://www.medivisorindiatreatment.com/",
+
   "https://medivisorindiatreatment.com/"
 ];
 

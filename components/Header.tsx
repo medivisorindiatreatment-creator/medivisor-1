@@ -5,9 +5,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import ContactModal from '@/components/ContactModal';
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const [windowWidth, setWindowWidth] = useState<number>(0);
   const [isSticky, setIsSticky] = useState(false);
@@ -28,18 +29,19 @@ export default function Header() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
   const openModal = () => {
-      setIsModalOpen(true);
-    };
-  
-    const closeModal = () => {
-      setIsModalOpen(false);
-    }
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   const navItems = [
     { href: '/', label: 'Home' },
     {
-      href: '/aboutus',
-      label: 'About Us',
+      label: 'About Us', // removed href
       subItems: [
         { href: '/aboutus', label: 'About Us' },
         { href: '/services', label: 'Our Services' },
@@ -50,8 +52,7 @@ export default function Header() {
       ],
     },
     {
-      href: '/india-treatment',
-      label: 'India Treatment',
+      label: 'India Treatment', // removed href
       subItems: [
         { href: '/treatment-cost', label: 'Treatment Cost' },
         { href: '/treatment-process', label: 'Treatment Process' },
@@ -61,8 +62,7 @@ export default function Header() {
       ],
     },
     {
-      href: '/gallery',
-      label: 'Gallery',
+      label: 'Gallery', // removed href
       subItems: [
         { href: '/patient-testimonials', label: 'Patient Testimonials' },
         { href: '/photo-albums', label: 'Patient Activities' },
@@ -81,14 +81,14 @@ export default function Header() {
     <>
       <div className={`h-[80px] ${isSticky ? 'block' : 'hidden'}`} />
       <header
-        className={`bg-white transition-all duration-300  container mx-auto ${
+        className={`bg-white transition-all duration-300 container mx-auto ${
           isSticky
             ? 'fixed top-0 left-0 w-full z-50 shadow-lg'
             : 'relative z-50 shadow-sm'
         }`}
       >
         <nav
-          className={`flex justify-between items-center px-4 lg:px-0  transition-all duration-300 ${
+          className={`flex justify-between items-center px-4 lg:px-0 transition-all duration-300 ${
             isSticky ? 'py-3' : 'md:py-4 py-1'
           }`}
         >
@@ -143,20 +143,27 @@ export default function Header() {
                       item.subItems && windowWidth >= 768 && setOpenSubmenu(null)
                     }
                   >
-                    {/* Main Link */}
+                    {/* Main Link (disabled if subItems exist) */}
                     <div className="flex items-center justify-between">
-                      <Link
-                        href={item.href}
-                        className="py-2 px-0 rounded hover:text-[#E22026] transition-colors"
-                        onClick={() => {
-                          setIsMenuOpen(false);
-                          if (item.subItems && windowWidth < 768) {
-                            handleSubmenuToggle(item.label);
+                      {item.subItems ? (
+                        <span
+                          className="py-2 px-0 cursor-default select-none"
+                          onClick={() =>
+                            windowWidth < 768 && handleSubmenuToggle(item.label)
                           }
-                        }}
-                      >
-                        {item.label}
-                      </Link>
+                        >
+                          {item.label}
+                        </span>
+                      ) : (
+                        <Link
+                          href={item.href!}
+                          className="py-2 px-0 rounded hover:text-[#E22026] transition-colors"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {item.label}
+                        </Link>
+                      )}
+
                       {item.subItems && (
                         <ChevronDown
                           size={18}
@@ -198,9 +205,8 @@ export default function Header() {
             {/* CTA + Mobile Toggle */}
             <div className="flex items-center gap-3">
               <button
-
                 className="bg-[#E22026] cursor-pointer md:block hidden hover:bg-[#74BF44] text-white font-medium px-5 py-2 rounded-md shadow-md transition-all"
-                   onClick={openModal}
+                onClick={openModal}
                 type="button"
               >
                 Enquire Now
@@ -217,10 +223,7 @@ export default function Header() {
           </div>
         </nav>
       </header>
-       <ContactModal
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
-            />
+      <ContactModal isOpen={isModalOpen} onClose={closeModal} />
     </>
   );
 }

@@ -180,9 +180,9 @@ const HospitalCard = ({ hospital, onOpenModal }: { hospital: Hospital; onOpenMod
               className="object-contain"
             />
           </div>
-          <CardTitle className="text-2xl font-medium text-gray-600 ">{hospital.name}</CardTitle>
+          <CardTitle className="text-xl font-medium text-gray-600 ">{hospital.name}</CardTitle>
         </div>
-        <CardDescription className="flex items-center my-2 text-lg font-medium text-gray-600 mb-0">
+        <CardDescription className="flex items-center my-2 text-base font-medium text-gray-600 mb-0">
           <MapPin className="h-5 w-5 mr-1 text-[#E22026] flex-shrink-0" />
           <span className="truncate">{hospital.location}</span>
         </CardDescription>
@@ -194,7 +194,7 @@ const HospitalCard = ({ hospital, onOpenModal }: { hospital: Hospital; onOpenMod
         <Button
           onClick={onOpenModal}
           variant="ghost"
-          className="text-lg text-left px-0 justify-start text-gray-700 cursor-pointer "
+          className="text-base text-left px-0 justify-start text-gray-700 cursor-pointer "
         >
           Enquire Now
         </Button>
