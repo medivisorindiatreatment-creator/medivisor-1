@@ -154,7 +154,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
         if (!wixClient.posts) {
           console.error('Error: wixClient.posts module not available')
           setError('Blog service not available. Please check configuration.')
-          setIsLoading(false)
           return
         }
 
@@ -165,12 +164,13 @@ export default function BlogPost({ slug }: BlogPostProps) {
           if (typeof wixClient.posts.getPostBySlug === 'function') {
             console.log('Trying getPostBySlug...')
             const response = await wixClient.posts.getPostBySlug(slug, {
-              fieldsets: ['CONTENT_TEXT', 'URL', 'RICH_CONTENT'],
+              fieldsets: ['CONTENT_TEXT', 'URL', 'RICH_CONTENT', 'TAGS', 'CATEGORY_IDS'],
             })
 
             if (response.post) {
               fetchedPost = response.post as Post
               console.log('Successfully fetched post using getPostBySlug')
+              console.log('Rich content:', fetchedPost.richContent)
             }
           }
         } catch (getBySlugError) {
@@ -193,35 +193,55 @@ export default function BlogPost({ slug }: BlogPostProps) {
           }
         }
 
+        if (!fetchedPost) {
+          try {
+            if (typeof wixClient.posts.listPosts === 'function') {
+              console.log('Trying listPosts as fallback...')
+              const response = await wixClient.posts.listPosts({
+                paging: { limit: 100 },
+              })
+
+              const foundPost = response.posts?.find((p: any) => p.slug === slug)
+              if (foundPost) {
+                fetchedPost = foundPost as Post
+                console.log('Successfully found post using listPosts')
+              }
+            }
+          } catch (listError) {
+            console.error('listPosts also failed:', listError)
+          }
+        }
+
         if (fetchedPost) {
           setPost(fetchedPost)
 
           // Fetch related posts
           try {
             let relatedPostsData: Post[] = []
+            let relatedResponse
             if (typeof wixClient.posts.queryPosts === 'function') {
               console.log('Trying to fetch related posts using queryPosts...')
               const postTags = fetchedPost.tags || []
               const postCategories = fetchedPost.categoryIds || []
 
               let query = wixClient.posts.queryPosts().ne('_id', fetchedPost._id).limit(6)
-
+              
               if (postTags.length > 0) {
-                query = query.hasSome('tags', postTags)
+                query = query.hasSome('tags', postTags);
                 console.log('Querying related posts by tags:', postTags)
               } else if (postCategories.length > 0) {
-                query = query.hasSome('categoryIds', postCategories)
+                query = query.hasSome('categoryIds', postCategories);
                 console.log('Querying related posts by categories:', postCategories)
               } else {
                 console.log('No tags or categories found, fetching recent posts instead.')
               }
 
-              const relatedResponse = await query.find()
+              relatedResponse = await query.find()
               relatedPostsData = relatedResponse.items as Post[]
-            } else {
+            } else if (typeof wixClient.posts.listPosts === 'function') {
               console.log('Falling back to listPosts for related content...')
               // Fallback to listPosts and filter
-              const relatedResponse = await wixClient.posts.listPosts({
+              relatedResponse = await wixClient.posts.listPosts({
                 paging: { limit: 10 },
               })
               const postsList = relatedResponse.posts || []
@@ -229,7 +249,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
                 .filter((p: any) => p._id !== fetchedPost._id)
                 .slice(0, 6) as Post[]
             }
-            console.log('Fetched related posts count:', relatedPostsData.length)
+            console.log('Fetched related posts:', relatedPostsData.length)
             setRelatedPosts(relatedPostsData)
           } catch (relatedError) {
             console.error('Failed to fetch related posts:', relatedError)
@@ -404,7 +424,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
               </div>
               <div className='col-span-1 bg-white md:p-4'>
                 {/* Related Posts */}
-                {relatedPosts.length > 0 && (
+                 {relatedPosts.length > 0 && (
                   <section className="mt-5">
                     <h2 className="text-xl md:text-3xl font-medium text-gray-700 mb-3 leading-tight">Related Articles</h2>
                     <div className="space-y-4">
