@@ -418,7 +418,9 @@ export default function BlogPost({ slug }: BlogPostProps) {
    
 
               <div className="lg:sticky md:py-0 py-10 lg:top-28 lg:min-h-[calc(100vh-7rem)]">
-                <Blogside/>
+               <div className='w-full md:block hidden'>
+                 <Blogside/>
+                 </div>
   <div>
     <div className="bg-[#E22026] rounded-xs shadow-xs text-white p-4 text-center">
       <h2 className="text-2xl md:text-xl font-semibold mb-4 tracking-tight">

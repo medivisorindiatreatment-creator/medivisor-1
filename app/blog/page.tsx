@@ -191,7 +191,7 @@ export default function BlogPage() {
                       </span>
                       <div className="flex-grow pt-2">
                         {post.excerpt && (
-                          <p className="text-gray-600 dark:text-gray-300 text-base line-clamp-3">{post.excerpt}</p>
+                          <p className="text-gray-600 dark:text-gray-700 text-base line-clamp-3">{post.excerpt}</p>
                         )}
                       </div>
                       <div className="flex justify-between items-center pt-4">

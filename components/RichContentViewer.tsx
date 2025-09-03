@@ -210,7 +210,7 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
         return (
           <p
             key={index}
-            className={`mb-6 text-base text-gray-700 leading-relaxed ${getTextAlignment(node.textStyle?.textAlignment)}`}
+            className={`mb-2 text-base text-gray-700 leading-relaxed ${getTextAlignment(node.textStyle?.textAlignment)}`}
           >
             {node.nodes?.map((childNode, childIndex) => renderNode(childNode, childIndex))}
           </p>
@@ -294,7 +294,7 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
 
       case "ORDERED_LIST":
         return (
-          <ol key={index} className="list-decimal mb-8 space-y-3 text-base text-gray-700 ml-6 border border-gray-100 rounded-xs p-4 bg-white shadow-xs">
+          <ol key={index} className="list-decimal mb-8 space-y-3 text-base text-gray-700 md:ml-6 md:border md:border-gray-100 rounded-xs p-4 bg-white ">
             {node.nodes?.map((childNode, childIndex) => (
               <li key={childIndex} className="leading-relaxed">
                 {childNode.nodes?.map((textNode, textIndex) => renderNode(textNode, textIndex))}
@@ -314,7 +314,7 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
         return (
           <blockquote
             key={index}
-            className="relative border-l-4 border-blue-500 pl-6 py-4 my-8 bg-blue-50 rounded-xs"
+            className="relative border-l-4 border-blue-500 md:pl-6 py-4 my-8 bg-blue-50 rounded-xs"
           >
             <div className="absolute -left-2 -top-2 text-4xl text-blue-300 font-serif">“</div>
             <div className="italic text-base text-gray-800 leading-relaxed">
