@@ -18,6 +18,7 @@ import {
   Share2,
   Bookmark,
 } from 'lucide-react'
+import Blogside from '@/components/BlogAside'
 import { RicosRenderer } from './RichContentViewer'
 import { extractTextFromRicos, type RicosContent } from '../lib/ricos-parser'
 
@@ -363,31 +364,31 @@ export default function BlogPost({ slug }: BlogPostProps) {
         <div className=" mx-auto">
           {/* Breadcrumb */}
           <nav className="my-3">
-           <button
-  className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-background hover:text-accent-foreground h-10 px-4 py-2 border-gray-200 text-gray-600 hover:bg-gray-50"
->
-  <ChevronLeft className="w-4 h-4 mr-2" />
-  Back to Blog
-</button>
+            <button
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-background hover:text-accent-foreground h-10 px-4 py-2 border-gray-200 text-gray-600 hover:bg-gray-50"
+            >
+              <ChevronLeft className="w-4 h-4 mr-2" />
+              Back to Blog
+            </button>
           </nav>
           <div className="space-y-12">
             <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
               <div className='col-span-2'>
                 <article className="bg-white rounded-xs shadow-xs border border-gray-100 overflow-hidden">
-                 
+
                   <div className="p-4 md:p-4">
                     {/* Article Header */}
-                    
+
                     <header className="mt-5">
                       <h1 className="text-xl  md:text-2xl font-bold text-gray-900 mb-6 leading-tight">
                         {post.title}
                       </h1>
 
 
-                    
+
 
                       {/* Action Buttons */}
-                 
+
                     </header>
 
                     {/* Article Content */}
@@ -408,14 +409,36 @@ export default function BlogPost({ slug }: BlogPostProps) {
                       )}
                     </div>
 
-                   
+
                   </div>
                 </article>
-                
+
               </div>
-              <div className='col-span-1'>
-                  <div className=" sticky min-h-screen top-28"><aside><div className="rounded-none border bg-gradient-to-r from-red-600 to-red-700 border-none shadow-none text-white"><div className="p-8 text-center"><h2 className="text-3xl font-bold mb-4">Ready to Meet Your Specialist?</h2><p className="text-lg mb-6">Schedule a consultation with any of our expert doctors and take the first<br/>step towards better health.</p></div></div></aside></div>
-                </div>
+              <div className='col-span-1 bg-white'>
+   
+
+              <div className="lg:sticky md:py-0 py-10 lg:top-28 lg:min-h-[calc(100vh-7rem)]">
+                <Blogside/>
+  <div>
+    <div className="bg-[#E22026] rounded-xs shadow-xs text-white p-4 text-center">
+      <h2 className="text-2xl md:text-xl font-semibold mb-4 tracking-tight">
+        Ready to Meet Your Specialist?
+      </h2>
+      <p className="text-base md:text-lg mb-6 leading-relaxed">
+        Schedule a consultation with one of our expert doctors and take the first step toward better health.
+      </p>
+      <button
+        onClick={() => (window.location.href = "/contact")}
+        className="inline-flex items-center px-6 font-medium py-2 bg-white text-red-600  rounded-xs hover:bg-red-50 hover:text-gray-700 transition-all duration-200 shadow-xs hover:shadow-md"
+      >
+        Book Now
+      </button>
+    </div>
+  </div>
+   
+</div>
+            
+              </div>
             </div>
             {/* Main Article */}
 
@@ -472,7 +495,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
               </section>
             )}
           </div>
-          </div>
+        </div>
       </main>
     </div>
   )

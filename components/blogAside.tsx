@@ -19,8 +19,8 @@ export default function QuickLinks() {
   const navItems = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/aboutus', label: 'About Us', icon: Info },
-    { href: '/india-treatment', label: 'India Treatment', icon: BriefcaseMedical },
-    { href: '/gallery', label: 'Gallery', icon: ImageIcon },
+    { href: '/services', label: 'Our Services', icon: BriefcaseMedical },
+  
     { href: '/blog', label: 'Blog', icon: Newspaper },
     { href: '/team', label: 'Our Team', icon: Users },
     { href: '/safety-measures', label: 'Safety Measures', icon: ShieldCheck },

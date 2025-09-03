@@ -1,48 +1,51 @@
-import React from "react"
-import { type RicosNode, type RicosContent, getWixMediaUrl } from "@/lib/ricos-parser"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Download, ExternalLink, Play } from 'lucide-react'
-import Image from "next/image"
-import { getYouTubeEmbedUrl } from "@/lib/utils"
-import type { JSX } from "react/jsx-runtime"
+import React from "react";
+import { type RicosNode, type RicosContent, getWixMediaUrl } from "@/lib/ricos-parser";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Download, ExternalLink, Play } from 'lucide-react';
+import Image from "next/image";
+import { getYouTubeEmbedUrl } from "@/lib/utils";
+import type { JSX } from "react/jsx-runtime";
 import { FaCheckCircle } from 'react-icons/fa';
 
 interface RicosRendererProps {
-  content: RicosContent | string
-  className?: string
+  content: RicosContent | string;
+  className?: string;
 }
 
 export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
   // Handle legacy HTML content
   if (typeof content === "string") {
-    return <div className={`prose  text-smpmd:rose-base max-w-none ${className}`} dangerouslySetInnerHTML={{ __html: content }} />
+    return <div className={`prose prose-base max-w-none ${className}`} dangerouslySetInnerHTML={{ __html: content }} />;
   }
 
+  /**
+   * Renders text with applied decorations like bold, italic, links, etc.
+   * Decorations are applied in reverse order to ensure proper nesting.
+   */
   const renderTextWithDecorations = (textData: any): React.ReactNode => {
-    if (!textData) return null
+    if (!textData) return null;
 
-    let element: React.ReactNode = textData.text
+    let element: React.ReactNode = textData.text;
 
-    // Apply decorations in reverse order to nest them properly
     if (textData.decorations) {
       for (let i = textData.decorations.length - 1; i >= 0; i--) {
-        const decoration = textData.decorations[i]
+        const decoration = textData.decorations[i];
 
         switch (decoration.type) {
           case "BOLD":
-            element = <span className="font-semibold text-gray-700">{element}</span>
-            break
+            element = <span className="font-semibold text-gray-800">{element}</span>;
+            break;
           case "ITALIC":
-            element = <em className="italic">{element}</em>
-            break
+            element = <em className="italic">{element}</em>;
+            break;
           case "UNDERLINE":
-            element = <u className="underline decoration-2 underline-offset-2">{element}</u>
-            break
+            element = <u className="underline decoration-2 underline-offset-2">{element}</u>;
+            break;
           case "LINK":
-            const url = decoration.linkData?.link?.url
-            const target = decoration.linkData?.link?.target === "BLANK" ? "_blank" : "_self"
-            const rel = decoration.linkData?.link?.rel?.noreferrer ? "noopener noreferrer" : undefined
+            const url = decoration.linkData?.link?.url;
+            const target = decoration.linkData?.link?.target === "BLANK" ? "_blank" : "_self";
+            const rel = decoration.linkData?.link?.rel?.noreferrer ? "noopener noreferrer" : undefined;
 
             element = (
               <a
@@ -54,11 +57,11 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
                 {element}
                 {target === "_blank" && <ExternalLink className="inline w-3 h-3 ml-1" />}
               </a>
-            )
-            break
+            );
+            break;
           case "COLOR":
-            const foreground = decoration.colorData?.foreground
-            const background = decoration.colorData?.background
+            const foreground = decoration.colorData?.foreground;
+            const background = decoration.colorData?.background;
 
             element = (
               <span
@@ -66,136 +69,190 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
                   color: foreground,
                   backgroundColor: background,
                 }}
-                className={`${background ? "px-0 py-1 rounded-md" : ""}`}
+                className={`${background ? "px-0 py-0.5 rounded" : ""}`}
               >
                 {element}
               </span>
-            )
-            break
+            );
+            break;
           case "FONT_SIZE":
-            const fontSize = decoration.fontSizeData?.value
+            const fontSize = decoration.fontSizeData?.value;
             if (fontSize) {
-              element = <span style={{ fontSize: `${fontSize}px` }}>{element}</span>
+              element = <span style={{ fontSize: `${fontSize}px` }}>{element}</span>;
             }
-            break
+            break;
         }
       }
     }
 
-    return element
-  }
+    return element;
+  };
 
+  /**
+   * Gets Tailwind class for text alignment.
+   */
   const getTextAlignment = (alignment?: string): string => {
     switch (alignment) {
       case "LEFT":
-        return "text-left"
+        return "text-left";
       case "CENTER":
-        return "text-center"
+        return "text-center";
       case "RIGHT":
-        return "text-right"
+        return "text-right";
       case "JUSTIFY":
-        return "text-justify"
+        return "text-justify";
       default:
-        return "text-left"
+        return "text-left";
     }
-  }
+  };
 
+  /**
+   * Gets Tailwind class for flex alignment (for images, etc.).
+   */
   const getAlignment = (alignment?: string): string => {
     switch (alignment) {
       case "LEFT":
-        return "flex justify-start"
+        return "flex justify-start";
       case "CENTER":
-        return "flex justify-center"
+        return "flex justify-center";
       case "RIGHT":
-        return "flex justify-end"
+        return "flex justify-end";
       default:
-        return "flex justify-center"
+        return "flex justify-center";
     }
-  }
+  };
 
+  /**
+   * Renders a single image node as a figure.
+   */
+  const renderSingleImage = (node: RicosNode, index: number): React.ReactNode => {
+    const imageId = node.imageData?.image?.src?.id;
+    const altText = node.imageData?.altText || "";
+    const caption = node.imageData?.caption;
+    const width = node.imageData?.image?.width || 800;
+    const height = node.imageData?.image?.height || 600;
+    const alignment = node.imageData?.containerData?.alignment || "CENTER";
+
+    if (!imageId) return null;
+
+    return (
+      <figure key={index} className={`my-3 border border-gray-200 rounded-xs shadow-sm hover:shadow-md transition-shadow duration-300 ${getAlignment(alignment)}`}>
+        <div className="relative overflow-hidden rounded-xs">
+          <Image
+            src={getWixMediaUrl(imageId, width, height) || "/placeholder.svg"}
+            alt={altText}
+            width={width}
+            height={height}
+            className="w-full h-auto object-cover transition-transform duration-500 "
+            priority={index < 2}
+            unoptimized
+          />
+        </div>
+        {caption && (
+          <figcaption className="text-sm text-gray-600 mt-3 text-center italic bg-gray-50 px-4 py-2 rounded-xs">
+            {caption}
+          </figcaption>
+        )}
+      </figure>
+    );
+  };
+
+  /**
+   * Renders a group of consecutive image nodes in a grid layout.
+   */
+  const renderImageGrid = (images: RicosNode[], startIndex: number): React.ReactNode => {
+    return (
+      <div key={`grid-${startIndex}`} className="my-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {images.map((node, idx) => {
+          const imageId = node.imageData?.image?.src?.id;
+          const altText = node.imageData?.altText || "";
+          const caption = node.imageData?.caption;
+          const width = node.imageData?.image?.width || 800;
+          const height = node.imageData?.image?.height || 600;
+
+          if (!imageId) return null;
+
+          return (
+            <figure key={startIndex + idx} className="border border-gray-200 rounded-xs shadow-sm hover:shadow-md transition-shadow duration-300">
+              <div className="relative overflow-hidden rounded-xs">
+                <Image
+                  src={getWixMediaUrl(imageId, width, height) || "/placeholder.svg"}
+                  alt={altText}
+                  width={width}
+                  height={height}
+                  className="w-full h-auto object-cover transition-transform duration-500 "
+                  priority={(startIndex + idx) < 2}
+                  unoptimized
+                />
+              </div>
+              {caption && (
+                <figcaption className="text-sm text-gray-600 mt-3 text-center italic bg-gray-50 px-4 py-2 rounded-xs">
+                  {caption}
+                </figcaption>
+              )}
+            </figure>
+          );
+        })}
+      </div>
+    );
+  };
+
+  /**
+   * Recursively renders a Ricos node based on its type.
+   */
   const renderNode = (node: RicosNode, index: number): React.ReactNode => {
     switch (node.type) {
       case "PARAGRAPH":
         if (!node.nodes || node.nodes.length === 0) {
-          return <div key={index} className="h-0" />
+          return <div key={index} className="h-0" />;
         }
 
         return (
           <p
             key={index}
-            className={`mb-6 text-sm md:text-base text-gray-700 leading-relaxed ${getTextAlignment(node.textStyle?.textAlignment)}`}>
+            className={`mb-6 text-base text-gray-700 leading-relaxed ${getTextAlignment(node.textStyle?.textAlignment)}`}
+          >
             {node.nodes?.map((childNode, childIndex) => renderNode(childNode, childIndex))}
           </p>
-        )
+        );
 
       case "HEADING":
-        const level = node.headingData?.level || 1
-        const HeadingTag = `h${Math.min(level, 6)}` as keyof JSX.IntrinsicElements
+        const level = node.headingData?.level || 1;
+        const HeadingTag = `h${Math.min(level, 6)}` as keyof JSX.IntrinsicElements;
         const headingClasses = {
-          1: "text-5xl font-bold mb-8 mt-12 text-gray-900 leading-tight tracking-tight",
-          2: "text-4xl font-bold mb-3 mt-10 text-gray-900 leading-tight tracking-tight",
-          3: "text-3xl font-bold mb-5 mt-8 text-gray-900 leading-tight",
-          4: "text-2xl font-bold mb-4 mt-6 text-gray-900 leading-tight",
-          5: "text-xl font-bold mb-3 mt-5 text-gray-900 leading-tight",
-          6:  "text-sm md:text-base font-bold mb-2 mt-4 text-gray-900 leading-tight",
-        }
+          1: "text-4xl md:text-5xl font-bold mb-8 mt-12 text-gray-900 leading-tight tracking-tight",
+          2: "text-3xl md:text-4xl font-bold mb-6 mt-10 text-gray-900 leading-tight tracking-tight",
+          3: "text-2xl md:text-3xl font-bold mb-5 mt-8 text-gray-900 leading-tight",
+          4: "text-xl md:text-2xl font-bold mb-4 mt-6 text-gray-900 leading-tight",
+          5: "text-lg md:text-xl font-bold mb-3 mt-5 text-gray-900 leading-tight",
+          6: "text-base md:text-lg font-bold mb-2 mt-4 text-gray-900 leading-tight",
+        };
 
         return (
           <HeadingTag
             key={index}
-            className={`${headingClasses[level as keyof typeof headingClasses]} ${getTextAlignment(node.headingData?.textStyle?.textAlignment)}`}
+            className={`${headingClasses[level as keyof typeof headingClasses]} border-b border-gray-200 pb-2 ${getTextAlignment(node.headingData?.textStyle?.textAlignment)}`}
           >
             {node.nodes?.map((childNode, childIndex) => renderNode(childNode, childIndex))}
           </HeadingTag>
-        )
+        );
 
       case "TEXT":
-        return <React.Fragment key={index}>{renderTextWithDecorations(node.textData)}</React.Fragment>
-
-      case "IMAGE":
-        const imageId = node.imageData?.image?.src?.id
-        const altText = node.imageData?.altText || ""
-        const caption = node.imageData?.caption
-        const width = node.imageData?.image?.width || 800
-        const height = node.imageData?.image?.height || 600
-        const alignment = node.imageData?.containerData?.alignment || "CENTER"
-
-        if (!imageId) return null
-
-        return (
-          <figure key={index} className={`my-8 ${getAlignment(alignment)}`}>
-            <div className="relative overflow-hidden rounded-xs shadow-xs hover:shadow-sm transition-shadow duration-300">
-              <Image
-                src={getWixMediaUrl(imageId, width, height) || "/placeholder.svg"}
-                alt={altText}
-                width={width}
-                height={height}
-                className="w-full h-auto object-cover  transition-transform duration-500"
-                priority={index < 2}
-                unoptimized
-              />
-            </div>
-            {caption && (
-              <figcaption className="text-sm text-gray-600 mt-3 text-center italic bg-gray-50 px-4 py-2 ro text-smumd:nded-base">
-                {caption}
-              </figcaption>
-            )}
-          </figure>
-        )
+        return <React.Fragment key={index}>{renderTextWithDecorations(node.textData)}</React.Fragment>;
 
       case "VIDEO":
-        const videoUrl = node.videoData?.video?.src?.url
-        const thumbnailId = node.videoData?.thumbnail?.src?.id
-        const videoWidth = node.videoData?.containerData?.width?.size || 800
-        const videoHeight = node.videoData?.containerData?.height?.size || 450
+        const videoUrl = node.videoData?.video?.src?.url;
+        const thumbnailId = node.videoData?.thumbnail?.src?.id;
+        const videoWidth = node.videoData?.containerData?.width?.size || 800;
+        const videoHeight = node.videoData?.containerData?.height?.size || 450;
 
-        if (!videoUrl) return null
+        if (!videoUrl) return null;
 
-        const youtubeEmbedUrl = getYouTubeEmbedUrl(videoUrl)
+        const youtubeEmbedUrl = getYouTubeEmbedUrl(videoUrl);
 
         return (
-          <div key={index} className="my-8">
-            <div className="relative aspect-video bg-black rounded-xl overflow-hidden s text-smhmd:adow-base">
+          <div key={index} className="my-8 max-w-4xl mx-auto border border-gray-200 rounded-xs shadow-sm">
+            <div className="relative aspect-video bg-black rounded-xs overflow-hidden">
               {youtubeEmbedUrl ? (
                 <iframe
                   className="w-full h-full"
@@ -219,100 +276,98 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
               )}
             </div>
           </div>
-        )
+        );
 
       case "BULLETED_LIST":
         return (
-          <ul key={index} className="list-none mb-4 space-y-1 text-sm md:text-base text-gray-700">
+          <ul key={index} className="list-none mb-8 space-y-3 text-base text-gray-700 border border-gray-100 rounded-xs p-4 bg-white shadow-xs">
             {node.nodes?.map((childNode, childIndex) => (
-              <li key={childIndex} className="flex items-start gap-x-3">
-                <FaCheckCircle className="text-white fill-[#74BF44] mt-1 ml-2 flex-shrink-0" />
+              <li key={childIndex} className="flex items-start gap-3">
+                <FaCheckCircle className="text-[#74BF44] mt-1 flex-shrink-0 w-5 h-5" />
                 <div className="flex-1">
                   {childNode.nodes?.map((textNode, textIndex) => renderNode(textNode, textIndex))}
                 </div>
               </li>
             ))}
           </ul>
-        )
+        );
 
       case "ORDERED_LIST":
         return (
-          <ol key={index} className="list-decimal  mb-8 space-y-2 text-sm md:text-base text-gray-700 ml-2">
+          <ol key={index} className="list-decimal mb-8 space-y-3 text-base text-gray-700 ml-6 border border-gray-100 rounded-xs p-4 bg-white shadow-xs">
             {node.nodes?.map((childNode, childIndex) => (
-              <li key={childIndex} className="leading-relaxed pl-2">
+              <li key={childIndex} className="leading-relaxed">
                 {childNode.nodes?.map((textNode, textIndex) => renderNode(textNode, textIndex))}
               </li>
             ))}
           </ol>
-        )
+        );
 
       case "LIST_ITEM":
         return (
           <React.Fragment key={index}>
             {node.nodes?.map((childNode, childIndex) => renderNode(childNode, childIndex))}
           </React.Fragment>
-        )
+        );
 
       case "BLOCKQUOTE":
         return (
           <blockquote
             key={index}
-            className="relative border-l-4 border-blue-500 pl-8 py-6 my-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-r-xl"
+            className="relative border-l-4 border-blue-500 pl-6 py-4 my-8 bg-blue-50 rounded-xs"
           >
-            <div className="absolute -left-2 -top-2 text-4xl text-blue-400 font-serif">"</div>
-            <div className="italic text-sm md:text-base text-gray-800 leading-relaxed">
+            <div className="absolute -left-2 -top-2 text-4xl text-blue-300 font-serif">“</div>
+            <div className="italic text-base text-gray-800 leading-relaxed">
               {node.nodes?.map((childNode, childIndex) => renderNode(childNode, childIndex))}
             </div>
           </blockquote>
-        )
+        );
 
       case "CODE_BLOCK":
-        const language = node.codeBlockData?.textStyle?.language || "text"
-        const codeText = node.nodes?.map((n) => n.textData?.text).join("") || ""
+        const language = node.codeBlockData?.textStyle?.language || "text";
+        const codeText = node.nodes?.map((n) => n.textData?.text).join("") || "";
 
         return (
-          <div key={index} className="my-8">
-            <div className="relative bg-gray-900 rounded-xl overflow-hidden s text-smhmd:adow-base">
+          <div key={index} className="my-8 max-w-4xl mx-auto border border-gray-200 rounded-xs shadow-sm">
+            <div className="relative bg-gray-900 rounded-xs overflow-hidden">
               <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
-                <span className="text-sm text-gray-300 font-medium">{language}</span>
+                <span className="text-sm text-gray-300 font-medium capitalize">{language}</span>
                 <div className="flex space-x-2">
-                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                 </div>
               </div>
-              <pre className="p-6 overflow-x-auto">
+              <pre className="p-4 overflow-x-auto">
                 <code className={`language-${language} text-gray-100 text-sm`}>{codeText}</code>
               </pre>
             </div>
           </div>
-        )
+        );
 
       case "DIVIDER":
         return (
-          <div key={index} className="my-12 flex items-center">
+          <div key={index} className="my-12 flex items-center border-t border-gray-200 pt-4">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-            <div className="px-4">
-              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-            </div>
+            <div className="px-4 text-gray-400">⋆</div>
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
           </div>
-        )
+        );
 
       case "BUTTON":
-        const buttonText = node.buttonData?.text || "Button"
-        const buttonUrl = node.buttonData?.link?.url
-        const buttonTarget = node.buttonData?.link?.target || "_self"
-        const buttonStyle = node.buttonData?.design
+        const buttonText = node.buttonData?.text || "Button";
+        const buttonUrl = node.buttonData?.link?.url;
+        const buttonTarget = node.buttonData?.link?.target || "_self";
+        const buttonStyle = node.buttonData?.design;
 
         return (
           <div key={index} className="my-8 flex justify-center">
             <Button
               asChild
-              className="inline-flex items-center gap-2 px-6 py-3 text-base font-medium ro text-smumd:nded-base s text-smhmd:adow-base hover:shadow-xl transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-3 text-base font-medium rounded-xs shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200"
               style={{
                 backgroundColor: buttonStyle?.backgroundColor || "#3B82F6",
-                borderColor: buttonStyle?.borderColor,
+                borderColor: buttonStyle?.borderColor || "#3B82F6",
                 color: buttonStyle?.textColor || "white",
               }}
             >
@@ -322,23 +377,23 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
                 rel={buttonTarget === "_blank" ? "noopener noreferrer" : undefined}
               >
                 {buttonText}
-                {buttonTarget === "_blank" && <ExternalLink className="w-4 h-4" />}
+                {buttonTarget === "_blank" && <ExternalLink className="w-4 h-4 ml-2" />}
               </a>
             </Button>
           </div>
-        )
+        );
 
       case "EMBED":
-        const embedSrc = node.embedData?.src
-        const embedType = node.embedData?.type
+        const embedSrc = node.embedData?.src;
+        const embedType = node.embedData?.type;
 
-        if (!embedSrc) return null
+        if (!embedSrc) return null;
 
-        const embedYoutubeUrl = getYouTubeEmbedUrl(embedSrc)
+        const embedYoutubeUrl = getYouTubeEmbedUrl(embedSrc);
 
         return (
-          <div key={index} className="my-8">
-            <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden s text-smhmd:adow-base">
+          <div key={index} className="my-8 max-w-4xl mx-auto border border-gray-200 rounded-xs shadow-sm">
+            <div className="aspect-video bg-gray-100 rounded-xs overflow-hidden">
               <iframe
                 src={embedYoutubeUrl || embedSrc}
                 className="w-full h-full"
@@ -348,71 +403,70 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
               />
             </div>
           </div>
-        )
+        );
 
       case "GALLERY":
-        const galleryItems = node.galleryData?.items || []
+        const galleryItems = node.galleryData?.items || [];
 
-        // Group items into pairs for the two-column layout
-        const groupedItems = []
+        // Group items into pairs for two-column layout on desktop
+        const groupedItems = [];
         for (let i = 0; i < galleryItems.length; i += 2) {
-          groupedItems.push(galleryItems.slice(i, i + 2))
+          groupedItems.push(galleryItems.slice(i, i + 2));
         }
 
         return (
           <div key={index} className="my-8 space-y-8">
             {groupedItems.map((group, groupIndex) => (
-              <div key={groupIndex} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div key={groupIndex} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {group.map((item, itemIndex) => {
-                  const itemImageId = item.image?.src?.id
-                  if (!itemImageId) return null
+                  const itemImageId = item.image?.src?.id;
+                  if (!itemImageId) return null;
 
                   return (
-                    <Card key={itemIndex} className="overflow-hidden hover:s text-smhmd:adow-base transition-shadow duration-300 h-full flex flex-col">
-                      <div className="relative aspect-video overflow-hidden">
+                    <Card key={itemIndex} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col border border-gray-200 rounded-xs shadow-sm">
+                      <div className="relative aspect-[16/9] overflow-hidden">
                         <Image
                           src={getWixMediaUrl(itemImageId, 600, 338) || "/placeholder.svg"}
                           alt={item.title || `Gallery image ${itemIndex + 1}`}
                           fill
-                          className="object-cover hover:scale-110 transition-transform duration-500"
+                          className="object-cover transition-transform duration-500"
                           unoptimized
                         />
                       </div>
-                      <CardHeader>
-                        {item.title && <CardTitle>{item.title}</CardTitle>}
-                        {item.description && <CardDescription>{item.description}</CardDescription>}
+                      <CardHeader className="pb-2">
+                        {item.title && <CardTitle className="text-xl">{item.title}</CardTitle>}
+                        {item.description && <CardDescription className="text-gray-600">{item.description}</CardDescription>}
                       </CardHeader>
-                      <CardContent className="flex-grow">
+                      <CardContent className="flex-grow pt-0">
                         {item.description && (
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-600 line-clamp-3">
                             {item.description}
                           </p>
                         )}
-                        {/* You can add more content here based on your Ricos data structure */}
                       </CardContent>
                     </Card>
-                  )
+                  );
                 })}
               </div>
             ))}
           </div>
-        )
+        );
 
       case "AUDIO":
-        const audioUrl = node.audioData?.audio?.src?.url
-        const audioName = node.audioData?.name
-        const authorName = node.audioData?.authorName
+        const audioUrl = node.audioData?.audio?.src?.url;
+        const audioName = node.audioData?.name;
+        const authorName = node.audioData?.authorName;
 
-        if (!audioUrl) return null
+        if (!audioUrl) return null;
 
         return (
-          <Card key={index} className="my-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+          <Card key={index} className="my-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xs shadow-sm">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                 <Play className="w-6 h-6 text-purple-600" />
               </div>
               <div className="flex-1">
-                {audioName && <h4 className="font-semibold text-gray-900">{audioName}</h4>}
+                {audioName && <h4 className="font-semibold text-gray-900 text-lg">{audioName}</h4>}
                 {authorName && <p className="text-sm text-gray-600">{authorName}</p>}
               </div>
             </div>
@@ -421,30 +475,30 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
               Your browser does not support the audio element.
             </audio>
           </Card>
-        )
+        );
 
       case "FILE":
-        const fileUrl = node.fileData?.src?.url
-        const fileName = node.fileData?.name
-        const fileType = node.fileData?.type
-        const fileSize = node.fileData?.size
+        const fileUrl = node.fileData?.src?.url;
+        const fileName = node.fileData?.name;
+        const fileType = node.fileData?.type;
+        const fileSize = node.fileData?.size;
 
-        if (!fileUrl) return null
+        if (!fileUrl) return null;
 
         return (
-          <Card key={index} className="my-8 p-6 bg-gradient-to-r from-gray-50 to-blue-50 border-gray-200">
+          <Card key={index} className="my-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xs shadow-sm">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                 <Download className="w-6 h-6 text-blue-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold text-gray-900">{fileName || "Download File"}</h4>
+                <h4 className="font-semibold text-gray-900 text-lg">{fileName || "Download File"}</h4>
                 <div className="text-sm text-gray-600">
                   {fileType && <span className="mr-2">{fileType.toUpperCase()}</span>}
                   {fileSize && <span>({formatFileSize(fileSize)})</span>}
                 </div>
               </div>
-              <Button asChild variant="outline" size="sm" className="bg-white hover:bg-blue-50 border-blue-200">
+              <Button asChild variant="outline" size="sm" className="bg-white hover:bg-blue-50 border border-blue-200">
                 <a href={fileUrl} download={fileName} target="_blank" rel="noopener noreferrer">
                   <Download className="w-4 h-4 mr-2" />
                   Download
@@ -452,27 +506,51 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
               </Button>
             </div>
           </Card>
-        )
+        );
 
       default:
         if (node.nodes) {
-          return <div key={index}>{node.nodes.map((childNode, childIndex) => renderNode(childNode, childIndex))}</div>
+          return <div key={index}>{node.nodes.map((childNode, childIndex) => renderNode(childNode, childIndex))}</div>;
         }
-        return null
+        return null;
+    }
+  };
+
+  // Custom rendering logic to group consecutive IMAGE nodes into grids
+  const renderedElements: React.ReactNode[] = [];
+  if (content.nodes) {
+    let i = 0;
+    while (i < content.nodes.length) {
+      const node = content.nodes[i];
+      if (node.type === "IMAGE") {
+        const imageGroup: RicosNode[] = [];
+        while (i < content.nodes.length && content.nodes[i].type === "IMAGE") {
+          imageGroup.push(content.nodes[i]);
+          i++;
+        }
+        if (imageGroup.length > 1) {
+          renderedElements.push(renderImageGrid(imageGroup, i - imageGroup.length));
+        } else {
+          renderedElements.push(renderSingleImage(imageGroup[0], i - 1));
+        }
+      } else {
+        renderedElements.push(renderNode(node, i));
+        i++;
+      }
     }
   }
 
   return (
-    <div className={`prose  text-smpmd:rose-base max-w-none ${className}`}>
-      {content.nodes?.map((node, index) => renderNode(node, index))}
+    <div className={`prose prose-base max-w-none ${className}`}>
+      {renderedElements}
     </div>
-  )
+  );
 }
 
 function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes"
-  const k = 1024
-  const sizes = ["Bytes", "KB", "MB", "GB"]
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
