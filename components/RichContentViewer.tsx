@@ -123,8 +123,7 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
         return (
           <p
             key={index}
-            className={ text-sm`md:text-base text-gray-700 leading-relaxed mb-3 ${getTextAlignment(node.paragraphData?.textStyle?.textAlignment)}`}
-          >
+            className={`mb-6 text-sm md:text-base text-gray-700 leading-relaxed ${getTextAlignment(node.textStyle?.textAlignment)}`}>
             {node.nodes?.map((childNode, childIndex) => renderNode(childNode, childIndex))}
           </p>
         )
@@ -138,7 +137,7 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
           3: "text-3xl font-bold mb-5 mt-8 text-gray-900 leading-tight",
           4: "text-2xl font-bold mb-4 mt-6 text-gray-900 leading-tight",
           5: "text-xl font-bold mb-3 mt-5 text-gray-900 leading-tight",
-          6:  text-sm"md:text-base font-bold mb-2 mt-4 text-gray-900 leading-tight",
+          6:  "text-sm md:text-base font-bold mb-2 mt-4 text-gray-900 leading-tight",
         }
 
         return (

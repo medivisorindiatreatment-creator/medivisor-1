@@ -3,10 +3,6 @@ import { wixServerClient } from "@/lib/wixServer";
 
 // Define a list of allowed origins.
 const ALLOWED_ORIGINS = [
-  "https://medivisor-ujuu.vercel.app",
-  "https://www.medivisor-ujuu.vercel.app",
-  "https://www.medivisor-ujuu.vercel.ap", 
-
   "https://www.medivisorindiatreatment.com/",
 
   "https://medivisorindiatreatment.com/"
