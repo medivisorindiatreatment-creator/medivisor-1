@@ -276,7 +276,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <div className="min-h-screen bg-gradient-to-br md:py-10 py-4 from-gray-50 to-white">
         <main className="container mx-auto px-4 py-12">
           <div className=" mx-auto">
             <div className="animate-pulse">
@@ -302,7 +302,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <div className="min-h-screen bg-gradient-to-br md:py-10 py-4 from-gray-50 to-white">
         <main className="container mx-auto px-4 py-12 text-center">
           <div className="max-w-md mx-auto">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
@@ -328,7 +328,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <div className="min-h-screen md:py-10 py-4 bg-gradient-to-br from-gray-50 to-white">
         <main className="container mx-auto px-4 py-12 text-center">
           <div className="max-w-md mx-auto">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
@@ -359,8 +359,8 @@ export default function BlogPost({ slug }: BlogPostProps) {
   const readTime = calculateReadTime(post.richContent || post.contentText || post.content, post.minutesToRead)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <main className="container mx-auto px-4 py-8 md:py-12">
+    <div className="min-h-screen bg-gradient-to-br py-8 md:py-10 from-gray-50 to-white">
+      <main className="container mx-auto px-4 ">
         <div className=" mx-auto">
           {/* Breadcrumb */}
           <nav className="my-3">
@@ -447,9 +447,9 @@ export default function BlogPost({ slug }: BlogPostProps) {
 
             {/* Related Posts */}
             {relatedPosts.length > 0 && (
-              <section className="mt-16">
-                <h2 className="text-2xl font-bold text-gray-900 mb-8">Related Articles</h2>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <section className="mt-10">
+          
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {relatedPosts.map((relatedPost) => {
                     const relatedImageUrl = getWixImageUrl(
                       relatedPost.media?.wixMedia?.image || relatedPost.coverMedia?.image
@@ -457,7 +457,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
                     return (
                       <div
                         key={relatedPost._id}
-                        className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-300"
+                        className="bg-white rounded-xs shadow-xs border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-300"
                       >
                         <button
                           onClick={() => window.location.href = `/blog/${relatedPost.slug}`}
@@ -472,8 +472,8 @@ export default function BlogPost({ slug }: BlogPostProps) {
                               />
                             </div>
                           )}
-                          <div className="p-6">
-                            <h3 className="font-semibold text-lg line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors duration-200">
+                          <div className="p-4">
+                            <h3 className="font-medium text-lg line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors duration-200">
                               {relatedPost.title}
                             </h3>
                             {relatedPost.excerpt && (
