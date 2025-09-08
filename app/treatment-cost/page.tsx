@@ -60,7 +60,7 @@ const TreatmentCard = ({
 
   return (
     <Card className="bg-white rounded-xs shadow-xs overflow-hidden transform transition-transform duration-300 border-gray-100 ">
-      <Link href={`/treatments/${treatment._id}`}>
+   
         <Image
           src={imageUrl}
           alt={treatment.hospitalName}
@@ -78,7 +78,7 @@ const TreatmentCard = ({
             {treatment.treatmentName}
           </CardTitle>
         </CardHeader>
-      </Link>
+    
       <CardFooter className="flex justify-between items-center pt-1">
         <Button
           variant="outline"
