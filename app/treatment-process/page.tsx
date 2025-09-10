@@ -1,59 +1,34 @@
-'use client';
+import TreatmentProcessPage from './TreatmentProcessPage';
+import { Metadata } from 'next';
 
-import React, { useState } from 'react';
-import {
-  FileText,
-  MessageCircle,
-  Plane,
-  MapPin,
-  Clock,
-  CheckCircle,
-  Phone,
-  Mail,
-  Globe,
-  Heart,
-  Users,
-  Award,
-  Shield,
-  ArrowRight,
-  ChevronRight
-} from 'lucide-react';
-import TreatmentProcess from "@/components/TreatmentProcess"
-import Banner from "@/components/BannerService";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import CtaSection from '@/components/CtaSection';
-import WorkflowCompo from "@/components/QuickEVisaFlow"
-const Treatment = () => { // Renamed the component to 'Treatment'
-  const [activeStep, setActiveStep] = useState(1);
-
-
-
-
-
-  return (
-    <>
-      <div className="min-h-screen bg-white">
-        {/* Hero Banner Section */}
-      <Banner
-  topSpanText=" Treatment Process"
-  title="Your Medical Journey in India, Step by Step"
-  description="Every healing journey starts with trust. At Medivisor, we guide you at every step — from understanding your concerns and connecting you with trusted doctors and hospitals, to explaining costs clearly and managing travel and stay. During treatment and recovery, our team stays close, so you always feel cared for, supported, and confident in your choices."
-  buttonText="Start Your Journey"
-  buttonLink="/contact"
-  bannerBgImage="/grandparents-grandchildren-globe-with-inclusion-text-concept-as-abstract-vector-featuring-g_980716-652718.jpg"
-  mainImageSrc="/about-main.png"
-  mainImageAlt="Friendly Medivisor Advisors Guiding Patients Through Treatment"
-/>
-
-
-        <TreatmentProcess />
-        
-      <WorkflowCompo/>
-    
-       <CtaSection/>
-      </div>
-    </>
-  );
+export const metadata: Metadata = {
+  title: 'Treatment Process | Medivisor India',
+  description: 'Learn about the Medivisor India treatment process for international patients. From initial consultation to post-treatment care, we ensure a smooth and safe medical journey.',
+  keywords: 'Medivisor India treatment process, medical process India, international patient care, hospital procedures India, treatment steps India, patient journey, medical tourism India',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Treatment Process | Medivisor India',
+    description: 'Step-by-step guide to Medivisor India’s treatment process for international patients, ensuring safe and effective medical care.',
+    url: 'https://www.medivisorindia.com/treatment-process',
+    siteName: 'Medivisor India',
+    images: [
+      {
+        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Medivisor India Treatment Process',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Treatment Process | Medivisor India',
+    description: 'Explore Medivisor India’s treatment process for international patients, from consultation to post-treatment follow-up.',
+    site: '@MedivisorIndia',
+  },
 };
 
-export default Treatment; // Corrected export to match component name
+export default function Page() {
+  return <TreatmentProcessPage />;
+}

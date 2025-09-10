@@ -226,10 +226,10 @@ export default function TeamMemberPage() {
         bio:
           extractTextFromRichText(
             itemData.longDescription ||
-              item.longDescription ||
-              item["Long Description"] ||
-              item.bio ||
-              item.description,
+            item.longDescription ||
+            item["Long Description"] ||
+            item.bio ||
+            item.description,
           ) || "Dedicated team member.",
         shortDescription:
           extractTextFromRichText(
@@ -238,10 +238,10 @@ export default function TeamMemberPage() {
         longDescription:
           extractTextFromRichText(
             itemData.longDescription ||
-              item.longDescription ||
-              item["Long Description"] ||
-              item.bio ||
-              item.description,
+            item.longDescription ||
+            item["Long Description"] ||
+            item.bio ||
+            item.description,
           ) || "",
         order: Number.parseInt(itemData.order) || Number.parseInt(item.order) || Number.parseInt(item.Order) || 0,
         "link-team-1-title":
@@ -307,7 +307,7 @@ export default function TeamMemberPage() {
           <p className="text-lg text-gray-600 mb-8">
             The team member you're looking for doesn't exist or may have been removed.
           </p>
-          <Button asChild className="bg-red-600 hover:bg-red-700 text-white">
+          <Button asChild className="bg-red-600 mt-5 hover:bg-red-700 text-white">
             <Link href="/team">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Team
@@ -320,16 +320,16 @@ export default function TeamMemberPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-10">
         {/* Back Button */}
-        <Button variant="ghost" asChild className="mb-8 hover:bg-red-50 hover:text-red-600">
+        <Button variant="ghost" asChild className="mt-8 hover:bg-red-50 hover:text-red-600">
           <Link href="/team">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Team
           </Link>
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 py-10 lg:grid-cols-3 gap-12">
           {/* Profile Image and Basic Info */}
           <div className="lg:col-span-1">
             <Card className="overflow-hidden shadow-xl border-0">

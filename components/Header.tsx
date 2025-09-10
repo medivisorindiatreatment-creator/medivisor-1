@@ -85,7 +85,7 @@ export default function Header() {
       >
         <nav
           className={`flex justify-between container mx-auto items-center px-4 lg:px-0 transition-all duration-300 ${
-            isSticky ? 'py-3' : 'md:py-2 py-3'
+            isSticky ? 'py-3' : ' md:py-2 py-3'
           }`}
         >
           {/* Logo */}

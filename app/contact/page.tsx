@@ -9,7 +9,35 @@ export const metadata: Metadata = {
     "Contact Medivisor India Treatment for medical tourism assistance. Global offices in India, Mauritius, Fiji, Vanuatu, Solomon Islands, and PNG. 24/7 support available.",
   keywords:
     "contact medivisor, medical tourism contact, healthcare support India, international patient assistance",
+  openGraph: {
+    title: "Contact Medivisor India Treatment - Get Medical Tourism Support",
+    description:
+      "Reach Medivisor India for expert medical tourism assistance across multiple countries. Our global offices provide 24/7 support to international patients.",
+    url: "https://www.medivisorindia.com/contact",
+    siteName: "Medivisor India",
+    type: "website",
+    images: [
+      {
+        url: "/medical-help-india.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Contact Medivisor India",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Medivisor India Treatment",
+    description:
+      "Connect with Medivisor India for seamless medical tourism assistance and global support for patients.",
+    site: "@MedivisorIndia",
+    images: ["/medical-help-india.jpg"],
+  },
+  robots: "index, follow",
+  authors: [{ name: "Medivisor India" }],
+  metadataBase: new URL("https://www.medivisorindia.com"),
 };
+
 
 export default function ContactPage() {
   const globalOffices = [

@@ -1,33 +1,69 @@
-import { Mail, Phone, MessageCircle, CheckCircle, Star, Award } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Metadata } from "next";
 import Banner from "@/components/BannerService";
-import TreatmentCost from "@/components/TreatmentCost"
+import SafetyMeasures from "@/components/SafetyMeasures";
 import OurInitiativesSection from "@/components/OurInitiativesSection";
 import Activities from "@/components/Activities";
-import SafetyMeasures from "@/components/SafetyMeasures";
+
+export const metadata: Metadata = {
+  title: "Safety Measures & Patient Care | Medivisor India Treatment",
+  description: "Medivisor India Treatment prioritizes patient safety with strict protocols, accredited hospitals, and expert medical care. Explore our initiatives to improve healthcare access and ensure a secure medical journey.",
+  keywords: "Medivisor India, patient safety, safety measures, accredited hospitals India, healthcare initiatives, international patient care, medical tourism India",
+
+  robots: "index, follow",
+  openGraph: {
+    title: "Safety Measures & Patient Care | Medivisor India Treatment",
+    description: "Discover how Medivisor India ensures patient safety through strict protocols, accredited hospitals, and community healthcare initiatives.",
+    url: "https://www.medivisorindia.com/treatment",
+    siteName: "Medivisor India",
+    images: [
+      {
+        url: "https://www.medivisorindia.com/medical-help-india.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Medivisor India Safety Measures",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Safety Measures & Patient Care | Medivisor India Treatment",
+    description: "Learn about Medivisor India's strict safety protocols, accredited hospitals, and healthcare initiatives ensuring secure medical journeys for international patients.",
+   
+    site: "@MedivisorIndia",
+  },
+};
 
 export default function Treatment() {
-
-
   return (
-
-    <>
-
+    <div className="min-h-screen bg-white font-inter">
+      {/* Hero Banner */}
       <Banner
         topSpanText="Safety Measures"
-        title="Ensuring Care with Trust and Responsibility
-"
-        description="At Medivisor India Treatment, safety comes first. We follow strict protocols, partner with accredited hospitals, and take every precaution to make your healthcare journey secure and worry-free. Beyond patient care, we are committed to initiatives that improve healthcare access, raise awareness, and promote community well-being across India."
+        title="Ensuring Care with Trust and Responsibility"
+        description="At Medivisor India Treatment, patient safety comes first. We follow strict protocols, partner with accredited hospitals, and take every precaution to make your healthcare journey secure and worry-free. Beyond patient care, we actively work on initiatives to improve healthcare access, raise awareness, and promote community well-being across India."
         buttonText="Learn More"
-        buttonLink="/initiatives" 
-        bannerBgImage="/service-banner.png" // Replace with an image relevant to your initiatives (e.g., community outreach, health camp, research)
-        mainImageSrc="/about-main.png" // Replace with a compelling image representing your initiatives (e.g., a collage of different programs, a symbolic icon)
+        buttonLink="/initiatives"
+        bannerBgImage="/service-banner.png"
+        mainImageSrc="/about-main.png"
         mainImageAlt="Medivisor India Treatment Initiatives"
-     
       />
-      <SafetyMeasures/>
-     {/* <Activities/> */}
-    </>
+
+      {/* Safety Measures Section */}
+      <section className="py-16 container mx-auto px-4">
+        <h2 className="text-3xl font-bold text-center mb-8">Our Safety Measures</h2>
+        <SafetyMeasures />
+      </section>
+
+      {/* Optional Initiatives / Activities */}
+      <section className="py-16 bg-gray-50">
+        <OurInitiativesSection />
+      </section>
+
+      {/* Optional Activities Section */}
+      <section className="py-16 container mx-auto px-4">
+        <Activities />
+      </section>
+    </div>
   );
 }

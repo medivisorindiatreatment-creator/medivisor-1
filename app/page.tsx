@@ -1,83 +1,42 @@
-'use client';
+import HomePage from '@/components/HomePage';
 
-import { useState, useEffect } from 'react';
-import Hero from '@/components/Hero';
-import Partners from '@/components/Partners';
-import TreatmentServices from '@/components/TreatmentServices';
-import About from '@/components/About';
-import SocialActivity from '@/components/socialActivity';
-import OurInitiativesSection from '@/components/OurInitiativesSection';
-import Testimonials from '@/components/Testimonials';
-import MediaCoverage from "@/components/mediaCovrage"
-import ProcessSteps from '@/components/ProcessSteps';
-import BlogSection from '@/components/BlogSection';
-import PaitentSupport from '@/components/paitentSupport';
-import SupportTrustSection from '@/components/supportTrustSection';
-import PartnerSection from '@/components/PartnerSection';
-import ExtentCare from '@/components/extentCare';
-import ContactModal from '@/components/ContactModal';
-import Overview from '@/components/Overview';
-import Activities from '@/components/Activities';
-import CtaSection from '@/components/CtaSection';
-import HumanBody from "@/components/humanBody"
-import MediaCoveragePage from './media-coverage/page';
-import DidYouKnowSection from '@/components/DidYouKnow';
+
+import { Metadata } from 'next';
+
+export const generateMetadata = (): Metadata => {
+  return {
+
+  title: 'Medivisor India | Premium Medical Treatment for International Patients',
+  description: 'Medivisor India offers world-class, affordable medical treatments for international patients, including surgeries, IVF, kidney transplants, cancer care, and advanced heart treatments. Experience compassionate care with expert doctors and state-of-the-art hospitals.',
+  keywords: 'Medivisor India, medical tourism India, affordable medical treatment, international patient care, surgery in India, IVF treatment India, kidney transplant India, cancer treatment India, heart treatment India, best hospitals India, expert doctors, world-class healthcare',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Medivisor India | Premium Medical Treatment for International Patients',
+    description: 'Get affordable, high-quality medical care in India with Medivisor. We provide expert-guided surgeries, IVF, kidney transplants, cancer care, and heart treatments for international patients.',
+    url: 'https://www.medivisorindia.com/',
+    siteName: 'Medivisor India',
+    images: [
+      {
+        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Medivisor India - Premium Medical Care',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Medivisor India | Premium Medical Treatment for International Patients',
+    description: 'Affordable, high-quality medical treatment in India for international patients. Surgeries, IVF, kidney transplant, cancer care, and heart treatments with expert care.',
+    site: '@MedivisorIndia',
+  },
+};
+
+  };
+
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    // Handle modal open buttons
-    const handleModalOpen = () => setIsModalOpen(true);
-
-    const modalButtons = document.querySelectorAll('.modal-open-btn');
-    modalButtons.forEach(button => {
-      button.addEventListener('click', handleModalOpen);
-    });
-
-    return () => {
-      modalButtons.forEach(button => {
-        button.removeEventListener('click', handleModalOpen);
-      });
-    };
-  }, []);
-  // Mock data - replace with your actual data source
-
   return (
-    <div className="bg-white min-h-screen">
-      <main>
-        <Hero />
-        <Partners />
-        <DidYouKnowSection />
-        <BlogSection />
-        <TreatmentServices />
-
-        <Testimonials />
-        <PaitentSupport />
-        <Activities />
-
-
-        {/* <SocialActivity/> */}
-        <ExtentCare />
-        {/* <OurInitiativesSection /> */}
-        <MediaCoverage />
-        {/* <Services /> */}
-
-        {/* <ExtentCare/> */}
-        {/* <HumanBody/> */}
-
-
-
-
-
-
-        <PartnerSection />
-
-        <CtaSection />
-      </main>
-      <ContactModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-    </div>
+    <HomePage/>
   );
 }

@@ -153,11 +153,11 @@ export default function ModernMomentPage({ params }: PageProps) {
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
+      <div className="sticky top-0 z-40 border-none  shadow-none py-5">
         <div className="container mx-auto px-4 py-4 md:px-6">
           <div className="flex items-center justify-between">
             <Link href="/photo-albums">
-              <Button variant="ghost" className="flex items-center gap-2 hover:bg-slate-100 rounded-xl px-2 py-1 md:px-4 md:py-2">
+              <Button variant="ghost" className="flex items-center gap-2 hover:bg-slate-100 bg-white rounded-xs px-2 py-1 md:px-4 md:py-2">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="hidden md:inline font-medium">Back to Gallery</span>
                 <span className="md:hidden font-medium">Back</span>
@@ -184,7 +184,7 @@ export default function ModernMomentPage({ params }: PageProps) {
         {/* Hero Section */}
         <div className="mb-6 md:mb-12">
           {coverImageUrl && (
-            <div className="relative h-[40vh] md:h-[80vh] overflow-hidden rounded-none md:rounded-3xl shadow-xs md:shadow-2xl mb-8 group">
+            <div className="relative h-[40vh] md:h-[80vh] overflow-hidden rounded-none md:rounded-xs shadow-xs md:shadow-xs mb-8 group">
               <img
                 src={coverImageUrl}
                 alt={moment.title_fld || "Happy moment"}
@@ -192,7 +192,7 @@ export default function ModernMomentPage({ params }: PageProps) {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <div className="absolute bottom-4 inline-flex w-auto left-4 right-4">
-                <Card className="w-full bg-white/95 backdrop-blur-xs border-0 shadow-sm md:shadow-lg rounded-xl overflow-hidden">
+                <Card className="w-full bg-white/95 backdrop-blur-xs border-0 shadow-xs md:shadow-lg rounded-xs overflow-hidden">
                   <CardContent className="p-4 md:p-6">
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                       <div className="flex-1">
@@ -243,7 +243,7 @@ export default function ModernMomentPage({ params }: PageProps) {
             </div>
           )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 px-4 md:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 px-4 md:px-0">
           {/* Main Content */}
           <div className="md:col-span-8 lg:col-span-9 space-y-6 md:space-y-12">
             {/* Story Content */}
@@ -267,7 +267,7 @@ export default function ModernMomentPage({ params }: PageProps) {
             )}
             {/* Photo Gallery */}
             {galleryImages.length > 0 && (
-              <Card className="md:bg-white/80 px-0 md:backdrop-blur-sm border-0 shadow-none md:shadow-lg rounded-xl overflow-hidden">
+              <Card className="md:bg-white/80 px-0 md:backdrop-blur-sm border-0 shadow-none md:shadow-xs bg-gray-50 rounded-xs overflow-hidden">
                 <CardContent className=" px-0 md:p-8">
                   <div className="flex items-center justify-between mb-6 md:mb-8">
                     <div className="flex items-center gap-3">
@@ -280,14 +280,14 @@ export default function ModernMomentPage({ params }: PageProps) {
                       </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-4">
                     {galleryImages.map((media, index) => {
                       const imageUrl = getWixImageUrl(media.src)
                       if (!imageUrl) return null
                       return (
                         <div
                           key={index}
-                          className="relative aspect-square overflow-hidden rounded-xl md:rounded-2xl bg-slate-100 group cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"
+                          className="relative aspect-square overflow-hidden rounded-xl md:rounded-xs bg-slate-100 group cursor-pointer shadow-sm hover:shadow-xs transition-all duration-300"
                           onClick={() => openLightbox(index)}
                         >
                           <OptimizedImage
@@ -321,11 +321,11 @@ export default function ModernMomentPage({ params }: PageProps) {
           {/* Desktop Sidebar */}
           <div className="hidden md:block md:col-span-4 lg:col-span-3 space-y-6">
             <div className="sticky top-20">
-              <Card className="bg-white/90 backdrop-blur-md border border-gray-100 shadow-sm rounded-xl overflow-hidden">
+              <Card className="bg-white/90 backdrop-blur-md border border-gray-100 shadow-xs rounded-xs overflow-hidden">
                 <BlogAside />
               </Card>
               {(moment.tags || moment.hashtags || moment.category) && (
-                <Card className="bg-white/90 backdrop-blur-md border border-slate-100 shadow-sm rounded-xl overflow-hidden mt-6">
+                <Card className="bg-white/90 backdrop-blur-md border border-slate-100 shadow-xs rounded-xs overflow-hidden mt-6">
                   <CardContent className="p-6">
                     <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2 mb-4">
                       <Tag className="w-5 h-5 text-blue-500" />
@@ -361,7 +361,7 @@ export default function ModernMomentPage({ params }: PageProps) {
                   </CardContent>
                 </Card>
               )}
-              <Card className="bg-[#E22026] mt-6 text-white border-0 shadow-sm rounded-xl overflow-hidden">
+              <Card className="bg-[#E22026] mt-6 text-white border-0 shadow-xs rounded-xs overflow-hidden">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold mb-3">Share This Story</h2>
                   <p className="text-sm text-pink-100 mb-6 leading-relaxed">
