@@ -228,8 +228,8 @@ export default function DoctorProfileComponent() {
                 <div>
                   <h1 className="text-4xl font-medium text-foreground mb-2 text-balance">{doctor.name}</h1>
                   <p className="text-xl text-gray-700 font-semibold mb-2">{doctor.title}</p>
-                  <div className="flex flex-wrap items-center gap-6 mb-4">
-                    <div className="flex items-center">
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <div className="flex bg-gray-50 p-2 px-4 items-center">
                       <div className="flex text-yellow-400 mr-2">
                         {[...Array(5)].map((_, i) => (
                           <Star key={i} className={`w-5 h-5 ${i < Math.floor(doctor.rating) ? "fill-current" : ""}`} />
@@ -238,7 +238,7 @@ export default function DoctorProfileComponent() {
                       <span className="text-foreground font-semibold">{doctor.rating}</span>
                       <span className="text-gray-600 ml-1">({doctor.reviewsCount} reviews)</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex bg-gray-50 p-2 px-4 items-center text-gray-600">
                       <Clock className="w-5 h-5 mr-1" />
                       <span>{doctor.experience} years experience</span>
                     </div>
@@ -351,7 +351,7 @@ export default function DoctorProfileComponent() {
               <Card className="bg-white border-gray-100 shadow-xs">
                 <CardContent className="p-4 text-center">
                   <Heart className="w-8 h-8 text-gray-700 mx-auto mb-3" />
-                  <h3 className="text-2xl font-bold text-foreground mb-2">Need Medical Consultation?</h3>
+                  <h3 className="text-2xl font-bold text-gray-700 mb-2">Need Medical Consultation?</h3>
                   <p className="text-gray-600 mb-4 text-lg text-pretty">
                     Book an appointment with Dr. Mithal for expert endocrinology care.
                   </p>

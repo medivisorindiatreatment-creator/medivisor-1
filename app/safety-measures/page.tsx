@@ -56,7 +56,7 @@ export default function Treatment() {
       </section>
 
       {/* Optional Initiatives / Activities */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 md:px-0 px-4 bg-gray-50">
         <OurInitiativesSection />
       </section>
 

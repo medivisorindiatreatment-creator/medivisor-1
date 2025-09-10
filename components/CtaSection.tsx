@@ -16,7 +16,8 @@ const ModernHelpSection = () => {
 
   return (
     <>
-      <section className="container mx-auto my-4 md:px-0 px-2 md:my-10">
+      <section className="md:px-0 px-4 md:my-10">
+        <div className="container mx-auto my-4 ">
         <div className="relative bg-[#e32128] px-4 md:px-10 rounded-xs shadow-xs relative z-10">
           <div className="max-w-4xl py-6 md:py-10 mx-auto text-center">
             {/* Main CTA Content */}
@@ -57,6 +58,7 @@ const ModernHelpSection = () => {
             </div>
           </div>
         </div>
+      </div>
       </section>
 
       <ContactModal

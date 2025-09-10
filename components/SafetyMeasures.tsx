@@ -103,20 +103,20 @@ export default function SafetyMeasures() {
   const isTwoCards = cards.length === 2;
 
   return (
-    <section className="md:py-10 py-10 bg-gray-50 overflow-hidden">
-      <div className="container mx-auto px-4 md:px-0">
+    <section className="md:py-10 py-10 bg-gray-50 px-4 md:px-0 overflow-hidden">
+      <div className="container mx-auto ">
         {/* Heading */}
         <div className="text-center mb-8 sm:mb-10 md:mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
             Our Patient Safety Measures
           </h2>
           <p className="mt-3 sm:mt-4 text-[19px] md:text-lg text-gray-700 max-w-3xl mx-auto px-2">
-          At Medivisor, patient safety isn’t just a protocol — it’s our promise. From the moment you arrive until the day you return home, every step of your medical journey is safeguarded with robust systems, dedicated care, and unwavering attention to detail.
+            At Medivisor, patient safety isn’t just a protocol — it’s our promise. From the moment you arrive until the day you return home, every step of your medical journey is safeguarded with robust systems, dedicated care, and unwavering attention to detail.
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="md:bg-white rounded-md md:shadow-sm md:p-6">
+        <div className="md:bg-white rounded-xs md:shadow-xs md:p-6">
           {/* Mobile Scrollable Tabs */}
           <div className="flex md:hidden overflow-x-auto gap-3 pb-3 mb-6 -mx-2 px-2 scrollbar-hide">
             {tabs.map((tab) => (
@@ -124,11 +124,10 @@ export default function SafetyMeasures() {
                 key={tab.id}
                 variant="outline"
                 size="sm"
-                className={`flex items-center text-lg gap-2 px-4 py-2 whitespace-nowrap rounded-full border transition-all duration-200 ${
-                  activeTab === tab.id
+                className={`flex items-center text-lg gap-2 px-4 py-2 whitespace-nowrap rounded-full border transition-all duration-200 ${activeTab === tab.id
                     ? 'bg-red-600 text-white border-red-600'
                     : 'bg-white text-gray-600 border-gray-200 hover:bg-red-50'
-                }`}
+                  }`}
                 onClick={() => setActiveTab(tab.id)}
               >
                 {tab.icon}
@@ -143,11 +142,10 @@ export default function SafetyMeasures() {
               <Button
                 key={tab.id}
                 variant="ghost"
-                className={`py-3 px-6 text-lg md:text-lg font-semibold border-b-4 rounded-none transition-all ${
-                  activeTab === tab.id
+                className={`py-3 px-6 text-lg md:text-lg font-semibold border-b-4 rounded-none transition-all ${activeTab === tab.id
                     ? 'text-red-600 border-red-600'
                     : 'text-gray-600 border-transparent hover:text-red-600'
-                }`}
+                  }`}
                 onClick={() => setActiveTab(tab.id)}
               >
                 {tab.icon}
@@ -163,11 +161,10 @@ export default function SafetyMeasures() {
             </h2>
 
             <div
-              className={`${
-                isTwoCards
+              className={`${isTwoCards
                   ? 'grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8'
                   : 'flex flex-col gap-6'
-              }`}
+                }`}
             >
               {cards.map((card, index) => (
                 <div

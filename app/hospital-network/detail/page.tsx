@@ -180,7 +180,7 @@ const HospitalDetails: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <div className="bg-gradient-to-br from-white via-gray-50 to-blue-50 pt-12 pb-16">
+            <div className="bg-white py-10">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
                         {/* Hospital Image */}
@@ -189,7 +189,7 @@ const HospitalDetails: React.FC = () => {
                                 <img
                                     src={hospital.photo || "/placeholder.svg"}
                                     alt={hospital.name}
-                                    className="w-full h-80 rounded-xl object-cover shadow-xs border border-gray-200"
+                                    className="w-full h-80 rounded-xs object-cover shadow-xs border border-gray-100"
                                 />
                                 <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full shadow-xs">
                                     <span className="text-sm font-medium text-gray-700">Est. {hospital.establishedYear}</span>
@@ -205,23 +205,23 @@ const HospitalDetails: React.FC = () => {
                                     {hospital.specializations.slice(0, 3).join(" • ")}
                                 </p>
 
-                                <div className="flex flex-wrap items-center gap-6 mb-6">
-                                    <div className="flex items-center bg-white px-4 py-2 rounded-lg shadow-xs">
+                                <div className="flex flex-wrap items-center gap-2 mb-6">
+                                    <div className="flex items-center bg-gray-50 px-4 py-2 rounded-xs shadow-xs">
                                         <div className="flex text-yellow-400 mr-2">
                                             {[...Array(5)].map((_, i) => (
                                                 <Star key={i} className={`w-5 h-5 ${i < Math.floor(hospital.rating) ? "fill-current" : ""}`} />
                                             ))}
                                         </div>
-                                        <span className="text-gray-900 font-semibold text-lg">{hospital.rating}</span>
+                                        <span className="text-gray-700 font-semibold text-lg">{hospital.rating}</span>
                                         <span className="text-gray-500 ml-1">({hospital.reviewsCount} reviews)</span>
                                     </div>
 
-                                    <div className="flex items-center text-gray-600 bg-white px-4 py-2 rounded-lg shadow-xs">
+                                    <div className="flex items-center text-gray-600 bg-gray-50 px-4 py-2 rounded-xs shadow-xs">
                                         <MapPin className="w-5 h-5 mr-2 text-gray-600" />
                                         <span className="font-medium">{hospital.location}</span>
                                     </div>
 
-                                    <div className="flex items-center text-gray-600 bg-white px-4 py-2 rounded-lg shadow-xs">
+                                    <div className="flex items-center text-gray-600 bg-gray-50 px-4 py-2 rounded-xs shadow-xs">
                                         <Hospital className="w-5 h-5 mr-2 text-gray-600" />
                                         <span className="font-medium">{hospital.bedCount} Beds</span>
                                     </div>
@@ -236,7 +236,7 @@ const HospitalDetails: React.FC = () => {
                 </div>
             </div>
 
-            <section className="py-16 bg-gray-50">
+            <section className="py-10 bg-gray-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Left Column - Main Content */}
@@ -413,7 +413,7 @@ const HospitalDetails: React.FC = () => {
                             <Card className="bg-white border-gray-100 shadow-xs">
                                 <CardContent className="p-4 text-center">
                                     <Heart className="w-8 h-8 text-gray-700 mx-auto mb-3" />
-                                    <h3 className="text-2xl font-bold text-foreground mb-2">Need Medical Consultation?</h3>
+                                    <h3 className="text-2xl font-bold text-gray-700 mb-2">Need Medical Consultation?</h3>
                                     <p className="text-gray-600 mb-4 text-lg text-pretty">
                                         Book an appointment with Dr. Mithal for expert endocrinology care.
                                     </p>

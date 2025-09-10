@@ -82,7 +82,7 @@ const TreatmentCard = ({
       <CardFooter className="flex justify-between items-center pt-1">
         <Button
           variant="outline"
-          className="border-gray-200 text-gray-600 hover:bg-gray-50"
+          className="border-gray-200 cursor-pointer text-gray-600 hover:bg-gray-50"
           onClick={onOpenModal}
         >
           Read More
