@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, X, ChevronDown } from 'lucide-react';
+import { FaFacebookF, FaYoutube, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import ContactModal from '@/components/ContactModal';
 
 export default function Header() {
@@ -30,18 +31,13 @@ export default function Header() {
     };
   }, []);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const navItems = [
     { href: '/', label: 'Home' },
     {
-      label: 'About Us', // removed href
+      label: 'About Us',
       subItems: [
         { href: '/aboutus', label: 'About Us' },
         { href: '/services', label: 'Our Services' },
@@ -52,7 +48,7 @@ export default function Header() {
       ],
     },
     {
-      label: 'India Treatment', // removed href
+      label: 'India Treatment',
       subItems: [
         { href: '/treatment-cost', label: 'Treatment Cost' },
         { href: '/treatment-process', label: 'Treatment Process' },
@@ -62,7 +58,7 @@ export default function Header() {
       ],
     },
     {
-      label: 'Gallery', // removed href
+      label: 'Gallery',
       subItems: [
         { href: '/patient-testimonials', label: 'Patient Testimonials' },
         { href: '/photo-albums', label: 'Patient Activities' },
@@ -88,7 +84,7 @@ export default function Header() {
         }`}
       >
         <nav
-          className={`flex justify-between  container mx-auto items-center px-4 lg:px-0 transition-all duration-300 ${
+          className={`flex justify-between container mx-auto items-center px-4 lg:px-0 transition-all duration-300 ${
             isSticky ? 'py-3' : 'md:py-2 py-3'
           }`}
         >
@@ -143,11 +139,11 @@ export default function Header() {
                       item.subItems && windowWidth >= 768 && setOpenSubmenu(null)
                     }
                   >
-                    {/* Main Link (disabled if subItems exist) */}
+                    {/* Main Link */}
                     <div className="flex items-center justify-between">
                       {item.subItems ? (
                         <span
-                          className="py-2 px-0 cursor-default select-none"
+                          className="py-2 px-0 cursor-default select-none text-xl md:text-base"
                           onClick={() =>
                             windowWidth < 768 && handleSubmenuToggle(item.label)
                           }
@@ -157,7 +153,7 @@ export default function Header() {
                       ) : (
                         <Link
                           href={item.href!}
-                          className="py-2 px-0 rounded hover:text-[#E22026] transition-colors"
+                          className="py-2 px-0 rounded hover:text-[#E22026] transition-colors text-lg md:text-base"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           {item.label}
@@ -188,7 +184,7 @@ export default function Header() {
                           <li key={subItem.href}>
                             <Link
                               href={subItem.href}
-                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#E22026] transition"
+                              className="block px-4 py-2 text-lg md:text-sm text-gray-700 hover:bg-gray-100 hover:text-[#E22026] transition"
                               onClick={() => setIsMenuOpen(false)}
                             >
                               {subItem.label}
@@ -200,10 +196,47 @@ export default function Header() {
                   </li>
                 ))}
               </ul>
+
+              {/* Social Media (modern design, only mobile) */}
+              <div className="flex gap-4 mt-8 px-6 md:hidden absolute bottom-4 w-full border-t border-gray-200 pt-4">
+                <a
+                  href="https://www.facebook.com/medivisorindiatreatment"
+                  title="Facebook"
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-600 text-white shadow-md hover:scale-110 transition-transform"
+                >
+                  <FaFacebookF size={22} />
+                </a>
+                <a
+                  href="https://www.youtube.com/@medivisorindiatreatment"
+                  title="YouTube"
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-red-600 text-white shadow-md hover:scale-110 transition-transform"
+                >
+                  <FaYoutube size={24} />
+                </a>
+                <a
+                  href="https://www.instagram.com/medivisorindiatreatment"
+                  title="Instagram"
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white shadow-md hover:scale-110 transition-transform"
+                >
+                  <FaInstagram size={22} />
+                </a>
+                 <a
+                href="https://wa.me/919876543210" // replace with your WhatsApp number
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-12 h-12 items-center justify-center rounded-full bg-green-500 text-white shadow-md hover:scale-110 transition-transform"
+                title="Chat on WhatsApp"
+              >
+                <FaWhatsapp size={22} />
+              </a>
+              </div>
             </div>
 
-            {/* CTA + Mobile Toggle */}
+            {/* CTA + WhatsApp + Mobile Toggle */}
             <div className="flex items-center gap-3">
+              {/* WhatsApp (Right Side) */}
+             
+
               <button
                 className="bg-[#E22026] cursor-pointer md:block hidden hover:bg-[#74BF44] text-white font-medium px-5 py-2 rounded-md shadow-md transition-all"
                 onClick={openModal}

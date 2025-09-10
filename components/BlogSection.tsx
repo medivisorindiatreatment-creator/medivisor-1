@@ -97,10 +97,10 @@ export default function BlogCarousel() {
 
   const posts: Post[] = Array.isArray(data?.posts)
     ? data.posts.map((p: any) => ({
-        ...p,
-        excerpt: p.excerpt || "No description available.",
-        content: p.content || "",
-      }))
+      ...p,
+      excerpt: p.excerpt || "No description available.",
+      content: p.content || "",
+    }))
     : []
 
   const startAutoplay = useCallback(() => {
@@ -191,7 +191,7 @@ export default function BlogCarousel() {
 
                   return (
                     <div key={post._id} className="flex-none w-full sm:w-1/2 lg:w-1/4 pl-4">
-                      <Card className="flex flex-col h-full pb-1 shadow-xs hover:shadow-sm transition-shadow duration-300 ease-in-out border-gray-200">
+                      <Card className="flex flex-col h-full pb-3 shadow-xs hover:shadow-sm transition-shadow duration-300 ease-in-out border-gray-200">
                         <Link href={`/blog/${post.slug}`} className="block">
                           <CardHeader className="p-0 rounded-t-xs overflow-hidden">
                             <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
@@ -228,32 +228,32 @@ export default function BlogCarousel() {
                             </div>
                           </CardHeader>
                         </Link>
-                         <Link href={`/blog/${post.slug}`} className=" transition-colors duration-200">
-                        <CardContent className="flex flex-col flex-grow p-3 bg-white rounded-b-xs">
-                          <div className="line-clamp-2 h-15">
- <CardTitle className="md:text-xl hover:text-primary text-gray-700 text-2xl font-medium leading-tight  overflow-hidden mt-2">
-                           
-                              {post.title}
-                          
-                          </CardTitle>
-                          </div>
-                         
-                          <div className="flex justify-start gap-x-3 items-center my-2">
-                            <CardDescription className="text-base text-gray-500 font-[400 ] dark:text-gray-600">
-                              {post.firstPublishedDate &&
-                                new Date(post.firstPublishedDate).toLocaleDateString("en-US", {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                })}
-                            </CardDescription>
-                            <span className="text-base text-gray-500 font-[400 ] dark:text-gray-600 ">{readTime}</span>
-                          </div>
-                          <p className="text-gray-600 dark:text-gray-700 md:text-lg text-[19px] line-clamp-3 mb-2 flex-grow">
-                            {post.excerpt}
-                          </p>
-                        </CardContent>
-                          </Link>
+                        <Link href={`/blog/${post.slug}`} className=" transition-colors duration-200">
+                          <CardContent className="flex flex-col flex-grow p-3 bg-white rounded-b-xs">
+                            <div className="line-clamp-2 md:h-15">
+                              <CardTitle className="md:text-xl hover:text-primary text-gray-700 text-2xl font-medium leading-tight  overflow-hidden mt-2">
+
+                                {post.title}
+
+                              </CardTitle>
+                            </div>
+
+                            <div className="flex justify-start gap-x-3 items-center my-2">
+                              <CardDescription className="text-base text-gray-500 font-[400 ] dark:text-gray-600">
+                                {post.firstPublishedDate &&
+                                  new Date(post.firstPublishedDate).toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                  })}
+                              </CardDescription>
+                              <span className="text-base text-gray-500 font-[400 ] dark:text-gray-600 ">{readTime}</span>
+                            </div>
+                            <p className="text-gray-600 dark:text-gray-700 md:text-lg text-[19px] line-clamp-3 mb-2 flex-grow">
+                              {post.excerpt}
+                            </p>
+                          </CardContent>
+                        </Link>
                       </Card>
                     </div>
                   )
