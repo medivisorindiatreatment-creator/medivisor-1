@@ -79,7 +79,7 @@ export default function Header() {
       <header
         className={`bg-white transition-all duration-300 ${
           isSticky
-            ? 'sticky top-0 left-0 py-3 w-full z-50 shadow-lg'
+            ? 'sticky top-0 left-0 py-3 w-full z-50 shadow-xs'
             : 'relative z-50 shadow-sm py-3'
         }`}
       >

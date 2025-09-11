@@ -59,7 +59,7 @@ export default function CancerTreatmentPage() {
           </section>
 
           {/* Overview Section */}
-          <section id="overview" className="py-14 px-4 md:px-0 md:px-0 bg-white">
+          <section id="overview" className="py-10 px-4 md:px-0 md:px-0 bg-white">
             <div className="container mx-auto ">
               <div className="text-center mb-10">
                 <h2 className="text-3xl font-bold text-gray-900 mb-3">
@@ -92,7 +92,7 @@ export default function CancerTreatmentPage() {
           </section>
 
           {/* Cancer Types Section */}
-          <section id="treatments" className="py-16 px-4 md:px-0 bg-gray-50">
+          <section id="treatments" className="py-10 px-4 md:px-0 bg-gray-50">
             <div className="container mx-auto">
               {/* Section Heading */}
               <div className="text-center mb-12">
@@ -123,7 +123,7 @@ export default function CancerTreatmentPage() {
                   >
                     <CardHeader className="p-5 pb-3">
                       <CardTitle className="text-xl flex items-center text-gray-800">
-                        <Activity className="h-10 w-10 bg-gray-100 border border-gray-100 rounded-full p-2 mr-3 text-gray-700" />
+                        <Activity className="h-10 w-10 bg-gray-100 border border-gray-100 rounded-full p-2 mr-3 text-[#E22026]" />
                         {cancer.name}
                       </CardTitle>
                     </CardHeader>
@@ -140,7 +140,7 @@ export default function CancerTreatmentPage() {
 
 
           {/* Advanced Treatments Section */}
-          <section id="services" className="py-14 px-4 md:px-0 bg-white">
+          <section id="services" className="py-10 px-4 md:px-0 bg-white">
             <div className="container mx-auto ">
               <div className="text-center mb-10">
                 <h2 className="text-3xl font-bold text-gray-900 mb-3">
@@ -184,7 +184,7 @@ export default function CancerTreatmentPage() {
           </section>
 
           {/* International Patient Support */}
-          <section className="py-14 px-4 md:px-0 bg-gray-50">
+          <section className="py-10 px-4 md:px-0 bg-gray-50">
             <div className="container mx-auto">
               <div className="text-center mb-10">
                 <h2 className="text-3xl font-bold text-gray-900 mb-3">
@@ -226,7 +226,7 @@ export default function CancerTreatmentPage() {
         </main>
 
         {/* Sticky Video Sidebar */}
-        <aside className="hidden lg:block sticky top-20 right-0 w-80 h-[calc(100vh-80px)] overflow-y-auto bg-white border-l border-gray-200">
+        <aside className="hidden lg:block sticky top-20 right-0 w-96 h-[calc(100vh-80px)] overflow-y-auto bg-white border-l border-gray-200">
           <div className="p-6 h-full flex flex-col">
             <div className="mb-4">
               <h3 className="text-2xl font-semibold text-gray-900 mb-2">

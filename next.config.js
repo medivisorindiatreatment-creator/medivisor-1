@@ -11,7 +11,17 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Ensure static generation works properly
-}
 
-module.exports = nextConfig
+  // ✅ Add redirects for old /single-post URLs
+  async redirects() {
+    return [
+      {
+        source: "/single-post/:slug*", // match /single-post/ and everything after it
+        destination: "/blog/:slug*",  // redirect to new blog route
+        permanent: true, // use 308 redirect (SEO friendly)
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;

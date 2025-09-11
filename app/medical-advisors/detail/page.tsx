@@ -275,7 +275,7 @@ export default function DoctorProfileComponent() {
               <Card className="border shadow-xs border-gray-50 bg-white">
                 <CardHeader>
                   <CardTitle className="text-3xl font-bold text-gray-700 flex items-center">
-                    <Stethoscope className="w-8 h-8 mr-2 text-[#74BF44]" />
+                    <Stethoscope className="w-10 h-10 mr-2 text-gray-700" />
                     Professional Experience
                   </CardTitle>
                 </CardHeader>
@@ -293,7 +293,7 @@ export default function DoctorProfileComponent() {
               <Card className="border shadow-xs border-gray-50 bg-white">
                 <CardHeader>
                   <CardTitle className="text-3xl font-bold text-gray-700 flex items-center">
-                    <GraduationCap className="w-8 h-8 mr-2 text-[#74BF44]" />
+                    <GraduationCap className="w-10 h-10 mr-2 text-gray-700" />
                     Education & Training
                   </CardTitle>
                 </CardHeader>
@@ -311,7 +311,7 @@ export default function DoctorProfileComponent() {
               <Card className="border shadow-xs border-gray-50 bg-white">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-foreground flex items-center">
-                    <Trophy className="w-8 h-8 mr-2 text-[#74BF44]" />
+                    <Trophy className="w-10 h-10 mr-2 text-gray-700" />
                     Awards & Recognition
                   </CardTitle>
                 </CardHeader>
