@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Travel Guide for International Patients | Medivisor India',
     description: 'Plan your medical trip to India with Medivisor India’s travel guide for international patients, including tips on travel, accommodation, and local transport.',
-    url: 'https://www.medivisorindia.com/travel-guide',
+    url: 'https://medivisorindiatreatment.com/travel-guide',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/og-travel-guide.jpg',
+        url: 'https://medivisorindiatreatment.com/og-travel-guide.jpg',
         width: 1200,
         height: 630,
         alt: 'Medivisor India Travel Guide',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Travel Guide for International Patients | Medivisor India',
     description: 'Get essential travel tips, accommodation guidance, and local transport information for international patients traveling to India for medical treatment.',
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 

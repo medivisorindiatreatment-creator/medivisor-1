@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Photo Albums | Medivisor India',
     description: 'Browse photo albums highlighting Medivisor India’s hospitals, events, and patient experiences.',
-    url: 'https://www.medivisorindia.com/photo-albums',
+    url: 'https://medivisorindiatreatment.com/photo-albums',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        url: 'https://medivisorindiatreatment.com/medical-help-india.jpg',
         width: 1200,
         height: 630,
         alt: 'Medivisor India Photo Albums',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Photo Albums | Medivisor India',
     description: 'View photos from hospitals, events, and patient experiences at Medivisor India.',
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 

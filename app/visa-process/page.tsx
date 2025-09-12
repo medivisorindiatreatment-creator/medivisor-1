@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Visa Process for Medical Travel | Medivisor India',
     description: 'Step-by-step guide for international patients to obtain a medical visa and travel to India for world-class treatment with Medivisor India.',
-    url: 'https://www.medivisorindia.com/visa-process',
+    url: 'https://medivisorindiatreatment.com/visa-process',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        url: 'https://medivisorindiatreatment.com/medical-help-india.jpg',
         width: 1200,
         height: 630,
         alt: 'Medivisor India Visa Process',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Visa Process for Medical Travel | Medivisor India',
     description: 'Medivisor India helps international patients with the medical visa application process and travel guidance to India.',
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 

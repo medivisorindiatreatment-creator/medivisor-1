@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Treatment Process | Medivisor India',
     description: 'Step-by-step guide to Medivisor India’s treatment process for international patients, ensuring safe and effective medical care.',
-    url: 'https://www.medivisorindia.com/treatment-process',
+    url: 'https://medivisorindiatreatment.com/treatment-process',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        url: 'https://medivisorindiatreatment.com/medical-help-india.jpg',
         width: 1200,
         height: 630,
         alt: 'Medivisor India Treatment Process',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Treatment Process | Medivisor India',
     description: 'Explore Medivisor India’s treatment process for international patients, from consultation to post-treatment follow-up.',
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 

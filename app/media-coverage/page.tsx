@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Media Coverage & News | Medivisor India',
     description: 'Stay updated with press releases, news articles, and media mentions of Medivisor India.',
-    url: 'https://www.medivisorindia.com/media-coverage',
+    url: 'https://medivisorindiatreatment.com/media-coverage',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        url: 'https://medivisorindiatreatment.com/medical-help-india.jpg',
         width: 1200,
         height: 630,
         alt: 'Medivisor India Media Coverage',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Media Coverage & News | Medivisor India',
     description: 'Discover recent news articles, press releases, and media coverage featuring Medivisor India and international patient care.',
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 

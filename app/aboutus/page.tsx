@@ -12,11 +12,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'About Medivisor India Treatment| Trusted International Medical Partner',
     description: 'Learn about Medivisor India’s mission, values, and experience in helping international patients access world-class healthcare with safety, compassion, and expertise.',
-    url: 'https://www.medivisorindia.com/about',
+    url: 'https://medivisorindiatreatment.com/about',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        url: 'https://medivisorindiatreatment.com/medical-help-india.jpg',
         width: 1200,
         height: 630,
         alt: 'About Medivisor India Treatment- Trusted Medical Partner',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: 'About Medivisor India Treatment| Trusted International Medical Partner',
     description: 'Discover how Medivisor India helps international patients access world-class medical treatments in India with expert care and safety-first approach.',
    
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 

@@ -7,12 +7,12 @@ export const siteMetadata = {
     "Medivisor provides affordable, high-quality medical treatment in India for international patients, including surgery, kidney transplant, IVF, cancer care, and heart treatment.",
   keywords:
     "medical tourism, India treatment, affordable surgery, kidney transplant, IVF, cancer care, heart treatment, international patients",
-  canonical: "https://www.medivisorindia.com/",
+  canonical: "https://medivisorindiatreatment.com/",
   openGraph: {
     title: "Medivisor India Treatment - Your Trusted Medical Partner",
     description:
       "We offer comprehensive medical tourism services for international patients seeking world-class treatment in India.",
-    url: "https://www.medivisorindia.com/",
+    url: "https://medivisorindiatreatment.com/",
     siteName: "Medivisor India Treatment",
     images: [
       {
@@ -27,7 +27,7 @@ export const siteMetadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@medivisorindia",
+    site: "@MedivisorIndiatreatment",
   },
 };
 

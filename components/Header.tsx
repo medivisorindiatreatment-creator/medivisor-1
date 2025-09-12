@@ -207,7 +207,7 @@ export default function Header() {
                   <FaFacebookF size={22} />
                 </a>
                 <a
-                  href="https://www.youtube.com/@medivisorindiatreatment"
+                  href="https://www.youtube.com/@MedivisorIndiatreatmenttreatment"
                   title="YouTube"
                   className="w-12 h-12 flex items-center justify-center rounded-full bg-red-600 text-white shadow-md hover:scale-110 transition-transform"
                 >

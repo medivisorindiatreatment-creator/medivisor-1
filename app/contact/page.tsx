@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     title: "Contact Medivisor India Treatment - Get Medical Tourism Support",
     description:
       "Reach Medivisor India for expert medical tourism assistance across multiple countries. Our global offices provide 24/7 support to international patients.",
-    url: "https://www.medivisorindia.com/contact",
+    url: "https://medivisorindiatreatment.com/contact",
     siteName: "Medivisor India",
     type: "website",
     images: [
@@ -30,12 +30,12 @@ export const metadata: Metadata = {
     title: "Contact Medivisor India Treatment",
     description:
       "Connect with Medivisor India for seamless medical tourism assistance and global support for patients.",
-    site: "@MedivisorIndia",
+    site: "@MedivisorIndiatreatment",
     images: ["/medical-help-india.jpg"],
   },
   robots: "index, follow",
   authors: [{ name: "Medivisor India" }],
-  metadataBase: new URL("https://www.medivisorindia.com"),
+  metadataBase: new URL("https://medivisorindiatreatment.com"),
 };
 
 

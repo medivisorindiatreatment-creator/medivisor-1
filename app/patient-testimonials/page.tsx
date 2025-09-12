@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Patient Testimonials | Medivisor India',
     description: 'Discover real experiences of international patients who trusted Medivisor India for their medical treatment in India.',
-    url: 'https://www.medivisorindia.com/patient-testimonials',
+    url: 'https://medivisorindiatreatment.com/patient-testimonials',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        url: 'https://medivisorindiatreatment.com/medical-help-india.jpg',
         width: 1200,
         height: 630,
         alt: 'Medivisor India Patient Testimonials',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Patient Testimonials | Medivisor India',
     description: 'Read patient reviews and success stories of international patients treated in India through Medivisor India.',
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 

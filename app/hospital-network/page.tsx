@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Hospital Network | Medivisor India',
     description: 'Discover our partner hospitals in India, delivering advanced medical care and world-class facilities for international patients.',
-    url: 'https://www.medivisorindia.com/hospital-network',
+    url: 'https://medivisorindiatreatment.com/hospital-network',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        url: 'https://medivisorindiatreatment.com/medical-help-india.jpg',
         width: 1200,
         height: 630,
         alt: 'Medivisor India Hospital Network',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: 'Hospital Network | Medivisor India',
     description: 'Meet our network of hospitals providing advanced medical care and expert treatment for international patients.',
     
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 

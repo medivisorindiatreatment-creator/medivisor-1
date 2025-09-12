@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Treatment Cost | Medivisor India',
     description: 'Transparent treatment cost overview for international patients. Learn about prices for surgeries, IVF, kidney transplant, cancer care, and heart treatments in India.',
-    url: 'https://www.medivisorindia.com/treatment-cost',
+    url: 'https://medivisorindiatreatment.com/treatment-cost',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        url: 'https://medivisorindiatreatment.com/medical-help-india.jpg',
         width: 1200,
         height: 630,
         alt: 'Medivisor India Treatment Cost',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: 'Treatment Cost | Medivisor India',
     description: 'Get clear information on treatment costs for surgeries, IVF, kidney transplant, cancer care, and heart treatments in India with Medivisor.',
   
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 

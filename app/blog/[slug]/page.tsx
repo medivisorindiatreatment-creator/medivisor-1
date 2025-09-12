@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const title = blog.title || 'Medivisor India Blog';
   const description = blog.excerpt || 'Read informative blog posts about medical treatment, patient journeys, and healthcare tips in India.';
   const image = blog.coverMedia?.image || '/default-blog-og.jpg';
-  const url = `https://www.medivisorindia.com/blog/${blog.slug}`;
+  const url = `https://medivisorindiatreatment.com/blog/${blog.slug}`;
   const keywords = (blog.tags || []).join(', ') || 'medical treatment, healthcare, patient stories, Medivisor India';
 
   return {
@@ -60,11 +60,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title,
       description,
       image,
-      site: '@MedivisorIndia',
+      site: '@MedivisorIndiatreatment',
     },
     authors: [{ name: 'Medivisor India' }],
     robots: 'index, follow',
-    metadataBase: new URL('https://www.medivisorindia.com'),
+    metadataBase: new URL('https://medivisorindiatreatment.com'),
   };
 }
 

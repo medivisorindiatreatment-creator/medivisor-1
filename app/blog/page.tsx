@@ -9,11 +9,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Blog | Medivisor India',
     description: 'Stay updated with the latest blog posts, patient stories, and healthcare insights by Medivisor India.',
-    url: 'https://www.medivisorindia.com/blog',
+    url: 'https://medivisorindiatreatment.com/blog',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        url: 'https://medivisorindiatreatment.com/medical-help-india.jpg',
         width: 1200,
         height: 630,
         alt: 'Medivisor India Blog',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Blog | Medivisor India',
     description: 'Read blog posts and healthcare articles by Medivisor India to guide international patients.',
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 

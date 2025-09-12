@@ -10,11 +10,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Our Medical Services | Medivisor India',
     description: 'Discover Medivisor India’s advanced medical services including surgeries, IVF, kidney transplant, cancer care, and heart treatments for international patients.',
-    url: 'https://www.medivisorindia.com/services',
+    url: 'https://medivisorindiatreatment.com/services',
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://www.medivisorindia.com/medical-help-india.jpg',
+        url: 'https://medivisorindiatreatment.com/medical-help-india.jpg',
         width: 1200,
         height: 630,
         alt: 'Medivisor India Medical Services',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     title: 'Our Medical Services | Medivisor India',
     description: 'Get advanced medical care in India with Medivisor. Surgeries, IVF, kidney transplant, cancer care, and heart treatments with expert-led guidance.',
 
-    site: '@MedivisorIndia',
+    site: '@MedivisorIndiatreatment',
   },
 };
 
