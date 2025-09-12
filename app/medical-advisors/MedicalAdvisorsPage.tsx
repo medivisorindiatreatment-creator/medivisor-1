@@ -157,7 +157,7 @@ export default function MedicalAdvisorsPage() {
         {/* Content */}
         <div className="flex flex-grow flex-col space-y-0 px-5 mt-1 py-2 md:py-4">
           {/* Name */}
-          <h2 className="text-2xl font-semibold text-gray-700 mb-0">
+          <h2 className="title-text">
             {advisor.name || "Medical Advisor"}
           </h2>
           {/* Specialty & Experience */}
@@ -166,10 +166,10 @@ export default function MedicalAdvisorsPage() {
           {advisor.specialty && (
             <div className="flex items-center gap-0 ">
 
-              <span className="text-lg font-normal text-gray-600 mb-0 ">{advisor.specialty}</span>
+              <span className="description-1 my-1">{advisor.specialty}</span>
             </div>
           )}
-          <p className="text-gray-700 text-[19px] md:text-base mb-3 mt-0 leading-relaxed flex-grow line-clamp-2">
+          <p className="description line-clamp-2">
             {advisor.experience}
           </p>
         </div>

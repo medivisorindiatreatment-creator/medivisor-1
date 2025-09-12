@@ -68,7 +68,7 @@ const TreatmentCard = ({
           height={204}
           className="w-full h-48 object-cover"
         />
-        <CardHeader>
+        <CardHeader className="p-4">
           <div className="flex items-center text-primary-500 mb-2">
             <Badge variant="secondary" className="bg-gray-100 text-gray-600">
               {treatment.hospitalName}
@@ -166,8 +166,8 @@ export default function TreatmentsPage() {
           <div className="container mx-auto ">
             <Card className="md:bg-white/80 md:shadow-xs shadow-none md:w-2/3 md:px-6 px-0 mx-auto md:p-7  md:backdrop-blur-sm border-0 ">
               <CardContent className="space-y-6 px-0 md:px-3">
-                <div className="prose prose-lg max-w-none">
-                  <p className="text-[19px] md:text-lg text-gray-700 mt-2 z-10">
+                <div className="description max-w-none">
+                  <p className="description">
                     As Medivisor, our expertise lies in orchestrating medical
                     treatments in India, and we take pride in delivering
                     detailed and personalized cost estimates. To initiate the
@@ -175,7 +175,7 @@ export default function TreatmentsPage() {
                     and a concise history of your health concern at{" "}
                     <a
                       href="mailto:info@medivisorhealth.com"
-                      className="text-gray-700 hover:text-[#74c044] font-semibold decoration-teal-200 hover:decoration-teal-300 transition-colors"
+                      className="title-text"
                     >
                       info@medivisorhealth.com
                     </a>
@@ -183,7 +183,7 @@ export default function TreatmentsPage() {
                     via Viber or WhatsApp at{" "}
                     <a
                       href="tel:+919643015697"
-                      className="text-gray-700 hover:text-[#74c044] font-semibold decoration-teal-200 hover:decoration-teal-300 transition-colors"
+                      className="title-text"
                     >
                       +91-9643015697
                     </a>
@@ -197,11 +197,11 @@ export default function TreatmentsPage() {
                     <CardContent className="md:p-6 p-3">
                       <div className="flex items-center gap-3 mb-1 md:mb-4">
                         <Mail className="md:h-5 w-6 h-6 md:w-5 text-gray-700" />
-                        <h3 className="font-semibold text-xl md:text-lg text-gray-800">
+                        <h3 className="title-text">
                           Email Your Reports
                         </h3>
                       </div>
-                      <p className="text-base text-gray-600 mb-4">
+                      <p className="description  mb-4">
                         Send your medical reports and health history for a
                         detailed cost estimate.
                       </p>
@@ -218,11 +218,11 @@ export default function TreatmentsPage() {
                     <CardContent className="md:p-6 p-3">
                       <div className="flex items-center gap-3 mb-1 md:mb-4">
                         <MessageCircle className="md:h-5 w-6 h-6 md:w-5 text-green-500" />
-                        <h3 className="font-semibold text-xl md:text-lg text-gray-800">
+                        <h3 className="title-text">
                           WhatsApp / Viber
                         </h3>
                       </div>
-                      <p className="text-base text-gray-600 mb-4">
+                      <p className="description  mb-4">
                         Quick consultation via WhatsApp or Viber for immediate
                         assistance.
                       </p>

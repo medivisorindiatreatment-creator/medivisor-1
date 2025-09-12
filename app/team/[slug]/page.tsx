@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card"
 
 const COLLECTION_ID = "Team1"
 
+// Helper function to extract text from a rich text object
 const extractTextFromRichText = (richTextObj: any): string => {
   if (!richTextObj) return ""
 
@@ -43,6 +44,7 @@ const extractTextFromRichText = (richTextObj: any): string => {
   return ""
 }
 
+// Interface for the team member data structure
 interface TeamMember {
   _id?: string
   name: string
@@ -60,6 +62,7 @@ interface TeamMember {
   rawData?: any
 }
 
+// Skeleton loader component for better user experience while data is loading
 const SkeletonProfile = () => (
   <div className="min-h-screen bg-white">
     <div className="container mx-auto px-4 py-16">
@@ -97,6 +100,7 @@ export default function TeamMemberPage() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
 
+  // Processes the Wix image URL to get a scaled version
   const processWixImageUrl = (item: any): string => {
     const bestImage = getBestCoverImage(item)
     if (bestImage) {
@@ -140,17 +144,18 @@ export default function TeamMemberPage() {
     return `/placeholder.svg?height=750&width=600&query=team member portrait`
   }
 
+  // Fetches team member data based on the provided slug
   const fetchTeamMember = async (memberId: string) => {
     try {
       const { wixClient } = await import("@/lib/wixClient")
 
       console.log("[v0] Searching for team member with slug:", memberId)
 
-      // First try to get by ID (exact match)
+      // First, try to get by exact ID match
       let response = await wixClient.items.query(COLLECTION_ID).eq("_id", memberId).find({ consistentRead: true })
       console.log("[v0] Search by ID result:", response?.items?.length || 0)
 
-      // If not found by ID, get all team members and find by slug match
+      // If not found by ID, get all members and find a slug match
       if (!response?.items?.length) {
         console.log("[v0] ID search failed, trying slug matching")
         const allMembersResponse = await wixClient.items
@@ -195,7 +200,7 @@ export default function TeamMemberPage() {
         }
       }
 
-      // If still not found, try partial name matching as fallback
+      // Final fallback: try partial name matching
       if (!response?.items?.length) {
         console.log("[v0] Slug matching failed, trying partial name search")
         const nameFromSlug = memberId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
@@ -218,6 +223,7 @@ export default function TeamMemberPage() {
       const itemData = item.data || item
       console.log("[v0] Successfully found team member:", itemData.title || item.title)
 
+      // Map the Wix item data to the TeamMember interface
       const teamMemberData: TeamMember = {
         _id: item._id || item.ID,
         name: itemData.title || item.title || item.Name || item.name || "Team Member",
@@ -265,6 +271,7 @@ export default function TeamMemberPage() {
     }
   }
 
+  // Load data when the component mounts or the slug changes
   const loadData = async () => {
     try {
       setLoading(true)
@@ -290,10 +297,12 @@ export default function TeamMemberPage() {
     }
   }, [params.slug])
 
+  // Display skeleton loader while fetching data
   if (loading) {
     return <SkeletonProfile />
   }
 
+  // Display "Not Found" message if no data is found
   if (notFound || !teamMember) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -318,22 +327,26 @@ export default function TeamMemberPage() {
     )
   }
 
+  // Main component to display team member details
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-10">
-        {/* Back Button */}
-        <Button variant="ghost" asChild className="mt-8 hover:bg-red-50 hover:text-red-600">
-          <Link href="/team">
+        {/* Navigation Buttons */}
+        <div className="flex flex-col sm:flex-row gap-2 mt-3">
+          {/* Back to previous page */}
+          <Button variant="ghost" className="hover:bg-red-50 bg-gray-100 cursor-pointer hover:text-red-600" onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Team
-          </Link>
-        </Button>
+            Go Back
+          </Button>
+          {/* Back to Professional Stage Page */}
+          
+        </div>
 
-        <div className="grid grid-cols-1 py-10 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 pb-10 pt-2 lg:grid-cols-3 gap-6">
           {/* Profile Image and Basic Info */}
           <div className="lg:col-span-1">
-            <Card className="overflow-hidden shadow-xl border-0">
-              <div className="aspect-[4/5] overflow-hidden bg-gray-100">
+            <Card className="overflow-hidden shadow-xs md:border md:border-gray-200">
+              <div className="aspect-[4/5] overflow-hidden ">
                 <img
                   src={teamMember.image || "/placeholder.svg"}
                   alt={teamMember.name}
@@ -344,9 +357,9 @@ export default function TeamMemberPage() {
                   }}
                 />
               </div>
-              <div className="p-6">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">{teamMember.name}</h1>
-                <p className="text-red-600 font-medium text-lg mb-4">{teamMember.role}</p>
+              <div className="p-4">
+                <h1 className="heading-lg">{teamMember.name}</h1>
+                <p className="description">{teamMember.role}</p>
 
                 {/* Social Links */}
                 <div className="flex gap-3">
@@ -403,30 +416,6 @@ export default function TeamMemberPage() {
                     {teamMember.longDescription || teamMember.bio}
                   </p>
                 </div>
-              </div>
-
-              {teamMember.shortDescription && teamMember.shortDescription !== teamMember.longDescription && (
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Quick Overview</h3>
-                  <p className="text-gray-600 leading-relaxed">{teamMember.shortDescription}</p>
-                </div>
-              )}
-
-              {/* Contact Section */}
-              <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Get in Touch</h3>
-                <p className="text-gray-600 mb-4">
-                  Interested in connecting with {teamMember.name.split(" ")[0]}? Feel free to reach out through any of
-                  the channels above.
-                </p>
-                {teamMember.email && (
-                  <Button asChild className="bg-red-600 hover:bg-red-700 text-white">
-                    <a href={`mailto:${teamMember.email}`}>
-                      <Mail className="w-4 h-4 mr-2" />
-                      Send Email
-                    </a>
-                  </Button>
-                )}
               </div>
             </div>
           </div>

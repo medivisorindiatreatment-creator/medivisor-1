@@ -46,8 +46,7 @@ const HOSPITALS: Hospital[] = [
     beds: 10000,
     established: 1983,
     specialties: ['Cardiology', 'Oncology', 'Neurology', 'Orthopedics', 'Transplants'],
-    description:
-      "Apollo Hospitals is one of India's leading healthcare providers with over 70 hospitals across 13 countries. Known for pioneering medical treatments and advanced healthcare technology.",
+    description: "Apollo Hospitals is a leading healthcare provider in India with over 70 hospitals across 13 countries, offering advanced treatments, expert medical care, and state-of-the-art technology across multiple specialties for excellent patient outcomes.",
     achievements: ['First hospital in India to perform heart transplant', 'JCI Accredited', 'NABH Certified'],
     category: 'multi-specialty',
   },
@@ -64,8 +63,7 @@ const HOSPITALS: Hospital[] = [
     beds: 4500,
     established: 2001,
     specialties: ['Cardiac Sciences', 'Neurosciences', 'Oncology', 'Renal Sciences', 'Orthopedics'],
-    description:
-      'Fortis Healthcare is a leading integrated healthcare delivery service provider in India with 36 healthcare facilities across the country.',
+    description: "Fortis Healthcare is a top integrated healthcare provider in India with 36 advanced facilities nationwide, delivering high-quality care across multiple specialties with expert doctors, modern technology, and a focus on patient safety and outcomes.",
     achievements: ['NABH Accredited', 'Green OT Certified', 'ISO 9001:2015 Certified'],
     category: 'multi-specialty',
   },
@@ -82,8 +80,7 @@ const HOSPITALS: Hospital[] = [
     beds: 3500,
     established: 2000,
     specialties: ['Oncology', 'Neurosciences', 'Cardiac Sciences', 'Orthopedics', 'Gastroenterology'],
-    description:
-      "Max Healthcare is one of India's leading private healthcare providers operating 17 healthcare facilities across the Delhi NCR, Punjab, Uttarakhand and Maharashtra.",
+    description: "Max Healthcare is a premier private healthcare provider with 17 facilities across North and West India, offering specialized treatments, modern technology, and excellent patient care delivered by highly skilled doctors across multiple medical specialties.",
     achievements: ['JCI Accredited', 'NABL Certified Labs', 'NABH Accredited'],
     category: 'multi-specialty',
   },
@@ -100,8 +97,7 @@ const HOSPITALS: Hospital[] = [
     beds: 1600,
     established: 2009,
     specialties: ['Cardiac Sciences', 'Neurosciences', 'Oncology', 'Digestive & Hepatobiliary Sciences', 'Orthopedics'],
-    description:
-      "Medanta is a multi-super specialty hospital with 1600 beds and 45 operation theatres. It is one of India's largest and most advanced medical institutes.",
+    description: "Medanta - The Medicity is a leading multi-super specialty hospital in Gurugram with 1600 beds and 45 operation theatres, providing advanced treatments, expert medical care, and compassionate patient services across multiple specialties.",
     achievements: ['JCI Accredited', 'NABH Certified', 'NABL Accredited Labs'],
     category: 'multi-specialty',
   },
@@ -118,8 +114,7 @@ const HOSPITALS: Hospital[] = [
     beds: 6000,
     established: 1953,
     specialties: ['Cardiology', 'Neurology', 'Oncology', 'Orthopedics', 'Gastroenterology'],
-    description:
-      'Manipal Hospitals is a leading healthcare provider in India with 28 hospitals across 15 cities, known for clinical excellence and patient care.',
+    description: "Manipal Hospitals operates 28 hospitals across 15 cities in India, delivering high-quality healthcare with a focus on patient safety, advanced treatments, multi-specialty care, and clinical excellence by experienced doctors and medical professionals.",
     achievements: ['NABH Accredited', 'JCI Accredited Units', 'NABL Certified'],
     category: 'multi-specialty',
   },
@@ -136,12 +131,12 @@ const HOSPITALS: Hospital[] = [
     beds: 600,
     established: 2007,
     specialties: ['Cardiac Sciences', 'Neurosciences', 'Oncology', 'Orthopedics', 'Gastroenterology'],
-    description:
-      'Artemis Hospital is a 600+ bed, state-of-the-art multi-specialty hospital located in Gurugram, Delhi NCR.',
+    description: "Artemis Hospital is a modern, multi-specialty hospital in Gurugram with over 600 beds, providing advanced medical treatments, innovative clinical solutions, and patient-focused care across multiple specialties with highly experienced doctors and technology-driven services.",
     achievements: ['JCI Accredited', 'NABH Certified', 'NABL Accredited'],
     category: 'multi-specialty',
   },
 ];
+
 
 // Utility function to truncate text
 const truncateText = (text: string, maxLength = 120): string => {
@@ -169,9 +164,9 @@ const HospitalCard = ({ hospital, onOpenModal }: { hospital: Hospital; onOpenMod
         </div>
       </div>
 
-      <CardHeader className="pb-1">
-        <div className="flex items-end space-x-3 mb-2">
-          <div className="w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center">
+      <CardHeader className="pb-1 p-4 pb-2">
+        <div className="flex items-end space-x-3 mb-0">
+          {/* <div className="w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center">
             <Image
               src={hospital.logo || '/placeholder.svg?height=32&width=32'}
               alt={hospital.name}
@@ -179,22 +174,22 @@ const HospitalCard = ({ hospital, onOpenModal }: { hospital: Hospital; onOpenMod
               height={24}
               className="object-contain"
             />
-          </div>
-          <CardTitle className="text-2xl font-medium text-gray-600 ">{hospital.name}</CardTitle>
+          </div> */}
+          <CardTitle className="title-text py-0 my-0">{hospital.name}</CardTitle>
         </div>
-        <CardDescription className="flex items-center my-2 text-lg md:text-base font-medium text-gray-600 mb-0">
+        <CardDescription className="flex items-center description-1 mt-3">
           <MapPin className="h-5 w-5 mr-1 text-[#E22026] flex-shrink-0" />
           <span className="truncate">{hospital.location}</span>
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="pt-0 flex flex-col flex-grow">
-        <p className="text-gray-600 text-[19px] md:text-base mb-2 text-left leading-relaxed flex-grow">{truncateText(hospital.description)}</p>
+      <CardContent className="pt-0 px-4 flex flex-col flex-grow my-0">
+        <p className="text-gray-600 text-[19px] md:text-base mb-2 text-left leading-relaxed flex-grow">{hospital.description}</p>
 
         <Button
           onClick={onOpenModal}
           variant="ghost"
-          className="text-base text-left px-0 justify-start text-gray-700 cursor-pointer "
+          className="text-base border border-gray-200 text-center px-0 justify-center text-gray-700 cursor-pointer "
         >
           Enquire Now
         </Button>
@@ -349,7 +344,7 @@ export default function HospitalCarousel() {
           {/* Header with Navigation Arrows */}
           <div className="flex justify-between items-center mb-3 md:mb-6">
             <div className="flex-1">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-"> Hospital Partners</h2>
+              <h2 className="heading-lg"> Hospital Partners</h2>
             </div>
 
 

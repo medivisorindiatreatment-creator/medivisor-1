@@ -253,8 +253,8 @@ export default function MeetOurDoctors() {
               <div className="p-5">
                 <h3 className="title-text mb-1">{advisor.name}</h3>
                 <p className=" description">{advisor.specialty}</p>
-                <p className="text-lg md:text-sm font-medium text-gray-700">
-                  <span className="font-bold"></span> {advisor.experience}
+                <p className="description-1">
+                  <span className="description-1"></span> {advisor.experience}
                 </p>
               </div>
             </div>

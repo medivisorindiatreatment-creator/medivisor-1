@@ -151,7 +151,7 @@ const ServiceCard = ({ service, onOpenModal }: { service: Service; onOpenModal: 
               ))}
             </ul>
           </div>
-          <div className="mt-auto pt-0 text-left">
+          <div className="mt-auto pt-0 md:pt-4 text-left">
             <Button
               className="inline-flex items-center w-full justify-center whitespace-nowrap rounded-md md:text-base text-lg font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-background hover:text-accent-foreground h-10 px-4 py-2 border-gray-200 text-gray-600 hover:bg-gray-50  left-4 right-4 mb-3"
               onClick={onOpenModal}

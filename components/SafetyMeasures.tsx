@@ -107,10 +107,10 @@ export default function SafetyMeasures() {
       <div className="container mx-auto ">
         {/* Heading */}
         <div className="text-center mb-8 sm:mb-10 md:mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+          <h2 className="heading-lg">
             Our Patient Safety Measures
           </h2>
-          <p className="mt-3 sm:mt-4 text-[19px] md:text-lg text-gray-700 max-w-3xl mx-auto px-2">
+          <p className="description max-w-3xl mx-auto px-2">
             At Medivisor, patient safety isn’t just a protocol — it’s our promise. From the moment you arrive until the day you return home, every step of your medical journey is safeguarded with robust systems, dedicated care, and unwavering attention to detail.
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function SafetyMeasures() {
 
           {/* Content */}
           <div className="tab-content-container bg-white p-4 overflow-y-auto max-h-[500px]">
-            <h2 className="text-2xl sm:text-2xl font-medium text-gray-700 mb-4 text-center">
+            <h2 className="title-heading mb-6 text-center">
               {tabContent[activeTab as keyof typeof tabContent].title}
             </h2>
 
@@ -171,13 +171,13 @@ export default function SafetyMeasures() {
                   key={index}
                   className="bg-white rounded-md md:border md:border-gray-100 p-0 sm:p-6 hover:shadow-md transition-all"
                 >
-                  <h3 className="text-[19px] sm:text-xl md:text-2xl font-semibold text-gray-700 mb-3">
+                  <h3 className="title-text ">
                     {card.title}
                   </h3>
-                  <p className="text-gray-700 text-[19px] md:text-base leading-relaxed mb-4">
+                  <p className="description my-4">
                     {card.description}
                   </p>
-                  <ul className="space-y-2 text-[19px] md:text-base text-gray-700">
+                  <ul className="space-y-2 description">
                     {card.details.map((detail, detailIndex) => (
                       <li key={detailIndex} className="flex items-start gap-2">
                         <span className="text-[#4CAF50] font-bold mt-1">✓</span>

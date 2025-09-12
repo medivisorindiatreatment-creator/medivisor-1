@@ -240,7 +240,7 @@ const HospitalCard = ({ hospital, onViewDetails }: { hospital: Hospital; onViewD
 
     <CardHeader className="pb-4 px-3 md:px-4">
       <div className="flex items-center space-x-3 mb-2">
-        <div className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center">
+        {/* <div className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center">
           <Image
             src={hospital.logo || "/placeholder.svg"}
             alt={hospital.name}
@@ -248,32 +248,23 @@ const HospitalCard = ({ hospital, onViewDetails }: { hospital: Hospital; onViewD
             height={32}
             className="object-contain"
           />
-        </div>
-        <CardTitle className="text-2xl md:text-xl text-gray-900">{hospital.name}</CardTitle>
+        </div> */}
+        <CardTitle className="title-text">{hospital.name}</CardTitle>
       </div>
-      <CardDescription className="flex md:text-base text-lg items-center text-gray-600">
+      <CardDescription className="flex description-1 items-center text-gray-600">
         <MapPin className="h-4 w-4 mr-1 text-[#E22026]" />
         {hospital.location}
       </CardDescription>
     </CardHeader>
 
-    <CardContent className="pt-0">
-      <p className="text-gray-600 md:text-base text-lg mb-4 line-clamp-3 leading-relaxed">{hospital.description}</p>
+    <CardContent className="pt-0 x-3 md:px-4">
+      <p className="description">{hospital.description}</p>
 
-      <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-        <div className="flex items-center bg-blue-50 p-2 rounded-lg">
-          <Building2 className="h-4 w-4 mr-2 text-[#E22026]" />
-          <span className="font-medium">{hospital.beds} beds</span>
-        </div>
-        <div className="flex items-center bg-green-50 p-2 rounded-lg">
-          <Users className="h-4 w-4 mr-2 text-green-500" />
-          <span className="font-medium">{hospital.reviews.toLocaleString()} reviews</span>
-        </div>
-      </div>
+     
 
 
 
-      <div className="flex space-x-2">
+      <div className="flex space-x-2 mt-3">
         <Button
           className=" text-left cursor-pointer bg-gray-100 justify-center md:justify-start gap-2  text-gray-700 px-8 md:w-auto w-full text-center text-base"
           onClick={onViewDetails}
