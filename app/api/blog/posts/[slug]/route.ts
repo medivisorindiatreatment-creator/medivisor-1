@@ -3,13 +3,8 @@ import { wixServerClient } from "@/lib/wixServer";
 
 // Define a list of allowed origins.
 const ALLOWED_ORIGINS = [
-  "https://medivisor-ujuu.vercel.app",
-  "https://www.medivisor-ujuu.vercel.app",
-  "https://www.medivisor-ujuu.vercel.ap", 
-
-  "https://www.medivisorindiatreatment.com/",
-
-  "https://medivisorindiatreatment.com/"
+  "https://www.medivisorindiatreatment.com",
+  "https://medivisorindiatreatment.com"
 ];
 
 /**
@@ -21,21 +16,20 @@ const getCorsHeaders = (origin: string | null) => {
   const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Credentials": "true",
   };
-  
+
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
+  } else {
+    headers["Access-Control-Allow-Origin"] = "*"; // fallback for dev/local
   }
 
   return headers;
 };
 
-
 /**
  * Handles the GET request for a specific blog post by its slug.
- * @param req The incoming Next.js request object.
- * @param context The context object containing dynamic route parameters.
- * @returns A Next.js response with the requested post data or an error.
  */
 export async function GET(
   req: NextRequest,
@@ -80,12 +74,11 @@ export async function GET(
 
 /**
  * Handles the OPTIONS preflight request for CORS.
- * @returns A successful Next.js response with CORS headers.
  */
 export async function OPTIONS(req: NextRequest) {
   const origin = req.headers.get("origin");
   const headers = getCorsHeaders(origin);
-  
+
   return new NextResponse(null, {
     status: 200,
     headers,
