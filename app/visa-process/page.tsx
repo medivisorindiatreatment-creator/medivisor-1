@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     siteName: 'Medivisor India Treatment',
     images: [
       {
-        url: 'https://medivisorindiatreatment.com/MRX-Logo-PNG.png',
+        url: 'https://medivisorindiatreatment.com/logo_medivisor.png',
         width: 800,
         height: 250,
         alt: 'Medivisor India Visa Process',

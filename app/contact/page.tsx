@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: 'https://medivisorindiatreatment.com/MRX-Logo-PNG.png',
+        url: 'https://medivisorindiatreatment.com/logo_medivisor.png',
         width: 800,
         height: 250,
         alt: "Contact Medivisor India",
