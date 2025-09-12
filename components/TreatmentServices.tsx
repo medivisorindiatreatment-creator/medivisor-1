@@ -210,10 +210,10 @@ export default function ServiceSection() {
 
                     {/* Content */}
                     <div className="p-4 flex flex-col flex-grow">
-                      <h4 className="md:text-xl hover:text-primary text-gray-600 text-2xl font-semibold leading-tight  overflow-hidden my-2">
+                      <h4 className="title-text mb-2">
                         {service.hospitalName}
                       </h4>
-                      <h3 className="text-lg text-gray-600 mb-2">
+                      <h3 className="description ">
                         {service.treatmentName}
                       </h3>
                       {service.description && (

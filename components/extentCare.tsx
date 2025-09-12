@@ -240,10 +240,10 @@ export default function SocialActivityCarousel() {
           {/* Content Column - Displayed first on mobile, then on the left on desktop */}
           <div className="lg:col-span-5 space-y-3 md:space-y-5 lg:order-2 order-1 mb-5 lg:mt-0">
             <div className="space-y-2">
-             <h2 className="md:text-4xl text-3xl font-bold text-gray-700">
+             <h2 className="heading-lg">
                 Every Treatment Counts
               </h2>
-              <p className=" text-[19px] md:text-lg text-gray-600 leading-relaxed">
+              <p className="description">
                 We dedicate a significant portion of our revenue to supporting underprivileged individuals in the regions where we operate. This commitment brings us immense joy and fulfillment, knowing we’re making a meaningful impact for those in need. Additionally, the heartfelt well-wishes and blessings we receive create a positive environment that supports us in achieving the highest success rates for our patients.
               </p>
             </div>
@@ -283,7 +283,7 @@ export default function SocialActivityCarousel() {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent">
                             <div className="absolute bottom-0 left-0 right-0 p-4 md:p-10 text-white">
                               <div className="max-w-2xl space-y-4">
-                                <h3 className="text-2xl md:text-4xl font-bold leading-tight">
+                                <h3 className="text-2xl md:text-xl font-semibold text-white  leading-tight">
                                   {moment.title || "Untitled Story"}
                                 </h3>
                             

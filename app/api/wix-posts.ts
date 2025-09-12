@@ -14,7 +14,7 @@ const wixClient = createClient({
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
  // Set CORS headers to allow requests from your frontend domain
- res.setHeader('Access-Control-Allow-Origin', '*'); 
+ res.setHeader('Access-Control-Allow-Origin', 'https://medivisorindiatreatment.com'); 
  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 

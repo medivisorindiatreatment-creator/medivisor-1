@@ -155,21 +155,13 @@ export default function WhyChooseUsSection() {
                 transition={{ duration: 0.4, delay: index * 0.1 }}
               >
                 {/* Background glow/overlay on hover */}
-                {isCurrentlyHovered && (
-                  <motion.div
-                    className="absolute inset-0 bg-gray-100 opacity-50 rounded-xs" // Changed hover background to gray for modern look
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.5 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                )}
+               
                 <div className="mb-4 z-10 transition-transform duration-300">
                   {isCurrentlyHovered ? stat.hoverIcon : stat.icon}
                 </div>
-                <h3 className="text-3xl font-semibold text-gray-900 leading-tight z-10">{stat.value}</h3>
-                <p className="text-2xl md:text-xl text-gray-700 mt-1 font-medium z-10">{stat.label}</p>
-                <p className="md:px-10 px-4 text-[19px] md:text-lg text-gray-700 mt-2 z-10">{stat.description}</p>
+                <h3 className="heading-lg">{stat.value}</h3>
+                <p className="title-text">{stat.label}</p>
+                <p className="md:px-3 px-4 description mt-2">{stat.description}</p>
               </motion.div>
             )
           })}

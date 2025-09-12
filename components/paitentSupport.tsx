@@ -50,18 +50,18 @@ export default function PaitentSupport() {
         <div className="md:grid lg:grid-cols-12 md:gap-12 items-center flex flex-col-reverse">
           {/* Content Side */}
           <div className="space-y-3 mdLspacey-6 col-span-5 md:order-1 order-2 mb-2 md:mb-0">
-            <h2 className="md:text-4xl text-3xl font-bold text-gray-700">
+            <h2 className="heading-lg">
               We Stand by Our Patients Every Step of the Way
             </h2>
 
-            <p className="md:text-lg text-[19px] text-gray-600 leading-relaxed">
+            <p className="description">
               Medivisor takes pride in providing unwavering support to our patients
               throughout their journey. From the moment they step foot in the
               Delhi airport, our dedicated team ensures that they are never left
               to navigate their medical experience alone.
             </p>
 
-            <p className="md:text-lg text-[19px] text-gray-600 leading-relaxed">
+            <p className="description">
               At every juncture of their treatment process, at least one Medivisor
               staff member is by their side, offering escorting, guidance, and
               assistance every step of the way. Our commitment is to ensure that

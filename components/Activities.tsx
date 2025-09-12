@@ -65,10 +65,10 @@ export default function Activities() {
       <div className="container mx-auto">
         {/* Heading */}
         <div className="md:text-center md:mb-8 mb-4 max-w-3xl mx-auto">
-          <h2 className="md:text-4xl text-3xl font-bold text-gray-700">
+          <h2 className="heading-lg">
             We Go Beyond Care —<br className="md:hidden block" /> We Celebrate Life
           </h2>
-          <p className="mt-2 text-gray-700 md:text-lg text-[19px]">
+          <p className="description">
           Beyond treatment, we bring care, joy, and unforgettable moments. From warm personal visits to lively events, your healing journey with us is filled with smiles and celebration — because your happiness is our true mission.
           </p>
         </div>
@@ -106,7 +106,7 @@ export default function Activities() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <h2 className="text-lg md:text-xl lg:text-2xl font-semibold mb-1">
+                      <h2 className="text-lg md:text-xl lg:text-2xl font-medium mb-1">
                         {activity.title}
                       </h2>
                       <p className="text-xs md:text-sm lg:text-base">

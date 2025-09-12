@@ -205,7 +205,7 @@ export default function MediaCoverageCarousel({
       <div className="container mx-auto ">
         <div className="flex justify-between items-center mb-4 md:mb-6">
           <div className="space-y-2">
-            <h2 className="text-3xl md:text-3xl font-bold text-gray-900">{title}</h2>
+            <h2 className="heading-lg">{title}</h2>
          
           </div>
           {showViewAll && (

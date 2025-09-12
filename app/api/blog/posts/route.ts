@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
     const res = NextResponse.json({ posts, metaData: { total } }, { status: 200 })
     // CORS headers (safe for public content; also fine for same-origin calls)
-    res.headers.set("Access-Control-Allow-Origin", "*")
+    res.headers.set("Access-Control-Allow-Origin", "https://medivisorindiatreatment.com")
     res.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS")
     res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization")
     return res
@@ -36,7 +36,7 @@ export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": "https://medivisorindiatreatment.com",
       "Access-Control-Allow-Methods": "GET, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },

@@ -105,7 +105,7 @@ const ServiceCard = ({ service, onOpenModal }: { service: Service; onOpenModal: 
 
   return (
     <div className="keen-slider__slide">
-      <div className="group bg-white rounded-xs overflow-hidden shadow-xs hover:shadow-xs transition-all duration-300 border border-gray-100 h-auto md:h-[650px] flex flex-col relative">
+      <div className="group bg-white rounded-xs overflow-hidden shadow-xs hover:shadow-xs transition-all duration-300 border border-gray-100 h-full flex flex-col relative">
         {service.isPopular && (
           <div className="absolute top-3 right-3 z-10 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-medium px-2 py-1 rounded-full">
             Popular
@@ -130,13 +130,13 @@ const ServiceCard = ({ service, onOpenModal }: { service: Service; onOpenModal: 
         </div>
         <div className="md:p-3 p-3 flex flex-col flex-grow">
           <div className="flex items-start justify-between my-3">
-            <h3 className="md:text-xl text-2xl font-medium line-clamp-1 text-gray-900 text-left leading-tight flex-1">{service.title}</h3>
+            <h3 className="title-text ">{service.title}</h3>
            
           </div>
           
           <div className="md:mb-4 mb-5 flex-grow h- ">
-            <p className="md:text-base text-[19px] text-left text-gray-600 leading-relaxed">
-              {truncateText(service.shortDescription || service.description)}
+            <p className="description">
+              {service.shortDescription || service.description}
             </p>
           </div>
           <div className="mb-3 ">
@@ -146,7 +146,7 @@ const ServiceCard = ({ service, onOpenModal }: { service: Service; onOpenModal: 
                   <div className="flex-shrink-0 w-6 md:w-5 h-6 md:h-5 rounded-full bg-green-100 flex items-center justify-center mt-0.5">
                     <Check className="md:w-3 md:h-3 w-4 h-4 text-green-600" />
                   </div>
-                  <span className="md:text-base text-[19px] text-left text-gray-600 leading-relaxed">{benefit}</span>
+                  <span className="description">{benefit}</span>
                 </li>
               ))}
             </ul>
@@ -191,7 +191,7 @@ export default function Services() {
         slides: { perView: 2, spacing: 20 },
       },
       '(min-width: 1024px)': {
-        slides: { perView: 4, spacing: 24 },
+        slides: { perView: 3, spacing: 24 },
       },
     },
   });
@@ -360,7 +360,7 @@ export default function Services() {
             <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-red-100 to-purple-100 rounded-full mb-8">
               <Briefcase className="h-12 w-12 text-red-600" />
             </div>
-            <h2 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-6">
+            <h2 className="heading-lg">
               Our Services
             </h2>
           </div>
@@ -386,14 +386,14 @@ export default function Services() {
             <div className="flex gap-2">
               <button
                 onClick={() => instanceRef.current?.prev()}
-                className="bg-[#d82128] text-white p-2 rounded-full hover:bg-[#b5181e] transition-colors shadow-lg hover:shadow-xl"
+                className="bg-white text-gray-700 p-2 rounded-full  cursor-pointer transition-colors shadow-lg hover:shadow-xl"
                 aria-label="Previous service"
               >
                 <ChevronLeft className="w-4 md:h-5 md:w-5 h-4" />
               </button>
               <button
                 onClick={() => instanceRef.current?.next()}
-                className="bg-[#d82128] text-white p-2 rounded-full hover:bg-[#b5181e] transition-colors shadow-lg hover:shadow-xl"
+                className="bg-white text-gray-700 p-2 rounded-full  cursor-pointer transition-colors shadow-lg hover:shadow-xl"
                 aria-label="Next service"
               >
                 <ChevronRight className="w-4 md:h-5 md:w-5 h-4" />

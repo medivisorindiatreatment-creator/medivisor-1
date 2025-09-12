@@ -158,7 +158,7 @@ export default function DidYouKnowSection() {
 
        <div className="md:pt-6 pt-2 col-span-1 flex justify-center md:justify-start">
   <div className="max-w-2xl md:px-0">
-    <h3 className="md:text-4xl text-3xl font-bold text-gray-700 mb-4">
+    <h3 className="heading-lg">
       Did You Know?
     </h3>
 
@@ -169,7 +169,7 @@ export default function DidYouKnowSection() {
             <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
           </div>
         </div>
-        <span className="text-[19px] md:text-lg">
+        <span className="description">
           Over 2 million international patients travel to India every year for affordable, high-quality medical care.
         </span>
       </li>
@@ -180,7 +180,7 @@ export default function DidYouKnowSection() {
             <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
           </div>
         </div>
-        <span className="text-[19px] md:text-lg">
+        <span className="description">
           India offers treatment at up to 80% lower costs than the Philippines, Thailand, Malaysia, or Singapore.
         </span>
       </li>
@@ -191,7 +191,7 @@ export default function DidYouKnowSection() {
             <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
           </div>
         </div>
-        <span className="text-[19px] md:text-lg">
+        <span className="description">
           India is home to hundreds of world-class, JCI-accredited hospitals and thousands of internationally trained surgeons.
         </span>
       </li>
@@ -202,7 +202,7 @@ export default function DidYouKnowSection() {
             <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
           </div>
         </div>
-        <span className="text-[19px] md:text-lg">
+        <span className="description">
           The country leads in robotic surgeries, organ transplants, bone marrow transplants, and advanced cancer therapies—all at affordable prices.
         </span>
       </li>
@@ -213,7 +213,7 @@ export default function DidYouKnowSection() {
             <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
           </div>
         </div>
-        <span className="text-[19px] md:text-lg">
+        <span className="description">
           With an Indian eVisa available within 24–72 hours, patients can start treatment immediately, with virtually no waiting time.
         </span>
       </li>
@@ -224,7 +224,7 @@ export default function DidYouKnowSection() {
             <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
           </div>
         </div>
-        <span className="text-[19px] md:text-lg">
+        <span className="description">
          Medivisor has proudly assisted over 2,000 patients from the Pacific Islands, Africa, CIS countries, and beyond in accessing seamless, world-class medical care in India.
         </span>
       </li>
@@ -235,7 +235,7 @@ export default function DidYouKnowSection() {
             <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
           </div>
         </div>
-        <span className="text-[19px] md:text-lg">
+        <span className="description">
         You can reach our India Office at 
         {" "}  <a
             href="tel:+91 83682 47758"
