@@ -30,7 +30,7 @@ export function ReadMoreButton({ text, limit = 300 }: ReadMoreButtonProps) {
       {shouldShowButton && (
         <Button
           variant="link"
-          className="px-0 text-blue-600 hover:text-blue-800"
+          className="px-0 py-0 my-0 h-auto text-lg text-[#74BF44] "
           onClick={toggleExpanded}
         >
           {isExpanded ? "Read Less" : "Read More"}

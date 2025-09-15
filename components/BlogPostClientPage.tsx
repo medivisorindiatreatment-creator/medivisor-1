@@ -164,7 +164,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
           if (typeof wixClient.posts.getPostBySlug === 'function') {
             console.log('Trying getPostBySlug...')
             const response = await wixClient.posts.getPostBySlug(slug, {
-              fieldsets: ['CONTENT_TEXT', 'URL', 'RICH_CONTENT', 'TAGS', 'CATEGORY_IDS'],
+              fieldsets: ['CONTENT_TEXT', 'URL', 'RICH_CONTENT'],
             })
 
             if (response.post) {
@@ -227,8 +227,8 @@ export default function BlogPost({ slug }: BlogPostProps) {
               let query = wixClient.posts.queryPosts().ne('_id', fetchedPost._id).limit(6)
               
               if (postTags.length > 0) {
-                query = query.hasSome('tags', postTags);
-                console.log('Querying related posts by tags:', postTags)
+                query = query.hasSome('hashtags', postTags);
+                console.log('Querying related posts by hashtags:', postTags)
               } else if (postCategories.length > 0) {
                 query = query.hasSome('categoryIds', postCategories);
                 console.log('Querying related posts by categories:', postCategories)
@@ -334,7 +334,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
                 className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
               >
                 <ChevronLeft className="w-4 h-4 mr-2" />
-                Go Back
+                 Back
               </button>
             </div>
           </div>
@@ -360,7 +360,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
                 className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
               >
                 <ChevronLeft className="w-4 h-4 mr-2" />
-                Go Back
+                 Back
               </button>
             </div>
           </div>

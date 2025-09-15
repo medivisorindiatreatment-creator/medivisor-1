@@ -329,24 +329,24 @@ export default function TeamMemberPage() {
 
   // Main component to display team member details
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-10">
+    <div className="min-h-screen px-2 bg-white">
+      <div className="container mx-auto py-10">
         {/* Navigation Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 mt-3">
           {/* Back to previous page */}
-          <Button variant="ghost" className="hover:bg-red-50 bg-gray-100 cursor-pointer hover:text-red-600" onClick={() => router.back()}>
+          <Button variant="ghost" className="hover:bg-red-50 w-auto bg-gray-100 cursor-pointer hover:text-red-600" onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Go Back
+             Back
           </Button>
           {/* Back to Professional Stage Page */}
           
         </div>
 
-        <div className="grid grid-cols-1 pb-10 pt-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 pb-10 mt-4 md:pt-2 lg:grid-cols-3 gap-6">
           {/* Profile Image and Basic Info */}
           <div className="lg:col-span-1">
-            <Card className="overflow-hidden shadow-xs md:border md:border-gray-200">
-              <div className="aspect-[4/5] overflow-hidden ">
+            <Card className="overflow-hidden shadow-xs  border-gray-200">
+              <div className="md:aspect-[4/5] aspect-[3/2] overflow-hidden ">
                 <img
                   src={teamMember.image || "/placeholder.svg"}
                   alt={teamMember.name}

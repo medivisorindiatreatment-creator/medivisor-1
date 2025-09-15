@@ -186,13 +186,13 @@ export default function ServiceSection() {
           </div>
 
           <div className="embla overflow-hidden" ref={emblaRef}>
-            <div className="embla__container flex -mx-2">
+            <div className="embla__container flex -mx-2 items-stretch">
               {services.map((service, index) => (
                 <div
                   key={service._id || index}
                   className="embla__slide px-2 min-w-0 flex-grow-0 flex-shrink-0 basis-full md:basis-1/2 lg:basis-1/4"
                 >
-                  <div className="group bg-white border border-gray-100 rounded-xs overflow-hidden flex flex-col h-full">
+                  <div className="group bg-white border border-gray-100 rounded-xs overflow-hidden flex flex-col h-full min-h-[300px]">
                     {/* Image */}
                     <div className="relative w-full h-56 overflow-hidden">
                       <img
@@ -209,28 +209,24 @@ export default function ServiceSection() {
                     </div>
 
                     {/* Content */}
-                    <div className="p-4 flex flex-col flex-grow">
+                    <div className="p-4 flex flex-col flex-1">
                       <h4 className="title-text mb-2">
                         {service.hospitalName}
                       </h4>
-                      <h3 className="description ">
+                      <h3 className="description">
                         {service.treatmentName}
+                        <span
+                          onClick={() => setIsModalOpen(true)}
+                          className="description ml-2 hover:underline decoration-gray-400 cursor-pointer"
+                        >
+                          Know More
+                        </span>
                       </h3>
                       {service.description && (
                         <p className="text-sm text-gray-500 flex-grow">
                           {service.description}
                         </p>
                       )}
-
-                      {/* Button at bottom */}
-                      <div className="mt-auto pt-3">
-                        <button
-                          className="inline-flex items-center cursor-pointer justify-center rounded-md border border-gray-200 bg-gray-50 px-4 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100"
-                          onClick={() => setIsModalOpen(true)}
-                        >
-                          Enquire Now
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>

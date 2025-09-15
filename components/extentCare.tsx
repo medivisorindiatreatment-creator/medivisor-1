@@ -115,7 +115,7 @@ export default function SocialActivityCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const carouselRef = useRef<HTMLDivElement>(null)
-  const autoPlayRef = useRef<NodeJS.Timeout>()
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchHappyMoments = async () => {
     try {
@@ -283,7 +283,7 @@ export default function SocialActivityCarousel() {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent">
                             <div className="absolute bottom-0 left-0 right-0 p-4 md:p-10 text-white">
                               <div className="max-w-2xl space-y-4">
-                                <h3 className="text-2xl md:text-xl font-semibold text-white  leading-tight">
+                                <h3 className="text-lg md:text-xl lg:text-2xl font-medium mb-1">
                                   {moment.title || "Untitled Story"}
                                 </h3>
                             

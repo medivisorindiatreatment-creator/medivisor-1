@@ -110,7 +110,7 @@ export default function VisaPage() {
                       >
                         {/* Image Section */}
                         <div className="flex-1 relative group w-full">
-                          <div className="relative overflow-hidden rounded-md shadow-md">
+                          <div className="relative overflow-hidden rounded-xs shadow-xs">
                             <img
                               src={document.image || "/placeholder.svg"}
                               alt={document.title}
@@ -129,7 +129,7 @@ export default function VisaPage() {
                           </h2>
                           <p className="description">{document.description}</p>
 
-                          <div className="rounded-md border border-gray-100 shadow-sm overflow-hidden bg-white">
+                          <div className="rounded-xs border border-gray-100 shadow-xs overflow-hidden bg-white">
                             <div className="px-4 sm:px-5 pt-3">
                               <h3 className="title-text">Requirements:</h3>
                             </div>
@@ -137,7 +137,7 @@ export default function VisaPage() {
                               {document.details.map((detail, detailIndex) => (
                                 <div
                                   key={detailIndex}
-                                  className="flex items-center gap-2 px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100 transition"
+                                  className="flex items-center gap-2 px-3 py-2 rounded-xs bg-gray-50 hover:bg-gray-100 transition"
                                 >
                                   <CheckCircle className="w-5 h-5 text-[#74BF44] flex-shrink-0" />
                                   <span className="description">{detail}</span>
@@ -159,7 +159,7 @@ export default function VisaPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {/* Left Box */}
                   <div>
-                    <div className="text-center md:text-left bg-gray-50 rounded-lg p-6 sm:p-8 md:p-10 h-full flex flex-col justify-center shadow-sm">
+                    <div className="text-center md:text-left bg-gray-50 rounded-xs p-6 sm:p-8 md:p-10 h-full flex flex-col justify-center shadow-xs">
                       <Download className="w-10 h-10 sm:w-12 sm:h-12 text-[#E22026] mb-4 mx-auto md:mx-0" />
                       <h3 className="title-heading mb-4">
                         Download e-Visa Application Form
@@ -168,7 +168,7 @@ export default function VisaPage() {
                         If you haven't received the e-Visa form, download it directly below.
                       </p>
                       <a href="/e-Visa Application Form.docx" className="w-full sm:w-auto">
-                        <Button className="w-full sm:w-auto bg-[#E22026] border border-red-300 text-white text-sm md:text-base font-medium px-6 py-3 rounded-md shadow-sm transition duration-300 hover:bg-[#74BF44] hover:scale-105">
+                        <Button className="w-full sm:w-auto bg-[#E22026] border border-red-300 text-white text-sm md:text-base font-medium px-6 py-3 rounded-xs shadow-xs transition duration-300 hover:bg-[#74BF44] hover:scale-105">
                           Download Application Form
                         </Button>
                       </a>
@@ -177,7 +177,7 @@ export default function VisaPage() {
 
                   {/* Right Box */}
                   <div>
-                    <div className="h-full text-center md:text-left rounded-lg border border-red-300 bg-gradient-to-br from-[#E22026] to-[#c4181e] shadow-sm">
+                    <div className="h-full text-center md:text-left rounded-xs border border-red-300 bg-gradient-to-br from-[#E22026] to-[#c4181e] shadow-xs">
                       <div className="p-4 sm:p-8 md:p-10">
                         <div className="pb-4 flex justify-center md:justify-start">
                           <AlertTriangle className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
@@ -234,7 +234,7 @@ export default function VisaPage() {
                   {importantNotes.map((note, index) => {
                     const IconComponent = note.icon
                     return (
-                      <div key={index} className="bg-white rounded-md p-6 border border-gray-100 shadow-xs text-center">
+                      <div key={index} className="bg-white rounded-xs p-6 border border-gray-100 shadow-xs text-center">
                         <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                           <IconComponent className="w-7 h-7 sm:w-8 sm:h-8 text-gray-700" />
                         </div>

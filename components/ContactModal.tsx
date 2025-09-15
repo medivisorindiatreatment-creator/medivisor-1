@@ -197,26 +197,19 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="w-[95vw] max-w-md h-auto mx-auto p-0 bg-white rounded-xs shadow-sm border-0 overflow-hidden">
+      <DialogContent className="w-[95vw] max-w-sm h-auto mx-auto p-0 bg-white rounded-xs shadow-sm border-0 overflow-y-scroll md:overflow-hidden">
         {/* Compact Header */}
-        <div className="relative bg- px-4 py-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleClose}
-            className="absolute top-2 right-2 h-6 w-6 rounded-full text-white transition-colors"
-          >
-            <X className="h-3 w-3  " />
-          </Button>
-          <div className="text-center pr-8">
-            <DialogTitle className="text-2xl font-bold text-gray-700 mb-1">
-              Explore Advanced Medical Care in India
+        <div className="relative border-gray-100 bg-gray-100 border-b px-4 pt-7">
+           
+          <div className="text-center px-8">
+            <DialogTitle className="title-heading mb-4">
+             Enquire Now
             </DialogTitle>
           </div>
         </div>
 
         {/* Compact Content */}
-        <div className="px-4 py-4">
+        <div className="px-4 pb-4">
           {status.state === 'success' && (
             <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-3 py-2 rounded-lg mb-3 text-sm">
               <div className="flex items-center">
@@ -234,52 +227,43 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             </div>
           )}
 
-          <form onSubmit={onSubmit} className="space-y-3" noValidate>
+          <form onSubmit={onSubmit} className="space-y-4" noValidate>
             {/* Name Field */}
             <div>
-              <Label htmlFor="name" className="text-sm font-medium mb-1 text-gray-700 flex items-center">
-                <User className="w-4 h-4 mr-1" />
-                Full Name
-              </Label>
+           
               <Input
                 id="name"
                 name="name"
                 value={form.name}
                 onChange={onChange}
-                placeholder="Enter your name"
-                className="h-9 text-sm border-gray-300 focus:border-[#E22026] focus:ring-[#E22026]/20 rounded-md"
+                placeholder="Enter your Name"
+                className="h-9 description-1 border-gray-300 focus:border-gray-200 focus:ring-gray-200 rounded-xs"
               />
             </div>
 
             {/* Email Field */}
             <div>
-              <Label htmlFor="email" className="text-sm font-medium mb-1 text-gray-700 flex items-center">
-                <Mail className="w-4 h-4 mr-1" />
-                Email
-              </Label>
+              
               <Input
                 id="email"
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={onChange}
-                placeholder="your@email.com"
-                className="h-9 text-sm border-gray-300 focus:border-[#E22026] focus:ring-[#E22026]/20 rounded-md"
+                placeholder=" Enter Your Email Id"
+                className="h-9 description-1 border-gray-300 focus:border-gray-200 focus:ring-gray-200 rounded-xs"
               />
             </div>
 
             {/* Country Selection */}
             <div>
-              <Label htmlFor="country-select" className="text-sm font-medium mb-1 text-gray-700 flex items-center">
-                <MapPin className="w-4 h-4 mr-1" />
-                Country
-              </Label>
+            
               <div className="relative mt-1">
                 <select
                   id="country-select"
                   value={form.countryIso}
                   onChange={onCountryChange}
-                  className="h-9 w-full rounded-md border border-gray-300 bg-white px-2 text-sm focus:outline-none focus:border-[#E22026] focus:ring-2 focus:ring-[#E22026]/20 appearance-none pr-8"
+                  className="h-9 w-full rounded-xs border border-gray-300 bg-white px-2 description-1  pr-8"
                   disabled={isLocating}
                 >
                   {isLocating && <option value="" disabled>Locating...</option>}
@@ -299,15 +283,12 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
             {/* Phone Number */}
             <div>
-              <Label htmlFor="whatsapp" className="text-sm font-medium mb-1 text-gray-700 flex items-center">
-                <Phone className="w-4 h-4 mr-1" />
-                WhatsApp/Viber
-              </Label>
+            
               <div className="flex gap-2 mt-1">
                 <select
                   value={form.countryCode}
                   onChange={onDialCodeChange}
-                  className="h-9 w-16 rounded-md border border-gray-300 bg-white px-1 text-xs focus:outline-none focus:border-[#E22026] focus:ring-2 focus:ring-[#E22026]/20"
+                  className="h-9 w-16 rounded-xs border border-gray-300 bg-white px-1 description-1 "
                 >
                   {uniqueDialCodes.map((dial) => (
                     <option key={dial} value={dial}>
@@ -322,18 +303,15 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   pattern="[0-9]*"
                   value={form.whatsapp}
                   onChange={onChange}
-                  placeholder="5551234567"
-                  className="h-9 text-sm border-gray-300 focus:border-[#E22026] focus:ring-[#E22026]/20 rounded-md flex-1"
+                  placeholder="Enter Your Whatsapp Number"
+                  className="h-9 description-1 border-gray-300 focus:border-gray-200 focus:ring-gray-200 rounded-xs flex-1"
                 />
               </div>
             </div>
 
             {/* Message Field */}
             <div>
-              <Label htmlFor="message" className="text-sm font-medium mb-1 text-gray-700 flex items-center">
-                <MessageSquare className="w-4 h-4 mr-1" />
-                Message
-              </Label>
+             
               <Textarea
                 id="message"
                 name="message"
@@ -341,7 +319,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 onChange={onChange}
                 placeholder="Tell us about your medical needs..."
                 rows={3}
-                className="text-sm border-gray-300 focus:border-[#E22026] focus:ring-[#E22026]/20 rounded-md resize-none"
+                className="description-1 border-gray-300 focus:border-gray-200 focus:ring-gray-200 rounded-xs resize-none"
               />
               <div className="flex justify-between text-xs text-gray-600 mt-1">
                 <span>Min 10 chars</span>
@@ -356,8 +334,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               type="submit"
               disabled={isSubmitting}
               className={cn(
-                "w-full h-10 text-white font-medium text-sm rounded-md shadow-md transition-all duration-200",
-                "bg-[#E22026] hover:bg-[#74BF44] active:scale-[0.98]",
+                "w-full h-10 text-white font-medium text-sm rounded-xs shadow-md transition-all duration-200",
+                "hover:bg-[#E22026] bg-[#74BF44] active:scale-[0.98]",
                 "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
             >

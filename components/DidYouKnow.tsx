@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, CircleCheck, Lightbulb } from "lucide-react"
+import { FaLightbulb } from "react-icons/fa";
+import { ChevronLeft, ChevronRight, Lightbulb } from "lucide-react"
 
 const images = [
   {
@@ -102,6 +103,29 @@ export default function DidYouKnowSection() {
     setIsAutoPlaying(false)
   }
 
+  const listItems = [
+    "Over 2 million international patients travel to India every year for affordable, high-quality medical care.",
+    "India offers treatment at up to 80% lower costs than the Philippines, Thailand, Malaysia, or Singapore.",
+    "India is home to hundreds of world-class, JCI-accredited hospitals and thousands of internationally trained surgeons.",
+    "The country leads in robotic surgeries, organ transplants, bone marrow transplants, and advanced cancer therapies—all at affordable prices.",
+    "With an Indian eVisa available within 24–72 hours, patients can start treatment immediately, with virtually no waiting time.",
+    <span>
+      Medivisor has proudly assisted over 2,000 patients from the Pacific
+      Islands, Africa, CIS countries, and beyond in accessing seamless,
+      world-class medical care in India.
+    </span>,
+    <span>
+      You can reach our India Office at{" "}
+      <a
+        href="tel:+91 83682 47758"
+        className="transition-colors duration-200 hover:text-[#74BF44]"
+      >
+        +91 83682 47758
+      </a>{" "}
+      for quick treatment information and travel assistance.
+    </span>,
+  ]
+
   if (loading) {
     return <LoadingSkeleton />
   }
@@ -109,9 +133,9 @@ export default function DidYouKnowSection() {
   return (
     <section className="w-full bg-gray-50 py-4 md:py-10">
       <div className="container mx-auto ">
-        <div className="md:bg-white rounded-xs p-2  md:p-6 md:grid grid-cols-2 items-center gap-4 md:gap-12 overflow-hidden md:border border-none border-gray-100 transition-all duration-700">
+        <div className="md:bg-white rounded-xs p-2 md:p-6 md:grid grid-cols-2 items-center gap-4 md:gap-12 overflow-hidden md:border border-none border-gray-100 transition-all duration-700">
           {/* Left Image Slider (Sticky on Mobile) */}
-          <div className="relative col-span-1 group h-[250px]  md:h-96 lg:h-[500px] md:static sticky top-0 md:top-auto mb-6 md:mb-0">
+          <div className="relative col-span-1 group h-[250px] md:h-96 lg:h-[500px] md:static sticky top-0 md:top-auto mb-6 md:mb-0">
             <div className="relative w-full h-full overflow-hidden rounded-xs">
               {/* Main Image */}
               <div className="relative w-full h-full">
@@ -147,7 +171,9 @@ export default function DidYouKnowSection() {
                     key={index}
                     onClick={() => goToImage(index)}
                     className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      index === currentImage ? "bg-white scale-125" : "bg-white/50 hover:bg-white/75"
+                      index === currentImage
+                        ? "bg-white scale-125"
+                        : "bg-white/50 hover:bg-white/75"
                     }`}
                     aria-label={`Go to image ${index + 1}`}
                   />
@@ -156,99 +182,27 @@ export default function DidYouKnowSection() {
             </div>
           </div>
 
-       <div className="md:pt-6 pt-2 col-span-1 flex justify-center md:justify-start">
-  <div className="max-w-2xl md:px-0">
-    <h3 className="heading-lg">
-      Did You Know?
-    </h3>
+          <div className="md:pt-6 pt-2 col-span-1 flex justify-center md:justify-start">
+            <div className="max-w-2xl md:px-0 ">
+              <h3 className="heading-lg flex -ml-3 items-center gap-x-3">
+                <FaLightbulb className="text-red-500" />
+                Did You Know?
+              </h3>
 
-    <ul className="space-y-2 text-slate-700 leading-relaxed">
-      <li className="flex items-start gap-1 md:gap-3 group">
-        <div className="py-0 md:py-2">
-          <div className="">
-            <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
+              <ul className="space-y-3 descrtiption">
+                {listItems.map((item, index) => (
+                  <li key={index} className="flex items-start gap-x-3 group">
+                    <div className="py-0 md:py-0.5">
+                      <div className=" description-1 ">
+                        {index + 1}.
+                      </div>
+                    </div>
+                    <span className="description">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
-        <span className="description">
-          Over 2 million international patients travel to India every year for affordable, high-quality medical care.
-        </span>
-      </li>
-
-      <li className="flex items-start gap-1 md:gap-3 group">
-        <div className="py-0 md:py-2">
-          <div className="">
-            <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
-          </div>
-        </div>
-        <span className="description">
-          India offers treatment at up to 80% lower costs than the Philippines, Thailand, Malaysia, or Singapore.
-        </span>
-      </li>
-
-      <li className="flex items-start gap-1 md:gap-3 group">
-        <div className="py-0 md:py-2">
-          <div className="">
-            <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
-          </div>
-        </div>
-        <span className="description">
-          India is home to hundreds of world-class, JCI-accredited hospitals and thousands of internationally trained surgeons.
-        </span>
-      </li>
-
-      <li className="flex items-start gap-1 md:gap-3 group">
-        <div className="py-0 md:py-2">
-          <div className="">
-            <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
-          </div>
-        </div>
-        <span className="description">
-          The country leads in robotic surgeries, organ transplants, bone marrow transplants, and advanced cancer therapies—all at affordable prices.
-        </span>
-      </li>
-
-      <li className="flex items-start gap-1 md:gap-3 group">
-        <div className="py-0 md:py-2">
-          <div className="">
-            <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
-          </div>
-        </div>
-        <span className="description">
-          With an Indian eVisa available within 24–72 hours, patients can start treatment immediately, with virtually no waiting time.
-        </span>
-      </li>
-
-      <li className="flex items-start gap-1 md:gap-3 group">
-        <div className="py-0 md:py-2">
-          <div className="">
-            <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
-          </div>
-        </div>
-        <span className="description">
-         Medivisor has proudly assisted over 2,000 patients from the Pacific Islands, Africa, CIS countries, and beyond in accessing seamless, world-class medical care in India.
-        </span>
-      </li>
-
-      <li className="flex items-start gap-1 md:gap-3 group">
-        <div className="py-0 md:py-2">
-          <div className="">
-            <CircleCheck className="text-[#74BF44] md:text-base text-xs" />
-          </div>
-        </div>
-        <span className="description">
-        You can reach our India Office at 
-        {" "}  <a
-            href="tel:+91 83682 47758"
-            className="transition-colors duration-200"
-          >
-            +91 83682 47758
-          </a>{ " "}
-        for quick treatment information and travel assistance.
-        </span>
-      </li>
-    </ul>
-  </div>
-</div>
         </div>
       </div>
     </section>

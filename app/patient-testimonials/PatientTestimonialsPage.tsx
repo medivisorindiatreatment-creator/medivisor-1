@@ -74,7 +74,7 @@ export default function EnhancedTestimonialsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All Stories")
   const [isVisible, setIsVisible] = useState(false)
   const [hoveredCard, setHoveredCard] = useState<string | null>(null)
-  const searchTimeoutRef = useRef<NodeJS.Timeout>()
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setIsVisible(true)
@@ -256,6 +256,7 @@ export default function EnhancedTestimonialsPage() {
 2,000+ International Patients Share Their Journey"
   description="From choosing the right hospital to seamless post-treatment care, our patients’ experiences with Medivisor are filled with trust, comfort, and hope. Watch their stories and see how we make every journey unforgettable."
   buttonText="Read Their Stories"
+  buttonLink="/patient-testimonials"
   bannerBgImage="/grandparents-grandchildren-globe-with-inclusion-text-concept-as-abstract-vector-featuring-g_980716-652718.jpg"
   mainImageSrc="/about-main.png"
   mainImageAlt="International Patients Sharing Experiences with Medivisor"
@@ -264,14 +265,14 @@ export default function EnhancedTestimonialsPage() {
 
 
       {/* Search and Filter Section */}
-      <section className="sticky top-20 z-40 md:pt-10 md:pb-3  md:px-0 px-2 bg-gray-50 backdrop-blur-xs border-b border-gray-100 ">
+      <section className="sticky top-16 z-40 md:pt-10 md:pb-3 pt-4  md:px-0 px-2 bg-gray-50 backdrop-blur-xs border-b border-gray-100 ">
 
-        <div className="container mx-auto px-4 md:px-0   md:pt-2">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div className="container mx-auto px-4 md:px-0  md:pt-2">
+          <div className="flex flex-col lg:flex-row items-center pb-5  justify-between gap-3 md:gap-6">
 
 
             <div className=" w-full items-center gap-4 ">
-              <h2 className="heading-lg">Real Stories, Real Recoveries</h2>
+              <h2 className="md:heading-lg title-text">Real Stories, Real Recoveries</h2>
             </div>
             <div className="flex w-full ">
               <div className="relative w-full">
@@ -284,7 +285,7 @@ export default function EnhancedTestimonialsPage() {
                   placeholder="Search patient stories, treatments, conditions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 pr-12 py-5  w-full bg-white border-slate-200 rounded-2xl focus:ring-2 focus:ring-red-500/20 focus:border-red-500 shadow-sm text-base placeholder:text-slate-400"
+                  className="pl-12 pr-12 py-5  w-full bg-white border-slate-200 rounded-xs focus:ring-2 focus:ring-red-500/20 focus:border-red-500 shadow-xs text-base placeholder:text-slate-400"
                 />
               </div>
             </div>

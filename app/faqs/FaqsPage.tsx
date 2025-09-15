@@ -244,7 +244,7 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen px-2 md:px-0 bg-gray-50">
       {/* Header Section */}
       <Banner
         topSpanText="FAQs"
@@ -260,10 +260,10 @@ See a clear breakdown of medical expenses at top hospitals in India. Our Medivis
 
 
       {/* Main Content */}
-      <div className=" container mx-auto px-4 md:px-0 py-10">
-        <div className="flex flex-col lg:flex-row gap-8">
+      <div className=" container mx-auto  py-10">
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
           {/* Left Sidebar - Categories */}
-          <div className="lg:w-80 flex-shrink-0">
+          <div className="lg:w-80 md:order-1 order-2 flex-shrink-0">
             <div className="bg-white rounded-xs shadow-xs border border-gray-50 sticky top-6">
               <div className="p-6 border-b border-gray-100">
                 <h2 className="heading-lg">Categories</h2>
@@ -331,7 +331,7 @@ See a clear breakdown of medical expenses at top hospitals in India. Our Medivis
           </div>
 
           {/* Right Content - FAQ Items */}
-          <div className="flex-1 pt-10" ref={faqSectionRef}>
+          <div className="flex-1 order-1 md:order-2 pt-10" ref={faqSectionRef}>
             <div className="mb-6">
               <div className="flex items-center justify-between">
                 <div>

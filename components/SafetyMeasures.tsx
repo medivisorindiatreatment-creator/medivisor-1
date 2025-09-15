@@ -103,14 +103,14 @@ export default function SafetyMeasures() {
   const isTwoCards = cards.length === 2;
 
   return (
-    <section className="md:py-10 py-10 bg-gray-50 px-4 md:px-0 overflow-hidden">
+    <section className="md:py-10 py-10 bg-gray-50 px-2 md:px-0 overflow-hidden">
       <div className="container mx-auto ">
         {/* Heading */}
         <div className="text-center mb-8 sm:mb-10 md:mb-12">
           <h2 className="heading-lg">
             Our Patient Safety Measures
           </h2>
-          <p className="description max-w-3xl mx-auto px-2">
+          <p className="description md:max-w-3xl mx-auto px-2">
             At Medivisor, patient safety isn’t just a protocol — it’s our promise. From the moment you arrive until the day you return home, every step of your medical journey is safeguarded with robust systems, dedicated care, and unwavering attention to detail.
           </p>
         </div>
@@ -124,7 +124,7 @@ export default function SafetyMeasures() {
                 key={tab.id}
                 variant="outline"
                 size="sm"
-                className={`flex items-center text-lg gap-2 px-4 py-2 whitespace-nowrap rounded-full border transition-all duration-200 ${activeTab === tab.id
+                className={`flex items-center text-sm md:text-lg gap-2 px-4 py-2 whitespace-nowrap rounded-full border transition-all duration-200 ${activeTab === tab.id
                     ? 'bg-red-600 text-white border-red-600'
                     : 'bg-white text-gray-600 border-gray-200 hover:bg-red-50'
                   }`}
@@ -156,7 +156,7 @@ export default function SafetyMeasures() {
 
           {/* Content */}
           <div className="tab-content-container bg-white p-4 overflow-y-auto max-h-[500px]">
-            <h2 className="title-heading mb-6 text-center">
+            <h2 className="title-heading border-b md:border-none pb-2 border-gray-200 mb-6 text-center">
               {tabContent[activeTab as keyof typeof tabContent].title}
             </h2>
 

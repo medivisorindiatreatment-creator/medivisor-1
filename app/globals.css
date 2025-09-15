@@ -68,7 +68,7 @@ body {
   @apply text-3xl md:text-4xl font-bold text-gray-700 mb-4;
 }
 .description {
-  @apply text-lg text-gray-600 ;
+  @apply text-[17px] text-gray-600 ;
 }
 .description-1 {
   @apply text-base text-gray-600 ;

@@ -6,28 +6,32 @@ import Link from 'next/link';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { FaFacebookF, FaYoutube, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import ContactModal from '@/components/ContactModal';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const [windowWidth, setWindowWidth] = useState<number>(0);
-  const [isSticky, setIsSticky] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { scrollY } = useScroll();
 
-  // Track window width and sticky state
+  // Update header state based on scroll position
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    if (latest > 50) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  });
+
+  // Track window width for mobile/desktop submenu logic
   useEffect(() => {
     const updateWindowWidth = () => setWindowWidth(window.innerWidth);
-    const handleScroll = () => {
-      setIsSticky(window.scrollY > 50);
-    };
-
     updateWindowWidth();
     window.addEventListener('resize', updateWindowWidth);
-    window.addEventListener('scroll', handleScroll);
-
     return () => {
       window.removeEventListener('resize', updateWindowWidth);
-      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -75,19 +79,12 @@ export default function Header() {
 
   return (
     <>
-      <div className={`h-[100px] ${isSticky ? 'block' : 'hidden'}`} />
-      <header
-        className={`bg-white transition-all duration-300 ${
-          isSticky
-            ? 'sticky top-0 left-0 py-3 w-full z-50 shadow-xs'
-            : 'relative z-50 shadow-sm py-3'
+      <motion.header
+        className={`fixed top-0 left-0 w-full z-50 bg-white transition-all duration-300 ease-in-out ${
+          isScrolled ? 'py-2 shadow-xs' : 'py-3 shadow-xs'
         }`}
       >
-        <nav
-          className={`flex justify-between container mx-auto items-center px-4 lg:px-0 transition-all duration-300 ${
-            isSticky ? 'py-3' : ' md:py-2 py-3'
-          }`}
-        >
+        <nav className="flex justify-between container mx-auto items-center px-4 lg:px-0">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <Image
@@ -95,9 +92,7 @@ export default function Header() {
               alt="Medivisor India Treatment Logo"
               width={220}
               height={55}
-              className={`w-full object-contain transition-all duration-300 ${
-                isSticky ? 'h-12 md:h-16' : 'h-12 md:h-16'
-              }`}
+              className={`w-full object-contain transition-all duration-300 ${isScrolled ? 'h-12' : 'h-14'}`}
             />
           </Link>
 
@@ -176,7 +171,7 @@ export default function Header() {
                       <ul
                         className={`transition-all duration-300 ease-in-out overflow-hidden md:absolute md:top-full md:left-0 md:bg-white md:shadow-md md:rounded-md md:py-2 md:min-w-[220px] md:opacity-0 md:invisible md:scale-95 md:group-hover:opacity-100 md:group-hover:visible md:group-hover:scale-100 ${
                           openSubmenu === item.label
-                            ? 'max-h-screen md:opacity-100 md:visible md:scale-100'
+                            ? 'max-h-screen md:max-h-fit'
                             : 'max-h-0 md:max-h-fit'
                         }`}
                       >
@@ -207,7 +202,7 @@ export default function Header() {
                   <FaFacebookF size={22} />
                 </a>
                 <a
-                  href="https://www.youtube.com/@MedivisorIndiatreatmenttreatment"
+                  href="https://www.youtube.com/watch?v=m1Cm1ivOjzU"
                   title="YouTube"
                   className="w-12 h-12 flex items-center justify-center rounded-full bg-red-600 text-white shadow-md hover:scale-110 transition-transform"
                 >
@@ -220,23 +215,20 @@ export default function Header() {
                 >
                   <FaInstagram size={22} />
                 </a>
-                 <a
-                href="https://wa.me/919876543210" // replace with your WhatsApp number
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex w-12 h-12 items-center justify-center rounded-full bg-green-500 text-white shadow-md hover:scale-110 transition-transform"
-                title="Chat on WhatsApp"
-              >
-                <FaWhatsapp size={22} />
-              </a>
+                <a
+                  href="https://wa.me/919876543210" // replace with your WhatsApp number
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-12 h-12 items-center justify-center rounded-full bg-green-500 text-white shadow-md hover:scale-110 transition-transform"
+                  title="Chat on WhatsApp"
+                >
+                  <FaWhatsapp size={22} />
+                </a>
               </div>
             </div>
 
-            {/* CTA + WhatsApp + Mobile Toggle */}
+            {/* CTA + Mobile Toggle */}
             <div className="flex items-center gap-3">
-              {/* WhatsApp (Right Side) */}
-             
-
               <button
                 className="bg-[#E22026] cursor-pointer md:block hidden hover:bg-[#74BF44] text-white font-medium px-5 py-2 rounded-md shadow-md transition-all"
                 onClick={openModal}
@@ -255,7 +247,9 @@ export default function Header() {
             </div>
           </div>
         </nav>
-      </header>
+      </motion.header>
+      {/* Placeholder to prevent content from jumping */}
+      <div className={`transition-all duration-300 ease-in-out ${isScrolled ? 'h-[75px]' : 'h-[80px]'}`}></div>
       <ContactModal isOpen={isModalOpen} onClose={closeModal} />
     </>
   );

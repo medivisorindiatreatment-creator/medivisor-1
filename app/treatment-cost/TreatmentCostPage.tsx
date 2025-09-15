@@ -54,9 +54,10 @@ const TreatmentCard = ({
   onOpenModal: () => void;
 }) => {
   // Use getBestCoverImage to get a proper Wix Media URL
-  const imageUrl = treatment.image
-    ? getBestCoverImage(treatment.image)
-    : "/placeholder.svg?height=224&width=400&text=Image Not Found";
+  const imageUrl: string =
+    treatment.image && getBestCoverImage(treatment.image)
+      ? getBestCoverImage(treatment.image) as string
+      : "/placeholder.svg?height=224&width=400&text=Image Not Found";
 
   return (
     <Card className="bg-white rounded-xs shadow-xs overflow-hidden transform transition-transform duration-300 border-gray-100 ">
@@ -74,7 +75,7 @@ const TreatmentCard = ({
               {treatment.hospitalName}
             </Badge>
           </div>
-          <CardTitle className="text-xl font-medium text-gray-700 line-clamp-2">
+          <CardTitle className="text-xl font-normal md:font-medium text-gray-700 ">
             {treatment.treatmentName}
           </CardTitle>
         </CardHeader>
@@ -175,7 +176,7 @@ export default function TreatmentsPage() {
                     and a concise history of your health concern at{" "}
                     <a
                       href="mailto:info@medivisorhealth.com"
-                      className="title-text"
+                      className="font-semibold"
                     >
                       info@medivisorhealth.com
                     </a>
@@ -183,7 +184,7 @@ export default function TreatmentsPage() {
                     via Viber or WhatsApp at{" "}
                     <a
                       href="tel:+919643015697"
-                      className="title-text"
+                      className="font-semibold"
                     >
                       +91-9643015697
                     </a>

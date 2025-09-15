@@ -203,8 +203,8 @@ export default function MediaCoverageCarousel({
   return (
     <section className="md:py-10 py-10 border-t px-2 md:px-0 md:border-none border-b border-gray-100 bg-white">
       <div className="container mx-auto ">
-        <div className="flex justify-between items-center mb-4 md:mb-6">
-          <div className="space-y-2">
+        <div className="flex justify-between items-center mb-0 md:mb-0">
+          <div className=" md:mt-0 mt-3">
             <h2 className="heading-lg">{title}</h2>
          
           </div>

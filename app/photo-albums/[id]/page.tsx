@@ -13,7 +13,6 @@ import { ArrowLeft, Calendar, MapPin, Tag, Images, Heart, Share2, Download, Zoom
 import { OptimizedImage } from "@/components/optimized-image"
 import { RicosContentRenderer } from "@/components/ricos-content-renderer"
 import BlogAside from "@/components/blogAside"
-import BlogCard from "@/components/blogCard"
 const COLLECTION_ID = "photo-album"
 
 interface PageProps {
@@ -92,14 +91,15 @@ export default function ModernMomentPage({ params }: PageProps) {
         }
 
         const processedMoment = {
-          _id: item._id,
           ...item,
           order: item.order?.toString(),
           mediagallery: mediaGalleryParsed,
           coverMedia: item.coverMedia || undefined,
           excerpt: item.excerpt || item.shortDescription || "No description available.",
           content: item.content || item.detail || "",
-          firstPublishedDate: item.firstPublishedDate || item.date || item._createdDate,
+          firstPublishedDate: item.firstPublishedDate || item.date || (typeof item._createdDate === "string" ? item._createdDate : item._createdDate?.toISOString?.()),
+          _createdDate: typeof item._createdDate === "string" ? item._createdDate : item._createdDate?.toISOString?.(),
+          _updatedDate: typeof item._updatedDate === "string" ? item._updatedDate : item._updatedDate?.toISOString?.(),
         }
 
         setMoment(processedMoment)
@@ -285,15 +285,15 @@ export default function ModernMomentPage({ params }: PageProps) {
             </div>
           )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 px-4 md:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 px-2 md:px-0">
           {/* Main Content */}
           <div className="md:col-span-8 lg:col-span-9 space-y-6 md:space-y-12">
             {/* Story Content */}
             {moment.content && moment.content !== moment.shortDescription && (
-              <Card className="bg-white/80 border-0 shadow-sm md:shadow-lg rounded-xl overflow-hidden">
+              <Card className="bg-white/80 border-0 shadow-xs md:shadow-lg rounded-xs overflow-hidden">
                 <CardContent className="p-6 md:p-8">
                   <div className="flex items-center gap-3 mb-4 md:mb-6">
-                    <div className="w-10 h-10 md:w-12 md:h-12 bg-[#E22026] rounded-xl md:rounded-2xl flex items-center justify-center shadow-md">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-[#E22026] rounded-xs md:rounded-2xl flex items-center justify-center shadow-md">
                       <User className="h-5 w-5 md:h-6 md:w-6 text-white" />
                     </div>
                     <div>
@@ -329,7 +329,7 @@ export default function ModernMomentPage({ params }: PageProps) {
                       return (
                         <div
                           key={index}
-                          className="relative aspect-square overflow-hidden rounded-xl md:rounded-xs bg-slate-100 group cursor-pointer shadow-sm hover:shadow-xs transition-all duration-300"
+                          className="relative aspect-square overflow-hidden rounded-xs md:rounded-xs bg-slate-100 group cursor-pointer shadow-sm hover:shadow-xs transition-all duration-300"
                           onClick={() => openLightbox(index)}
                         >
                           <OptimizedImage
