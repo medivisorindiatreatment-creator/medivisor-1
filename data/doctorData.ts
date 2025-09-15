@@ -85,19 +85,6 @@ export const mockDoctor: DoctorProfile = {
     },
   ],
   specialtyInterests: ["Kidney Transplantation and Renovascular Hypertension", "Robotic and Laparoscopic Urology", "Stricture Urethra", "Uro - Oncology", "Laser Prostate Surgery"],
-  faqs: [
-    {
-      q: "What conditions does Dr. Anant Kumar specialize in treating?",
-      a: "Dr. Anant Kumar specializes in a wide range of urological conditions, including Kidney Transplantation, Robotic and Laparoscopic Urology, Stricture Urethra, Uro-Oncology, and Laser Prostate Surgery.",
-    },
-    {
-      q: "How can I book an appointment with Dr. Anant Kumar?",
-      a: "You can book an appointment by calling +91 926 888 0303 or through WhatsApp. Online booking is also available through the hospital's website.",
-    },
-    {
-      q: "Does Dr. Anant Kumar see international patients?",
-      a: "Yes, Dr. Anant Kumar sees international patients at Max Healthcare facilities. The hospital provides comprehensive support for international patients including visa assistance and travel coordination.",
-    },
-  ],
+  
   
 };

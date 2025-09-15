@@ -264,14 +264,14 @@ export default function EnhancedTestimonialsPage() {
 
 
       {/* Search and Filter Section */}
-      <section className="sticky top-0 z-40 md:py-0 pt-10 md:px-0 px-2 bg-gray-50 backdrop-blur-xs border-b border-gray-100 ">
+      <section className="sticky top-20 z-40 md:pt-10 md:pb-3  md:px-0 px-2 bg-gray-50 backdrop-blur-xs border-b border-gray-100 ">
 
-        <div className="container mx-auto px-4 md:px-0 py-2 pt-5 md:pt-2">
+        <div className="container mx-auto px-4 md:px-0   md:pt-2">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
 
 
-            <div className=" w-full items-center gap-4">
-              <h2 className="text-2xl md:text-4xl md:my-6 font-bold text-left text-gray-900">Real Stories, Real Recoveries</h2>
+            <div className=" w-full items-center gap-4 ">
+              <h2 className="heading-lg">Real Stories, Real Recoveries</h2>
             </div>
             <div className="flex w-full ">
               <div className="relative w-full">

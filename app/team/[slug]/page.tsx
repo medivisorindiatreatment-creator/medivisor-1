@@ -410,9 +410,9 @@ export default function TeamMemberPage() {
           <div className="lg:col-span-2">
             <div className="space-y-8">
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">About {teamMember.name.split(" ")[0]}</h2>
+                <h2 className="title-heading mb-4">About {teamMember.name}</h2>
                 <div className="prose prose-lg max-w-none">
-                  <p className="text-gray-700 leading-relaxed text-lg">
+                  <p className="description">
                     {teamMember.longDescription || teamMember.bio}
                   </p>
                 </div>

@@ -70,7 +70,7 @@ const TreatmentCard = ({
         />
         <CardHeader className="p-4">
           <div className="flex items-center text-primary-500 mb-2">
-            <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+            <Badge variant="secondary" className="bg-gray-50 rounded-xs text-sm font-medium p-1 text-gray-600">
               {treatment.hospitalName}
             </Badge>
           </div>
@@ -79,10 +79,10 @@ const TreatmentCard = ({
           </CardTitle>
         </CardHeader>
     
-      <CardFooter className="flex justify-between items-center pt-1">
+      <CardFooter className="flex p-4 justify-between items-center pt-1">
         <Button
           variant="outline"
-          className="border-gray-200 cursor-pointer text-gray-600 hover:bg-gray-50"
+          className="border-gray-200 cursor-pointer text-sm rounded-xs text-gray-600 hover:bg-gray-50"
           onClick={onOpenModal}
         >
           Read More

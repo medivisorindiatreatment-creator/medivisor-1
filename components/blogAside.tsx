@@ -17,19 +17,19 @@ export default function QuickLinks() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/', label: 'Home', icon: Home },
+   
     { href: '/aboutus', label: 'About Us', icon: Info },
     { href: '/services', label: 'Our Services', icon: BriefcaseMedical },
   
     { href: '/blog', label: 'Blog', icon: Newspaper },
-    { href: '/team', label: 'Our Team', icon: Users },
+   
     { href: '/safety-measures', label: 'Safety Measures', icon: ShieldCheck },
     { href: '/contact', label: 'Contact Us', icon: Phone },
   ];
 
   return (
     <aside className="w-full px-6 py-4">
-      <h2 className="text-xl font-semibold tracking-tight text-gray-700 mb-2">
+      <h2 className="title-heading">
         Quick Links
       </h2>
 
@@ -49,18 +49,18 @@ export default function QuickLinks() {
               >
                 <span className="flex items-center gap-3">
                   <Icon
-                    size={18}
+                    size={30}
                     className={`${
                       isActive
-                        ? 'text-[#E22026]'
-                        : 'text-gray-500 group-hover:text-[#E22026]'
+                        ? 'text-[#E22026] bg-white '
+                        : 'text-gray-500 bg-gray-100 p-1 group-hover:text-[#E22026]'
                     }`}
                   />
                   {item.label}
                 </span>
                 <span
                   className={`h-2 w-2 rounded-full ${
-                    isActive ? 'bg-[#E22026]' : 'bg-transparent group-hover:bg-gray-300'
+                    isActive ? 'bg-[#E22026]' : 'bg-geay=50 group-hover:bg-gray-300'
                   }`}
                 />
               </Link>

@@ -165,7 +165,7 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
     return (
         <Card className="group relative overflow-hidden transition-all duration-500 border border-gray-100 shadow-sm bg-white">
             <Link href={profileUrl} className="absolute inset-0 z-10" />
-            
+
             <div className="relative aspect-[3/2] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
                 <img
                     src={member.image || "/placeholder.svg"}
@@ -290,7 +290,7 @@ export default function TeamPage() {
                 </div>
             </div>
             <CtaSection />
-          
+
         </>
     );
 }

@@ -266,8 +266,8 @@ See a clear breakdown of medical expenses at top hospitals in India. Our Medivis
           <div className="lg:w-80 flex-shrink-0">
             <div className="bg-white rounded-xs shadow-xs border border-gray-50 sticky top-6">
               <div className="p-6 border-b border-gray-100">
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">Categories</h2>
-                <p className="text-base text-gray-600">Browse questions by topic</p>
+                <h2 className="heading-lg">Categories</h2>
+                <p className="description">Browse questions by topic</p>
               </div>
 
               <div className="p-4">
@@ -282,10 +282,10 @@ See a clear breakdown of medical expenses at top hospitals in India. Our Medivis
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedCategory === 'All' ? 'bg-white' : 'bg-white'
                         }`}>
-                        <HelpCircle className={`w-4 h-4 ${selectedCategory === 'All' ? 'text-gray-600' : 'text-gray-600'
+                        <HelpCircle className={`w-5 h-5 ${selectedCategory === 'All' ? 'text-gray-600' : 'text-gray-600'
                           }`} />
                       </div>
-                      <span className="font-medium text-lg">All Questions</span>
+                      <span className="description">All Questions</span>
                     </div>
                     <Badge variant="secondary" className={`${selectedCategory === 'All'
                         ? 'bg-text-100 text-gray-700'
@@ -311,10 +311,10 @@ See a clear breakdown of medical expenses at top hospitals in India. Our Medivis
                         <div className="flex items-center gap-3">
                           <div className={`w-8 h-8 rounded-xs flex items-center justify-center ${selectedCategory === category ? 'bg-gray-100' : 'bg-gray-100'
                             }`}>
-                            <Icon className={`w-4 h-4 ${selectedCategory === category ? 'text-gray-600' : 'text-gray-600'
+                            <Icon className={`w-5 h-5 ${selectedCategory === category ? 'text-gray-600' : 'text-gray-600'
                               }`} />
                           </div>
-                          <span className="font-normal text-lg">{category}</span>
+                          <span className="description">{category}</span>
                         </div>
                         <Badge variant="secondary" className={`${selectedCategory === category
                             ? 'bg-gray-100 text-gray-700'
@@ -331,14 +331,14 @@ See a clear breakdown of medical expenses at top hospitals in India. Our Medivis
           </div>
 
           {/* Right Content - FAQ Items */}
-          <div className="flex-1 py-10" ref={faqSectionRef}>
+          <div className="flex-1 pt-10" ref={faqSectionRef}>
             <div className="mb-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-3xl md:text-4xl mb-2 font-bold text-left text-gray-700">
+                  <h2 className="heading-lg">
                     {selectedCategory === 'All' ? 'All Questions' : selectedCategory}
                   </h2>
-                  <p className="text-gray-600 text-lg mt-1">
+                  <p className="description">
                     {filteredFAQs.length} question{filteredFAQs.length !== 1 ? 's' : ''} found
                   </p>
                 </div>
@@ -375,7 +375,7 @@ See a clear breakdown of medical expenses at top hospitals in India. Our Medivis
                               {item.category}
                             </Badge>
                           </div> */}
-                          <h3 className="text-lg font-medium text-gray-700 leading-tight pr-4">
+                          <h3 className="description">
                             {item.question}
                           </h3>
                         </div>
@@ -397,7 +397,7 @@ See a clear breakdown of medical expenses at top hospitals in India. Our Medivis
                         <div className="md:ml-14 pt-2 border-t border-gray-100">
                           <div className="pt-4">
                             {item.answer.split('\n\n').map((paragraph, index) => (
-                              <p key={index} className="text-gray-700 mb-4 text-[19px] md:text-base last:mb-0 leading-relaxed">
+                              <p key={index} className="description">
                                 {paragraph}
                               </p>
                             ))}
@@ -410,10 +410,11 @@ See a clear breakdown of medical expenses at top hospitals in India. Our Medivis
               })}
             </div>
 
-            <Ctasection/>
+            
           </div>
         </div>
       </div>
+      <Ctasection />
     </div>
   );
 }

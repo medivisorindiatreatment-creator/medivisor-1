@@ -1,12 +1,19 @@
-// types/medical-advisor.d.ts
-export type MedicalAdvisor = {
-  _id: string
-  name: string
-  photo?: string // Wix image URL
-  specialty: string
-  experience: string
-  // Add any other fields from your Wix collection that you might need
-  // _createdDate?: { $date: string };
-  // _updatedDate?: { $date: string };
-  // "link-medical-advisors-all"?: string;
+export interface MedicalAdvisor {
+  _id?: string;
+  name: string;
+  title?: string;
+  specialty?: string;
+  image?: string;
+  experience?: string;
+  languages?: string;
+  hospitals?: string;
+  contactPhone?: string;
+  whatsapp?: string;
+  about?: string;
+  workExperience?: string;
+  education?: string;
+  memberships?: string;
+  awards?: string;
+  specialtyInterests1?: string[] | null;
+  slug?: string;
 }

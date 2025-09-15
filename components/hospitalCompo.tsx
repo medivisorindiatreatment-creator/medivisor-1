@@ -156,12 +156,12 @@ const HospitalCard = ({ hospital, onOpenModal }: { hospital: Hospital; onOpenMod
           className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-        <div className="absolute top-3 right-3">
+        {/* <div className="absolute top-3 right-3">
           <Badge className="bg-white/95 text-gray-900 shadow-sm backdrop-blur-sm">
             <Star className="h-3 w-3 mr-1 fill-yellow-400 text-yellow-400" />
             {hospital.rating}
           </Badge>
-        </div>
+        </div> */}
       </div>
 
       <CardHeader className="pb-1 p-4 pb-2">

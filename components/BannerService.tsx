@@ -29,7 +29,7 @@ export default function Banner({
   children,
 }: BannerProps) {
   return (
-    <section className="relative px-2 md:px-0 overflow-hidden bg-white py-10 h-[70vh]">
+    <section className="relative px-2 md:px-0 overflow-hidden bg-white pt-10 md:py-10 md:h-[70vh]">
       <div className="relative z-20 container mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-12 items-center h-full">
         {/* Left Content */}
         <div className="space-y-2 md:space-y-4 md:pb-20">
@@ -46,11 +46,11 @@ export default function Banner({
         </div>
 
         {/* Right Image */}
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full  h-full flex items-center justify-center">
           <img
             src={mainImageSrc}
             alt={mainImageAlt}
-            className={`w-full h-auto max-h-full object-contain rounded-xl ${mainImageClass || ''}`}
+            className={`w-full h-auto max-h-full absoloute -bottom-4 object-contain rounded-xl ${mainImageClass || ''}`}
           />
         </div>
       </div>

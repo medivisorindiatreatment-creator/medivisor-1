@@ -124,14 +124,14 @@ export default function VisaPage() {
 
                         {/* Text Section */}
                         <div className="flex-1 space-y-4 w-full">
-                          <h2 className="text-3xl sm:text-2xl font-bold text-gray-900 leading-tight">
+                          <h2 className="heading-lg">
                             Step {index + 1}: {document.title}
                           </h2>
-                          <p className="text-[19px] sm:text-lg text-gray-600 leading-relaxed">{document.description}</p>
+                          <p className="description">{document.description}</p>
 
                           <div className="rounded-md border border-gray-100 shadow-sm overflow-hidden bg-white">
                             <div className="px-4 sm:px-5 pt-3">
-                              <h3 className="text-xl md:text-xl font-semibold text-gray-800">Requirements:</h3>
+                              <h3 className="title-text">Requirements:</h3>
                             </div>
                             <div className="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                               {document.details.map((detail, detailIndex) => (
@@ -140,7 +140,7 @@ export default function VisaPage() {
                                   className="flex items-center gap-2 px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100 transition"
                                 >
                                   <CheckCircle className="w-5 h-5 text-[#74BF44] flex-shrink-0" />
-                                  <span className="text-[19px] sm:text-lg text-gray-800">{detail}</span>
+                                  <span className="description">{detail}</span>
                                 </div>
                               ))}
                             </div>
@@ -161,7 +161,7 @@ export default function VisaPage() {
                   <div>
                     <div className="text-center md:text-left bg-gray-50 rounded-lg p-6 sm:p-8 md:p-10 h-full flex flex-col justify-center shadow-sm">
                       <Download className="w-10 h-10 sm:w-12 sm:h-12 text-[#E22026] mb-4 mx-auto md:mx-0" />
-                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                      <h3 className="title-heading mb-4">
                         Download e-Visa Application Form
                       </h3>
                       <p className="text-[19px] md:text-lg text-gray-600 mb-6 leading-relaxed">
@@ -193,7 +193,7 @@ export default function VisaPage() {
                               <CheckCircle className="w-6 h-6 text-[#74BF44]" />
                             </div>
                             <div>
-                              <p className="font-semibold text-xl sm:text-lg text-white">
+                              <p className="font-semibold text-xl sm:text-xl text-white">
                                 Initial Validity: 60 days
                               </p>
                               <p className="text-[18px] text-gray-100">
@@ -208,7 +208,7 @@ export default function VisaPage() {
                               <CheckCircle className="w-6 h-6 text-[#74BF44]" />
                             </div>
                             <div>
-                              <p className="font-semibold text-xl sm:text-lg text-white">
+                              <p className="font-semibold text-xl sm:text-xl text-white">
                                 Extension Cost: $80 per person
                               </p>
                               <p className="text-lg text-gray-100">
@@ -227,19 +227,19 @@ export default function VisaPage() {
             {/* Important Information */}
             <div className="py-10 bg-gray-50 px-4 sm:px-6 md:px-0">
               <div className="container mx-auto">
-                <h3 className="text-2xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-8 text-center">
+                <h3 className="heading-lg text-center pb-4">
                   Important Information
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {importantNotes.map((note, index) => {
                     const IconComponent = note.icon
                     return (
-                      <div key={index} className="bg-white rounded-md p-6 border border-gray-100 shadow-sm text-center">
+                      <div key={index} className="bg-white rounded-md p-6 border border-gray-100 shadow-xs text-center">
                         <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                           <IconComponent className="w-7 h-7 sm:w-8 sm:h-8 text-gray-700" />
                         </div>
-                        <h4 className="text-xl sm:text-lg font-semibold text-gray-900 mb-2">{note.title}</h4>
-                        <p className="text-[19px] sm:text-lg text-gray-600">{note.description}</p>
+                        <h4 className="title-heading mb-2">{note.title}</h4>
+                        <p className="description">{note.description}</p>
                       </div>
                     )
                   })}

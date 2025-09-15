@@ -92,14 +92,14 @@ export default function TreatmentProcessPage() {
                   {/* Text Content */}
                   <div className="flex-1 w-full px-1 sm:px-3 md:px-0 space-y-3 md:space-y-5 relative z-10">
                     {/* Heading with Step Number */}
-                    <h2 className="text-2xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-snug flex items-center gap-3">
+                    <h2 className="heading-lg flex items-center gap-3 ">
                       <span className="text-gray-700 bg-white rounded-full w-10 h-10 flex items-center justify-center text-lg sm:text-xl font-bold shadow-md">
                         {step.id}
                       </span>
                       {step.title}
                     </h2>
 
-                    <p className="text-[19px] sm:text-base md:text-lg text-gray-600 leading-relaxed">
+                    <p className="description">
                       {step.description}
                     </p>
 
@@ -109,7 +109,7 @@ export default function TreatmentProcessPage() {
                     >
                       {/* Header */}
                       <div className="px-0 pt-3 mb-4 md:mb-2 sm:px-5">
-                        <h3 className="text-xl sm:text-lg font-semibold text-gray-700">What's Included</h3>
+                        <h3 className="title-text">What's Included</h3>
                       </div>
 
                       {/* Features List */}
@@ -120,7 +120,7 @@ export default function TreatmentProcessPage() {
                             className={`flex items-center gap-2 px-2 sm:px-3 py-2 rounded-md hover:bg-gray-100 transition ${cardBgInner}`}
                           >
                             <CheckCircle className="w-5 h-5 sm:w-5 sm:h-5 text-[#74BF44] flex-shrink-0" />
-                            <span className="text-[19px] sm:text-sm md:text-base text-gray-800">{feature}</span>
+                            <span className="description">{feature}</span>
                           </div>
                         ))}
                       </div>

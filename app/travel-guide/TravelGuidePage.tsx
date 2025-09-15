@@ -61,21 +61,34 @@ export default function TravelGuidePage() {
                 <img src="/icon/air.png" className="w-10 h-10" alt="Departure Icon" />
               </div>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Before Departure</h2>
-            <p className="md:text-lg text-[19px] text-gray-600 max-w-2xl mx-auto">A comprehensive checklist to help you prepare for a successful and stress-free medical trip.</p>
+            <h2 className="heading-lg">Before Departure</h2>
+            <p className="description">A comprehensive checklist to help you prepare for a successful and stress-free medical trip.</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {beforeDepartureItems.map((item, index) => (
-              <Card key={index} className="bg-gray-50 border border-gray-100 rounded-xs shadow-xs hover:shadow-sm transition-all duration-300">
-                <div className="flex items-center gap-3 p-3 md:p-4 border-b border-gray-200 md:border-gray-100">
-                  <div className="flex-shrink-0 p-3 bg-white rounded-full shadow-sm text-gray-900">{item.icon}</div>
-                  <CardTitle className="md:text-lg text-2xl font-semibold text-gray-700">{item.title}</CardTitle>
+              <Card
+                key={index}
+                className="bg-gray-50 border border-gray-100 rounded-xs shadow-xs hover:shadow-xs "
+              >
+                {/* Header */}
+                <div className="flex items-center gap-4 p-4 border-b border-gray-200">
+                  <div className="flex-shrink-0 p-3 bg-white rounded-full shadow-inner text-gray-900">
+                    {item.icon}
+                  </div>
+                  <CardTitle className="title-heading">
+                    {item.title}
+                  </CardTitle>
                 </div>
-                <CardContent className="p-3 md:p-4">
-                  <p className="text-gray-700 text-xl md:text-base leading-relaxed">{item.description}</p>
+
+                {/* Body */}
+                <CardContent className="p-4">
+                  <p className="description">
+                    {item.description}
+                  </p>
                 </CardContent>
               </Card>
+
             ))}
           </div>
         </div>
@@ -86,25 +99,25 @@ export default function TravelGuidePage() {
         <div className="container mx-auto">
           <div className="text-center mb-10">
             <div className="flex justify-center mb-4">
-              <div className="p-4 bg-white  rounded-full shadow-sm border border-gray-200">
+              <div className="p-4 bg-white  rounded-xs shadow-xs border border-gray-100">
                 <MapPin className="w-10 h-10 text-gray-700" />
               </div>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">At the Transit Airport</h2>
-            <p className="md:text-lg text-[19px] text-gray-600 max-w-2xl mx-auto">Smart strategies to navigate your layover with ease and confidence.</p>
+            <h2 className="heading-lg">At the Transit Airport</h2>
+            <p className="description">Smart strategies to navigate your layover with ease and confidence.</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {transitTips.map((tip, index) => (
-              <Card key={index} className="group overflow-hidden bg-white rounded-xs border border-gray-100 shadow-xs hover:shadow-sm transition-all duration-500">
+              <Card key={index} className="group overflow-hidden bg-white rounded-xs border border-gray-50 shadow-xs hover:shadow-xs transition-all duration-500">
                 <div className="relative h-40 w-full overflow-hidden">
                   <img src={tip.image} alt={tip.title} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700" />
                 </div>
                 <CardHeader className="md:px-5 px-3 pt-4 pb-1">
-                  <CardTitle className="text-2xl font-semibold text-gray-800">{tip.title}</CardTitle>
+                  <CardTitle className="title-heading">{tip.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="md:px-5 px-3 pb-5 pt-0">
-                  <p className="text-gray-600 text-[19px] md:text-base leading-relaxed">{tip.description}</p>
+                  <p className="description">{tip.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -117,23 +130,23 @@ export default function TravelGuidePage() {
         <div className="container px-4 md:px-0 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           {/* Left Side */}
           <div className="lg:sticky top-20">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">After Arriving at Delhi Airport</h2>
+            <h2 className="heading-lg pb-4">After Arriving at Delhi Airport</h2>
             <img src="/young-brunette-woman-airport-is-waiting-her-flight-something-looking-smartphone-she-is-sitting-suitcase-backpack-side-view_255755-6978.avif" alt="Arrival assistance" className="w-full rounded-xs shadow-xs" />
           </div>
 
           {/* Right Side */}
           <div className="space-y-6">
-            <p className="md:text-lg text-[19px] text-gray-600">Follow these important steps to ensure a smooth arrival and transition for your medical journey in India.</p>
+            <p className="title-text">Follow these important steps to ensure a smooth arrival and transition for your medical journey in India.</p>
             <div className="space-y-4">
               {arrivalSteps.map((step, index) => (
                 <div key={index} className="flex items-start gap-3">
                   <CheckCircle className="text-[#75c044] mt-1 flex-shrink-0" />
-                  <p className="text-gray-700 md:text-base text-[19px]">{step}</p>
+                  <p className="description">{step}</p>
                 </div>
               ))}
             </div>
             <div className="pt-6 border-t border-gray-100">
-              <p className="text-gray-600 md:text-base text-[19px]">Safe travels, and we look forward to assisting you on your medical journey in India. If you have any further questions or need support, feel free to reach out. <b>Take care and best wishes for a successful and comfortable stay.</b></p>
+              <p className="description">Safe travels, and we look forward to assisting you on your medical journey in India. If you have any further questions or need support, feel free to reach out. <strong>Take care and best wishes for a successful and comfortable stay.</strong></p>
             </div>
           </div>
         </div>

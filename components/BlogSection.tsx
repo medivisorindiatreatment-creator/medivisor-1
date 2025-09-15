@@ -249,7 +249,7 @@ export default function BlogCarousel() {
                               </CardDescription>
                               <span className="description-1 ">{readTime}</span>
                             </div>
-                            <p className="description">
+                            <p className="description-1">
                               {post.excerpt}
                             </p>
                           </CardContent>

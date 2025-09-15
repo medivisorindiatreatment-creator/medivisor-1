@@ -259,9 +259,9 @@ export default function MediaCoveragePage() {
             src={imageUrl || fallbackImage || "/placeholder.svg?height=338&width=600&text=Image"}
             alt={item.title || "Media item"}
             fill={!isModal}
-            width={isModal ? 1200 : undefined}
+            width={isModal ? 800 : undefined}
             height={isModal ? 800 : undefined}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 800px) 50vw, 33vw"
             className={
               isModal
                 ? "max-w-full max-h-full object-contain rounded-xs shadow-xs"
@@ -577,7 +577,7 @@ Our organization and its work have garnered widespread appreciation and media co
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                             <Button
                               variant="secondary"
-                              className="scale-0 cursor-pointer text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm text-lg font-semibold group-hover:scale-100 transition-transform duration-300"
+                              className="scale-0 cursor-pointer text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm text-lg font-medium group-hover:scale-100 transition-transform duration-300"
                             >
                               <Eye className="h-4 w-4 mr-2" />
                               View Details
@@ -591,7 +591,7 @@ Our organization and its work have garnered widespread appreciation and media co
                             </Badge>
                           )}
                           {isLink && (
-                            <Badge className="absolute top-2 left-2 bg-blue-600/70 text-white text-xs font-medium px-2 py-1 rounded-full">
+                            <Badge className="absolute top-2 left-2 bg-[#74BF44]/70 text-white text-xs font-medium px-2 py-1 rounded-full">
                               <ExternalLink className="h-3 w-3 mr-1" />
                               Link
                             </Badge>
@@ -610,9 +610,9 @@ Our organization and its work have garnered widespread appreciation and media co
                                 </p>
                               )} */}
                             </div>
-                            <div className="flex items-center justify-between text-xs text-muted-foreground mt-3 pt-3 border-t border-gray-100 ">
+                            <div className="flex items-center justify-between description mt-3 pt-3 border-t border-gray-100 ">
                               <span className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
+                                <Calendar className="h-4 w-4" />
                                 {new Date(item._createdDate).toLocaleDateString()}
                               </span>
                               {/* <Badge variant="outline" className="text-xs font-normal capitalize">
@@ -626,9 +626,9 @@ Our organization and its work have garnered widespread appreciation and media co
 
                     <DialogContent className="sm:max-w-6xl max-h-[90vh] p-0 overflow-hidden">
                       <DialogHeader className="p-6 pb-4 border-b border-gray-100 ">
-                        <DialogTitle className="text-2xl font-bold pr-8">{item.title || "Media Item"}</DialogTitle>
+                        <DialogTitle className="title-heading">{item.title || "Media Item"}</DialogTitle>
                         {item.description && (
-                          <DialogDescription className="text-muted-foreground mt-2 text-base leading-relaxed">
+                          <DialogDescription className="description">
                             {item.description}
                           </DialogDescription>
                         )}
@@ -645,12 +645,12 @@ Our organization and its work have garnered widespread appreciation and media co
                           <Badge variant="secondary" className="capitalize px-3 py-1">
                             {item.type.toLowerCase()}
                           </Badge>
-                          <Badge variant="secondary" className="px-3 py-1">
+                          <Badge variant="secondary" className="px-3 description py-1">
                             {new Date(item._createdDate).toLocaleDateString()}
                           </Badge>
                         </div>
                         {item.link && (
-                          <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                          <Button asChild size="sm" className="bg-[#74BF44] hover:bg-[#74BF44]/90 text-white">
                             <a href={item.link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
                               <ExternalLink className="h-4 w-4" />
                               {item.link.text || "View Link"}

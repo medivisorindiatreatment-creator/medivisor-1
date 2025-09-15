@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { notFound } from "next/navigation"
+import { notFound, useRouter } from "next/navigation"
 import Link from "next/link"
 import { wixClient } from "@/lib/wixClient"
 import { getBestCoverImage, getWixImageUrl } from "@/lib/wixMedia"
@@ -23,12 +23,46 @@ interface PageProps {
 }
 
 export default function ModernMomentPage({ params }: PageProps) {
+  const router = useRouter()
   const [moment, setMoment] = useState<HappyMoment | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
+  const [lastVisitedPath, setLastVisitedPath] = useState("/photo-albums")
+
+  useEffect(() => {
+    // Store the previous path in state. We check if it's a valid path
+    // and not the current one.
+    const handleRouteChange = () => {
+      if (typeof window !== "undefined") {
+        setLastVisitedPath(document.referrer || "/photo-albums")
+      }
+    }
+
+    if (typeof window !== "undefined") {
+      // Use document.referrer to get the last page.
+      const referrer = document.referrer
+      const isExternalOrSelf = referrer === "" || new URL(referrer).origin === window.location.origin
+
+      if (referrer && isExternalOrSelf) {
+        setLastVisitedPath(referrer)
+      }
+    }
+
+    // This part ensures that even on client-side navigation, the back button
+    // logic is preserved correctly.
+    const handlePopState = () => {
+      // You can implement more sophisticated logic here if needed
+      // but for a simple "back" it's not strictly necessary.
+    }
+    window.addEventListener("popstate", handlePopState)
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState)
+    }
+  }, [])
 
   useEffect(() => {
     const fetchMoment = async () => {
@@ -103,6 +137,12 @@ export default function ModernMomentPage({ params }: PageProps) {
     notFound()
   }
 
+  const handleBack = () => {
+    // Navigate back to the doctors list page. The logic to scroll to the card
+    // is on the doctors list page itself.
+    window.history.back();
+  };
+
   const coverImageUrl = getBestCoverImage(moment)
   const galleryImages = Array.isArray(moment.mediagallery)
     ? moment.mediagallery.filter((media) => media.src && media.src.startsWith("wix:image://"))
@@ -156,13 +196,15 @@ export default function ModernMomentPage({ params }: PageProps) {
       <div className="sticky top-0 z-40 border-none  shadow-none py-5">
         <div className="container mx-auto px-4 py-4 md:px-6">
           <div className="flex items-center justify-between">
-            <Link href="/photo-albums">
-              <Button variant="ghost" className="flex items-center gap-2 hover:bg-slate-100 bg-white rounded-xs px-2 py-1 md:px-4 md:py-2">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden md:inline font-medium">Back to Gallery</span>
-                <span className="md:hidden font-medium">Back</span>
-              </Button>
-            </Link>
+            <Button
+              onClick={handleBack}
+              variant="ghost"
+              className="flex items-center gap-2 hover:bg-slate-100 bg-white rounded-xs px-2 py-1 md:px-4 md:py-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden md:inline font-medium">Back</span>
+              <span className="md:hidden font-medium">Back</span>
+            </Button>
             <div className="flex items-center gap-2 md:gap-3">
               <Button
                 variant="ghost"
@@ -196,14 +238,14 @@ export default function ModernMomentPage({ params }: PageProps) {
                   <CardContent className="p-4 md:p-6">
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                       <div className="flex-1">
-                        <h1 className="text-xl md:text-3xl font-bold text-gray-700 mb-1 md:mb-3 leading-tight">
+                        <h1 className="heading-lg">
                           {moment.title_fld || "Untitled title_fld"}
                         </h1>
                         <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-slate-600">
                           {moment.firstPublishedDate && (
                             <div className="flex items-center gap-1 md:gap-2">
                               <Calendar className="h-3 w-3 md:h-4 md:w-4" />
-                              <span className="font-medium">
+                              <span className="description">
                                 {new Date(moment.firstPublishedDate).toLocaleDateString("en-US", {
                                   year: "numeric",
                                   month: "long",
@@ -215,13 +257,13 @@ export default function ModernMomentPage({ params }: PageProps) {
                           {moment.location && (
                             <div className="flex items-center gap-1 md:gap-2">
                               <MapPin className="h-3 w-3 md:h-4 md:w-4" />
-                              <span className="font-medium">{moment.location}</span>
+                              <span className="description">{moment.location}</span>
                             </div>
                           )}
                           {galleryImages.length > 0 && (
                             <div className="flex items-center gap-1 md:gap-2">
                               <Images className="h-3 w-3 md:h-4 md:w-4" />
-                              <span className="font-medium">
+                              <span className="description">
                                 {galleryImages.length} photo{galleryImages.length !== 1 ? "s" : ""}
                               </span>
                             </div>
@@ -255,8 +297,8 @@ export default function ModernMomentPage({ params }: PageProps) {
                       <User className="h-5 w-5 md:h-6 md:w-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-xl md:text-2xl font-bold text-slate-900">Patient Story</h2>
-                      <p className="text-sm md:text-base text-slate-600">A journey of hope and healing</p>
+                      <h2 className="title-heading">Patient Story</h2>
+                      <p className="description">A journey of hope and healing</p>
                     </div>
                   </div>
                   <div className="prose prose-sm md:prose-lg prose-slate max-w-none">
@@ -271,12 +313,12 @@ export default function ModernMomentPage({ params }: PageProps) {
                 <CardContent className=" px-0 md:p-8">
                   <div className="flex items-center justify-between mb-6 md:mb-8">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 rounded-xl md:rounded-2xl flex items-center justify-center shadow-sm">
+                      <div className="w-10 h-10 md:w-14 md:h-14 bg-gray-100 rounded-xs md:rounded-xs flex items-center justify-center shadow-xs">
                         <Images className="h-8 w-8 md:h-6 md:w-6 text-gray-700" />
                       </div>
                       <div>
-                        <h2 className="text-3xl md:text-2xl font-bold text-slate-900">Photo Gallery</h2>
-                        <p className="text-[19px] md:text-base text-slate-600">{galleryImages.length} beautiful moments captured</p>
+                        <h2 className="title-heading">Photo Gallery</h2>
+                        <p className="description">{galleryImages.length} beautiful moments captured</p>
                       </div>
                     </div>
                   </div>
@@ -363,8 +405,8 @@ export default function ModernMomentPage({ params }: PageProps) {
               )}
               <Card className="bg-[#E22026] mt-6 text-white border-0 shadow-xs rounded-xs overflow-hidden">
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold mb-3">Share This Story</h2>
-                  <p className="text-sm text-pink-100 mb-6 leading-relaxed">
+                  <h2 className="text-2xl font-semibold mb-3">Share This Story</h2>
+                  <p className="text-lg text-pink-100 mb-6 leading-relaxed">
                     Help inspire others by sharing this beautiful journey of hope and healing.
                   </p>
                   <div className="space-y-3">

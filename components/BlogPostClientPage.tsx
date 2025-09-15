@@ -330,7 +330,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
               <p className="text-gray-600 mb-6">{error}</p>
               <p className="text-sm text-gray-500 mb-6">Slug: {slug}</p>
               <button
-                onClick={() => window.history.back()}
+                onClick={() =>  window.history.back()}
                 className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
               >
                 <ChevronLeft className="w-4 h-4 mr-2" />
