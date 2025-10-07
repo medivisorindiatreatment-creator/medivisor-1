@@ -17,6 +17,7 @@ export interface Hospital {
 }
 
 export interface HospitalBranch {
+  HospitalList_branches: never[]
   _id: string
   branchName: string
   address: string
@@ -26,13 +27,13 @@ export interface HospitalBranch {
   branchImageUrl: string
   slug: string
   mapEmbedUrl: string
-  primaryLocation: PrimaryLocation | null
+  primaryLocation: primaryLocation | null
   doctors: Doctor[]
   createdDate: string
   updatedDate: string
 }
 
-export interface PrimaryLocation {
+export interface primaryLocation {
   _id: string
   cityName: string
   state?: {

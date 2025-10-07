@@ -162,38 +162,43 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
    */
   const renderImageGrid = (images: RicosNode[], startIndex: number): React.ReactNode => {
     return (
-      <div key={`grid-${startIndex}`} className="my-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {images.map((node, idx) => {
-          const imageId = node.imageData?.image?.src?.id;
-          const altText = node.imageData?.altText || "";
-          const caption = node.imageData?.caption;
-          const width = node.imageData?.image?.width || 800;
-          const height = node.imageData?.image?.height || 600;
+   <div
+  key={`grid-${startIndex}`}
+  className="columns-1 sm:columns-2 md:columns-2 lg:columns-2 gap-4 [column-fill:_balance] my-8"
+>
+  {images.map((node, idx) => {
+    const imageId = node.imageData?.image?.src?.id;
+    const altText = node.imageData?.altText || "";
+    const caption = node.imageData?.caption;
+    const width = node.imageData?.image?.width || 800;
+    const height = node.imageData?.image?.height || 600;
 
-          if (!imageId) return null;
+    if (!imageId) return null;
 
-          return (
-            <figure key={startIndex + idx} className="border border-gray-200 rounded-xs shadow-sm hover:shadow-md transition-shadow duration-300">
-              <div className="relative overflow-hidden rounded-xs">
-                <Image
-                  src={getWixMediaUrl(imageId, width, height) || "/placeholder.svg"}
-                  alt={altText}
-                  width={width}
-                  height={height}
-                  className="w-full h-auto md:h-full md:object-contain object-cover transition-transform duration-500 "
-                  priority={(startIndex + idx) < 2}
-                  unoptimized
-                />
-              </div>
-              {caption && (
-                <figcaption className="text-[19px] text-gray-600 mt-3 text-center italic bg-gray-50 px-4 py-2 rounded-xs">
-                  {caption}
-                </figcaption>
-              )}
-            </figure>
-          );
-        })}
-      </div>
+    return (
+      <figure
+        key={startIndex + idx}
+        className="mb-4 break-inside-avoid overflow-hidden rounded-xl shadow-sm bg-white hover:shadow-md transition duration-300"
+      >
+        <Image
+          src={getWixMediaUrl(imageId, width, height) || "/placeholder.svg"}
+          alt={altText}
+          width={width}
+          height={height}
+          className="w-full h-auto object-cover align-middle transition-transform duration-500 hover:scale-[1.03]"
+          priority={(startIndex + idx) < 2}
+          unoptimized
+        />
+        {caption && (
+          <figcaption className="text-sm text-gray-700 text-center italic bg-gray-50 py-2 px-3">
+            {caption}
+          </figcaption>
+        )}
+      </figure>
+    );
+  })}
+</div>
+
     );
   };
 
@@ -220,18 +225,18 @@ export function RicosRenderer({ content, className = "" }: RicosRendererProps) {
         const level = node.headingData?.level || 1;
         const HeadingTag = `h${Math.min(level, 6)}` as keyof JSX.IntrinsicElements;
         const headingClasses = {
-          1: "text-4xl md:text-5xl font-bold mb-8 mt-12 text-gray-900 leading-tight tracking-tight",
-          2: "text-3xl md:text-4xl font-bold mb-6 mt-10 text-gray-900 leading-tight tracking-tight",
-          3: "text-2xl md:text-3xl font-bold mb-5 mt-8 text-gray-900 leading-tight",
-          4: "text-xl md:text-2xl font-bold mb-4 mt-6 text-gray-900 leading-tight",
-          5: "text-lg md:text-xl font-bold mb-3 mt-5 text-gray-900 leading-tight",
+          1: "text-4xl md:text-5xl font-bold my-4 text-gray-900 leading-tight tracking-tight",
+          2: "text-3xl md:text-4xl font-bold my-4 text-gray-900 leading-tight tracking-tight",
+          3: "text-2xl md:text-3xl font-bold my-4 text-gray-900 leading-tight",
+          4: "text-xl md:text-2xl font-bold my-4 text-gray-900 leading-tight",
+          5: "text-lg md:text-xl font-bold my-4 text-gray-900 leading-tight",
           6: "text-[19px] md:text-lg font-bold mb-2 mt-4 text-gray-900 leading-tight",
         };
 
         return (
           <HeadingTag
             key={index}
-            className={`${headingClasses[level as keyof typeof headingClasses]} border-b border-gray-200 pb-2 ${getTextAlignment(node.headingData?.textStyle?.textAlignment)}`}
+            className={`${headingClasses[level as keyof typeof headingClasses]}  ${getTextAlignment(node.headingData?.textStyle?.textAlignment)}`}
           >
             {node.nodes?.map((childNode, childIndex) => renderNode(childNode, childIndex))}
           </HeadingTag>
