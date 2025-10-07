@@ -627,7 +627,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
                       </div>
 
                       {/* Featured Image */}
-                      {imageUrl && (
+                      {/* {imageUrl && (
                         <div className="mb-8 rounded-lg overflow-hidden">
                           <img
                             src={imageUrl}
@@ -636,7 +636,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
                             loading="eager"
                           />
                         </div>
-                      )}
+                      )} */}
                     </header>
 
                     {/* Article Content */}
@@ -650,7 +650,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
                       ) : (
                         <div className="text-center py-12">
                           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-2xl">統</span>
+                            {/* <span className="text-2xl">統</span> */}
                           </div>
                           <p className="text-gray-600 italic text-lg">No content available for this post.</p>
                         </div>
