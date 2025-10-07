@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import { wixClient } from '../lib/wixClient'
+import { wixClient } from '@/lib/wixClient'
 import { media } from '@wix/sdk'
 import {
   ChevronLeft,
@@ -17,8 +17,8 @@ import {
   Share2,
   Bookmark,
 } from 'lucide-react'
-import { RicosRenderer } from './RichContentViewer'
-import { extractTextFromRicos, type RicosContent } from '../lib/ricos-parser'
+import { RicosRenderer } from '@/components/RichContentViewer'
+import { extractTextFromRicos, type RicosContent } from '@/lib/ricos-parser'
 
 interface Post {
   _id: string
@@ -146,6 +146,18 @@ function generateMetaDescription(content: string | RicosContent | undefined, exc
   return text || 'Read this informative blog post to learn more.'
 }
 
+// Function to get optimized share image URL
+function getShareImageUrl(wixUrl: string | undefined, fallbackImage?: string): string {
+  const imageUrl = getWixImageUrl(wixUrl) || fallbackImage
+  
+  if (!imageUrl) {
+    // Return a default share image if no image is available
+    return '/default-share-image.jpg' // Replace with your default share image path
+  }
+  
+  return imageUrl
+}
+
 interface BlogPostProps {
   slug: string
 }
@@ -162,134 +174,86 @@ export default function BlogPost({ slug }: BlogPostProps) {
   useEffect(() => {
     if (!post) return
 
+    const shareImageUrl = getShareImageUrl(
+      post.media?.wixMedia?.image || post.coverMedia?.image,
+      '/default-share-image.jpg' // Your default share image
+    )
+    const description = generateMetaDescription(post.richContent || post.contentText || post.content, post.excerpt)
+    const currentUrl = window.location.href
+
     // Update document title
     document.title = `${post.title} | Your Blog Name`
 
     // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]')
-    const description = generateMetaDescription(post.richContent || post.contentText || post.content, post.excerpt)
+    const updateMetaTag = (name: string, content: string, attribute: string = 'name') => {
+      let metaTag = document.querySelector(`meta[${attribute}="${name}"]`)
+      if (!metaTag) {
+        metaTag = document.createElement('meta')
+        metaTag.setAttribute(attribute, name)
+        document.head.appendChild(metaTag)
+      }
+      metaTag.setAttribute('content', content)
+    }
+
+    // Update link canonical
+    const updateLinkTag = (rel: string, href: string) => {
+      let linkTag = document.querySelector(`link[rel="${rel}"]`)
+      if (!linkTag) {
+        linkTag = document.createElement('link')
+        linkTag.setAttribute('rel', rel)
+        document.head.appendChild(linkTag)
+      }
+      linkTag.setAttribute('href', href)
+    }
+
+    // Basic meta tags
+    updateMetaTag('description', description)
+    updateLinkTag('canonical', currentUrl)
+
+    // Open Graph meta tags (Facebook, LinkedIn, WhatsApp, etc.)
+    updateMetaTag('og:title', post.title, 'property')
+    updateMetaTag('og:description', description, 'property')
+    updateMetaTag('og:image', shareImageUrl, 'property')
+    updateMetaTag('og:image:width', '1200', 'property')
+    updateMetaTag('og:image:height', '630', 'property')
+    updateMetaTag('og:image:alt', post.title, 'property')
+    updateMetaTag('og:url', currentUrl, 'property')
+    updateMetaTag('og:type', 'article', 'property')
+    updateMetaTag('og:site_name', 'Your Blog Name', 'property')
     
-    if (metaDescription) {
-      metaDescription.setAttribute('content', description)
-    } else {
-      const newMetaDescription = document.createElement('meta')
-      newMetaDescription.name = 'description'
-      newMetaDescription.content = description
-      document.head.appendChild(newMetaDescription)
+    // Article specific OG tags
+    updateMetaTag('article:published_time', post.firstPublishedDate || '', 'property')
+    if (post.lastPublishedDate) {
+      updateMetaTag('article:modified_time', post.lastPublishedDate, 'property')
+    }
+    
+    // Add article tags if available
+    if (post.tags && post.tags.length > 0) {
+      post.tags.forEach(tag => {
+        updateMetaTag('article:tag', tag, 'property')
+      })
     }
 
-    // Update Open Graph tags
-    const ogTitle = document.querySelector('meta[property="og:title"]')
-    if (ogTitle) {
-      ogTitle.setAttribute('content', post.title)
-    } else {
-      const newOgTitle = document.createElement('meta')
-      newOgTitle.setAttribute('property', 'og:title')
-      newOgTitle.content = post.title
-      document.head.appendChild(newOgTitle)
-    }
+    // Twitter Card meta tags
+    updateMetaTag('twitter:card', 'summary_large_image')
+    updateMetaTag('twitter:title', post.title)
+    updateMetaTag('twitter:description', description)
+    updateMetaTag('twitter:image', shareImageUrl)
+    updateMetaTag('twitter:image:alt', post.title)
+    updateMetaTag('twitter:url', currentUrl)
+    updateMetaTag('twitter:site', '@yourtwitterhandle') // Replace with your Twitter handle
 
-    const ogDescription = document.querySelector('meta[property="og:description"]')
-    if (ogDescription) {
-      ogDescription.setAttribute('content', description)
-    } else {
-      const newOgDescription = document.createElement('meta')
-      newOgDescription.setAttribute('property', 'og:description')
-      newOgDescription.content = description
-      document.head.appendChild(newOgDescription)
-    }
+    // WhatsApp specific meta tags
+    updateMetaTag('twitter:app:name:iphone', 'WhatsApp')
+    updateMetaTag('twitter:app:name:ipad', 'WhatsApp')
+    updateMetaTag('twitter:app:name:googleplay', 'WhatsApp')
 
-    const ogUrl = document.querySelector('meta[property="og:url"]')
-    if (ogUrl) {
-      ogUrl.setAttribute('content', window.location.href)
-    } else {
-      const newOgUrl = document.createElement('meta')
-      newOgUrl.setAttribute('property', 'og:url')
-      newOgUrl.content = window.location.href
-      document.head.appendChild(newOgUrl)
-    }
-
-    // Update Twitter Card tags
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]')
-    if (twitterTitle) {
-      twitterTitle.setAttribute('content', post.title)
-    } else {
-      const newTwitterTitle = document.createElement('meta')
-      newTwitterTitle.name = 'twitter:title'
-      newTwitterTitle.content = post.title
-      document.head.appendChild(newTwitterTitle)
-    }
-
-    const twitterDescription = document.querySelector('meta[name="twitter:description"]')
-    if (twitterDescription) {
-      twitterDescription.setAttribute('content', description)
-    } else {
-      const newTwitterDescription = document.createElement('meta')
-      newTwitterDescription.name = 'twitter:description'
-      newTwitterDescription.content = description
-      document.head.appendChild(newTwitterDescription)
-    }
-
-    // Set canonical URL
-    let canonicalUrl = document.querySelector('link[rel="canonical"]')
-    if (!canonicalUrl) {
-      canonicalUrl = document.createElement('link')
-      canonicalUrl.setAttribute('rel', 'canonical')
-      document.head.appendChild(canonicalUrl)
-    }
-    canonicalUrl.setAttribute('href', window.location.href)
+    // Additional social media meta tags
+    updateMetaTag('image', shareImageUrl) // Fallback for some platforms
 
     // Cleanup function to reset meta tags when component unmounts
     return () => {
       document.title = 'Your Blog Name' // Reset to default title
-    }
-  }, [post])
-
-  // Update Open Graph and Twitter images when image URL is available
-  useEffect(() => {
-    if (!post) return
-
-    const imageUrl = getWixImageUrl(post.media?.wixMedia?.image || post.coverMedia?.image)
-    if (!imageUrl) return
-
-    // Update Open Graph image
-    const ogImage = document.querySelector('meta[property="og:image"]')
-    if (ogImage) {
-      ogImage.setAttribute('content', imageUrl)
-    } else {
-      const newOgImage = document.createElement('meta')
-      newOgImage.setAttribute('property', 'og:image')
-      newOgImage.content = imageUrl
-      document.head.appendChild(newOgImage)
-    }
-
-    // Update Twitter image
-    const twitterImage = document.querySelector('meta[name="twitter:image"]')
-    if (twitterImage) {
-      twitterImage.setAttribute('content', imageUrl)
-    } else {
-      const newTwitterImage = document.createElement('meta')
-      newTwitterImage.name = 'twitter:image'
-      newTwitterImage.content = imageUrl
-      document.head.appendChild(newTwitterImage)
-    }
-
-    // Set image dimensions if available
-    const ogImageWidth = document.querySelector('meta[property="og:image:width"]')
-    const ogImageHeight = document.querySelector('meta[property="og:image:height"]')
-    
-    if (!ogImageWidth) {
-      const newOgImageWidth = document.createElement('meta')
-      newOgImageWidth.setAttribute('property', 'og:image:width')
-      newOgImageWidth.content = '1200'
-      document.head.appendChild(newOgImageWidth)
-    }
-    
-    if (!ogImageHeight) {
-      const newOgImageHeight = document.createElement('meta')
-      newOgImageHeight.setAttribute('property', 'og:image:height')
-      newOgImageHeight.content = '630'
-      document.head.appendChild(newOgImageHeight)
     }
   }, [post])
 
@@ -424,17 +388,51 @@ export default function BlogPost({ slug }: BlogPostProps) {
     fetchPostData()
   }, [slug])
 
-  const handleShare = async () => {
-    if (navigator.share) {
+  const handleShare = async (platform?: string) => {
+    const shareImageUrl = getShareImageUrl(
+      post?.media?.wixMedia?.image || post?.coverMedia?.image,
+      '/default-share-image.jpg'
+    )
+    const shareUrl = window.location.href
+    const shareTitle = post?.title || ''
+    const shareText = post?.excerpt || ''
+
+    if (platform) {
+      // Platform-specific sharing
+      const encodedUrl = encodeURIComponent(shareUrl)
+      const encodedTitle = encodeURIComponent(shareTitle)
+      const encodedText = encodeURIComponent(shareText)
+
+      switch (platform) {
+        case 'facebook':
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, '_blank')
+          break
+        case 'twitter':
+          window.open(`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`, '_blank')
+          break
+        case 'linkedin':
+          window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, '_blank')
+          break
+        case 'whatsapp':
+          window.open(`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`, '_blank')
+          break
+        default:
+          break
+      }
+    } else if (navigator.share) {
+      // Native sharing API
       try {
         await navigator.share({
-          title: post?.title,
-          text: post?.excerpt,
-          url: window.location.href,
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
         })
       } catch (error) {
         console.log('Error sharing:', error)
       }
+    } else {
+      // Fallback: copy to clipboard
+      handleCopyLink()
     }
   }
 
@@ -442,6 +440,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
     try {
       await navigator.clipboard.writeText(window.location.href)
       // You could add a toast notification here
+      alert('Link copied to clipboard!')
     } catch (error) {
       console.error('Failed to copy link:', error)
     }
@@ -639,19 +638,54 @@ export default function BlogPost({ slug }: BlogPostProps) {
                       )}
                     </div>
 
-                    {/* Social Sharing */}
+                    {/* Enhanced Social Sharing */}
                     <div className="mt-8 pt-6 border-t border-gray-200">
                       <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-gray-600">Share this post:</span>
                           <div className="flex gap-2">
+                            {/* Native Share */}
                             <button
-                              onClick={handleShare}
+                              onClick={() => handleShare()}
                               className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
                               aria-label="Share"
                             >
                               <Share2 className="w-5 h-5" />
                             </button>
+                            
+                            {/* Platform Specific Shares */}
+                            <button
+                              onClick={() => handleShare('facebook')}
+                              className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+                              aria-label="Share on Facebook"
+                            >
+                              <Facebook className="w-5 h-5" />
+                            </button>
+                            
+                            <button
+                              onClick={() => handleShare('twitter')}
+                              className="p-2 text-gray-600 hover:text-blue-400 transition-colors"
+                              aria-label="Share on Twitter"
+                            >
+                              <Twitter className="w-5 h-5" />
+                            </button>
+                            
+                            <button
+                              onClick={() => handleShare('linkedin')}
+                              className="p-2 text-gray-600 hover:text-blue-700 transition-colors"
+                              aria-label="Share on LinkedIn"
+                            >
+                              <Linkedin className="w-5 h-5" />
+                            </button>
+                            
+                            <button
+                              onClick={() => handleShare('whatsapp')}
+                              className="p-2 text-gray-600 hover:text-green-600 transition-colors"
+                              aria-label="Share on WhatsApp"
+                            >
+                              <MessageCircle className="w-5 h-5" />
+                            </button>
+                            
                             <button
                               onClick={handleCopyLink}
                               className="p-2 text-gray-600 hover:text-gray-800 transition-colors"
