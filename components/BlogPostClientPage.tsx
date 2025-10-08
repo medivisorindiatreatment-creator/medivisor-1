@@ -426,7 +426,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
                         )}
                       </div>
 
-                      {imageUrl && (
+                      {/* {imageUrl && (
                         <div className="mb-8 rounded-lg overflow-hidden">
                           <img
                             src={imageUrl}
@@ -439,7 +439,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
                             }}
                           />
                         </div>
-                      )}
+                      )} */}
                     </header>
 
                     <div className="prose prose-lg max-w-none">
