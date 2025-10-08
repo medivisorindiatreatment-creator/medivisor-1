@@ -160,11 +160,11 @@ export default function BlogPost({ slug }: BlogPostProps) {
     if (!post) return
 
     // Update document title only
-    document.title = `${post.title} | Medivisor India`
+    document.title = `${post.title} | Medivisor India Treatment`
 
     // Cleanup function to reset title when component unmounts
     return () => {
-      document.title = 'Medivisor India'
+      document.title = 'Medivisor India Treatment'
     }
   }, [post])
 

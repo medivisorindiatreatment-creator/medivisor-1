@@ -177,7 +177,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   }
 
   return {
-    title: `${title} | Medivisor India`,
+    title: `${title} | Medivisor India Treatment`,
     description,
     alternates: {
       canonical: url,
@@ -187,19 +187,19 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       description,
       url,
       siteName: "Medivisor India Treatment",
-      images: ogImages,
+       images: featuredImageUrl ? [featuredImageUrl] : [],
       locale: "en_US",
       type: "article",
       ...articleMeta,
-      authors: ["Medivisor India"],
+      authors: ["Medivisor India Treatment"],
     },
     twitter: {
       card: featuredImageUrl ? "summary_large_image" : "summary",
       title,
       description,
       images: featuredImageUrl ? [featuredImageUrl] : [],
-      site: "@medivisorindia",
-      creator: "@medivisorindia",
+      site: "@medivisorindiatreatment",
+      creator: "@medivisorindiatreatment",
     },
     robots: {
       index: true,
