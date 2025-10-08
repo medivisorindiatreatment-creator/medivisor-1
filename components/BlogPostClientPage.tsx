@@ -66,75 +66,20 @@ interface Post {
   commentCount?: number
 }
 
-// Function to get Wix Image URL with proper error handling
+// Function to get Wix Image URL with better error handling
 function getWixImageUrl(wixUrl: string | undefined): string | null {
   if (!wixUrl) return null
   
   try {
-    // Handle both wix:image:// and direct URLs
     if (wixUrl.startsWith('wix:image://')) {
       const { url } = media.getImageUrl(wixUrl)
       return url
     } else if (wixUrl.startsWith('http')) {
-      // If it's already a direct URL, return as is
       return wixUrl
     }
     return null
   } catch (error) {
     console.error('Error getting Wix image URL:', error)
-    return null
-  }
-}
-
-// Function to get optimized Wix Image URL for social sharing
-function getOptimizedWixImageUrl(wixUrl: string | undefined, width: number = 1200, height: number = 630): string | null {
-  if (!wixUrl) return null
-  
-  try {
-    if (wixUrl.startsWith('wix:image://')) {
-      const { url } = media.getImageUrl(wixUrl, {
-        width,
-        height,
-        fit: 'cover'
-      })
-      return url
-    } else if (wixUrl.startsWith('http')) {
-      // For direct URLs, try to optimize if it's a Wix static URL
-      if (wixUrl.includes('static.wixstatic.com')) {
-        // Wix static URLs can be optimized by modifying the parameters
-        return wixUrl.replace(/\/v1\/(.*)$/, `/v1/fill/w_${width},h_${height},al_c,q_85,usm_0.66_1.00_0.01,blur_0/$1`)
-      }
-      return wixUrl
-    }
-    return null
-  } catch (error) {
-    console.error('Error getting optimized Wix image URL:', error)
-    return null
-  }
-}
-
-// Function to validate and fix image URL
-function validateImageUrl(imageUrl: string | null): string | null {
-  if (!imageUrl) return null
-  
-  try {
-    // Check if URL is valid
-    new URL(imageUrl)
-    
-    // Fix common Wix URL issues
-    if (imageUrl.includes('static.wixstatic.com')) {
-      // Ensure the URL uses HTTPS and has proper format
-      const secureUrl = imageUrl.replace('http://', 'https://')
-      
-      // Remove any double encoding or weird characters
-      const cleanUrl = secureUrl.replace(/%25/g, '%')
-      
-      return cleanUrl
-    }
-    
-    return imageUrl
-  } catch (error) {
-    console.error('Invalid image URL:', imageUrl, error)
     return null
   }
 }
@@ -196,14 +141,12 @@ export default function BlogPost({ slug }: BlogPostProps) {
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
 
-  // Client-side meta tag updates (only for dynamic content that changes after load)
+  // Client-side meta tag updates
   useEffect(() => {
     if (!post) return
 
-    // Update document title only
     document.title = `${post.title} | Medivisor India`
 
-    // Cleanup function to reset title when component unmounts
     return () => {
       document.title = 'Medivisor India'
     }
@@ -231,7 +174,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
 
         let fetchedPost: Post | null = null
 
-        // Try multiple methods to fetch the post
         try {
           if (typeof wixClient.posts.getPostBySlug === 'function') {
             console.log('Trying getPostBySlug...')
@@ -242,8 +184,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
             if (response.post) {
               fetchedPost = response.post as Post
               console.log('Successfully fetched post using getPostBySlug')
-              console.log('Post cover media:', fetchedPost.coverMedia)
-              console.log('Post media:', fetchedPost.media)
             }
           }
         } catch (getBySlugError) {
@@ -266,25 +206,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
           }
         }
 
-        if (!fetchedPost) {
-          try {
-            if (typeof wixClient.posts.listPosts === 'function') {
-              console.log('Trying listPosts as fallback...')
-              const response = await wixClient.posts.listPosts({
-                paging: { limit: 100 },
-              })
-
-              const foundPost = response.posts?.find((p: any) => p.slug === slug)
-              if (foundPost) {
-                fetchedPost = foundPost as Post
-                console.log('Successfully found post using listPosts')
-              }
-            }
-          } catch (listError) {
-            console.error('listPosts also failed:', listError)
-          }
-        }
-
         if (fetchedPost) {
           setPost(fetchedPost)
 
@@ -300,19 +221,13 @@ export default function BlogPost({ slug }: BlogPostProps) {
               
               if (postTags.length > 0) {
                 query = query.hasSome('hashtags', postTags)
-                console.log('Querying related posts by hashtags:', postTags)
               } else if (postCategories.length > 0) {
                 query = query.hasSome('categoryIds', postCategories)
-                console.log('Querying related posts by categories:', postCategories)
-              } else {
-                console.log('No tags or categories found, fetching recent posts instead.')
               }
 
               const relatedResponse = await query.find()
               relatedPostsData = relatedResponse.items as Post[]
             } else if (typeof wixClient.posts.listPosts === 'function') {
-              console.log('Falling back to listPosts for related content...')
-              // Fallback to listPosts and filter
               const relatedResponse = await wixClient.posts.listPosts({
                 paging: { limit: 10 },
               })
@@ -321,7 +236,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
                 .filter((p: any) => p._id !== fetchedPost._id)
                 .slice(0, 6) as Post[]
             }
-            console.log('Fetched related posts:', relatedPostsData.length)
             setRelatedPosts(relatedPostsData)
           } catch (relatedError) {
             console.error('Failed to fetch related posts:', relatedError)
@@ -346,10 +260,8 @@ export default function BlogPost({ slug }: BlogPostProps) {
     const shareText = post?.excerpt || ''
 
     if (platform) {
-      // Platform-specific sharing
       const encodedUrl = encodeURIComponent(shareUrl)
       const encodedTitle = encodeURIComponent(shareTitle)
-      const encodedText = encodeURIComponent(shareText)
 
       switch (platform) {
         case 'facebook':
@@ -368,7 +280,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
           break
       }
     } else if (navigator.share) {
-      // Native sharing API
       try {
         await navigator.share({
           title: shareTitle,
@@ -379,7 +290,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
         console.log('Error sharing:', error)
       }
     } else {
-      // Fallback: copy to clipboard
       handleCopyLink()
     }
   }
@@ -387,7 +297,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href)
-      // You could add a toast notification here
       alert('Link copied to clipboard!')
     } catch (error) {
       console.error('Failed to copy link:', error)
@@ -431,7 +340,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-4">Oops! Something went wrong</h1>
               <p className="text-gray-600 mb-6">{error}</p>
-              <p className="text-sm text-gray-500 mb-6">Slug: {slug}</p>
               <button
                 onClick={() => window.history.back()}
                 className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
@@ -457,7 +365,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-4">Post Not Found</h1>
               <p className="text-gray-600 mb-6">The blog post you&apos;re looking for doesn&apos;t exist.</p>
-              <p className="text-sm text-gray-500 mb-6">Slug: {slug}</p>
               <button
                 onClick={() => window.history.back()}
                 className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
@@ -474,14 +381,13 @@ export default function BlogPost({ slug }: BlogPostProps) {
 
   const embedVideoUrl = post.media?.embedMedia?.video?.url
   const youtubeEmbedUrl = getYouTubeEmbedUrl(embedVideoUrl)
-  const imageUrl = validateImageUrl(getWixImageUrl(post.media?.wixMedia?.image || post.coverMedia?.image))
+  const imageUrl = getWixImageUrl(post.media?.wixMedia?.image || post.coverMedia?.image)
   const readTime = calculateReadTime(post.richContent || post.contentText || post.content, post.minutesToRead)
 
   return (
     <div className="min-h-screen bg-gradient-to-br px-4 md:px-0 py-4 md:py-10 from-gray-50 to-white">
       <main className="container mx-auto">
         <div className="mx-auto">
-          {/* Breadcrumb */}
           <nav className="md:my-3">
             <button
               onClick={() => window.history.back()}
@@ -496,13 +402,11 @@ export default function BlogPost({ slug }: BlogPostProps) {
               <div className='col-span-2'>
                 <article className="md:bg-white md:rounded-xs md:shadow-xs overflow-hidden">
                   <div className="p-0 md:p-4">
-                    {/* Article Header */}
                     <header className="mt-5">
                       <h1 className="text-2xl md:text-3xl font-medium text-gray-700 mb-6 leading-tight">
                         {post.title}
                       </h1>
                       
-                      {/* Post Meta Information */}
                       <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
@@ -522,7 +426,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
                         )}
                       </div>
 
-                      {/* Featured Image */}
                       {imageUrl && (
                         <div className="mb-8 rounded-lg overflow-hidden">
                           <img
@@ -531,7 +434,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
                             className="w-full h-auto object-cover"
                             loading="eager"
                             onError={(e) => {
-                              // If image fails to load, hide the container
                               const target = e.target as HTMLImageElement
                               target.style.display = 'none'
                             }}
@@ -540,7 +442,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
                       )}
                     </header>
 
-                    {/* Article Content */}
                     <div className="prose prose-lg max-w-none">
                       {post.richContent ? (
                         <RicosRenderer content={post.richContent} />
@@ -558,13 +459,11 @@ export default function BlogPost({ slug }: BlogPostProps) {
                       )}
                     </div>
 
-                    {/* Enhanced Social Sharing */}
                     <div className="mt-8 pt-6 border-t border-gray-200">
                       <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-gray-600">Share this post:</span>
                           <div className="flex gap-2">
-                            {/* Native Share */}
                             <button
                               onClick={() => handleShare()}
                               className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
@@ -572,8 +471,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
                             >
                               <Share2 className="w-5 h-5" />
                             </button>
-                            
-                            {/* Platform Specific Shares */}
                             <button
                               onClick={() => handleShare('facebook')}
                               className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
@@ -581,7 +478,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
                             >
                               <Facebook className="w-5 h-5" />
                             </button>
-                            
                             <button
                               onClick={() => handleShare('twitter')}
                               className="p-2 text-gray-600 hover:text-blue-400 transition-colors"
@@ -589,7 +485,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
                             >
                               <Twitter className="w-5 h-5" />
                             </button>
-                            
                             <button
                               onClick={() => handleShare('linkedin')}
                               className="p-2 text-gray-600 hover:text-blue-700 transition-colors"
@@ -597,7 +492,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
                             >
                               <Linkedin className="w-5 h-5" />
                             </button>
-                            
                             <button
                               onClick={() => handleShare('whatsapp')}
                               className="p-2 text-gray-600 hover:text-green-600 transition-colors"
@@ -605,7 +499,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
                             >
                               <MessageCircle className="w-5 h-5" />
                             </button>
-                            
                             <button
                               onClick={handleCopyLink}
                               className="p-2 text-gray-600 hover:text-gray-800 transition-colors"
@@ -643,15 +536,14 @@ export default function BlogPost({ slug }: BlogPostProps) {
                 </article>
               </div>
               <div className='col-span-1 bg-white md:p-4'>
-                {/* Related Posts */}
-                 {relatedPosts.length > 0 && (
+                {relatedPosts.length > 0 && (
                   <section className="mt-5">
                     <h2 className="text-xl md:text-3xl font-medium text-gray-700 mb-3 leading-tight">Related Articles</h2>
                     <div className="space-y-4">
                       {relatedPosts.map((relatedPost) => {
-                        const relatedImageUrl = validateImageUrl(getWixImageUrl(
+                        const relatedImageUrl = getWixImageUrl(
                           relatedPost.media?.wixMedia?.image || relatedPost.coverMedia?.image
-                        ))
+                        )
                         return (
                           <a
                             key={relatedPost._id}
@@ -698,7 +590,6 @@ export default function BlogPost({ slug }: BlogPostProps) {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </main>

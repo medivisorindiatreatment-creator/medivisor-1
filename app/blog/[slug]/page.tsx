@@ -7,7 +7,7 @@ interface Params {
   params: { slug: string }
 }
 
-// Function to get Wix Image URL for meta tags with proper error handling
+// Function to get properly formatted Wix Image URL
 function getWixImageUrl(wixUrl: string | undefined): string | null {
   if (!wixUrl) return null
   
@@ -15,10 +15,9 @@ function getWixImageUrl(wixUrl: string | undefined): string | null {
     // Handle both wix:image:// and direct URLs
     if (wixUrl.startsWith('wix:image://')) {
       const { url } = media.getImageUrl(wixUrl)
-      return url
+      return formatImageUrlForSocial(url)
     } else if (wixUrl.startsWith('http')) {
-      // If it's already a direct URL, return as is
-      return wixUrl
+      return formatImageUrlForSocial(wixUrl)
     }
     return null
   } catch (error) {
@@ -27,72 +26,51 @@ function getWixImageUrl(wixUrl: string | undefined): string | null {
   }
 }
 
-// Function to get optimized Wix Image URL for social sharing
-function getOptimizedWixImageUrl(wixUrl: string | undefined, width: number = 1200, height: number = 630): string | null {
-  if (!wixUrl) return null
-  
-  try {
-    if (wixUrl.startsWith('wix:image://')) {
-      const { url } = media.getImageUrl(wixUrl)
-      return url
-    } else if (wixUrl.startsWith('http')) {
-      // For direct URLs, try to optimize if it's a Wix static URL
-      if (wixUrl.includes('static.wixstatic.com')) {
-        // Wix static URLs can be optimized by modifying the parameters
-        // Use Wix's image transformation API
-        return wixUrl.replace(/\/v1\/(.*)$/, `/v1/fill/w_${width},h_${height},al_c,q_85,usm_0.66_1.00_0.01,blur_0/$1`)
-      }
-      return wixUrl
-    }
-    return null
-  } catch (error) {
-    console.error('Error getting optimized Wix image URL:', error)
-    return null
-  }
-}
-
-// Function to validate and fix image URL for social media
-function validateAndFixImageUrl(imageUrl: string | null): string | null {
+// Function to format image URL for social media platforms
+function formatImageUrlForSocial(imageUrl: string): string | null {
   if (!imageUrl) return null
   
   try {
-    // Check if URL is valid
-    new URL(imageUrl)
+    // Ensure URL is valid
+    const url = new URL(imageUrl)
     
-    // Fix common Wix URL issues for social media
-    if (imageUrl.includes('static.wixstatic.com')) {
-      // Ensure the URL uses HTTPS
-      const secureUrl = imageUrl.replace('http://', 'https://')
+    // For Wix static URLs, we need to ensure they're properly formatted
+    if (url.hostname === 'static.wixstatic.com') {
+      // Reconstruct the URL with proper parameters for social media
+      const pathParts = url.pathname.split('/')
+      const mediaPart = pathParts[pathParts.length - 1]
       
-      // Remove any double encoding or weird characters
-      const cleanUrl = secureUrl.replace(/%25/g, '%')
+      // Create a clean, optimized URL for social media
+      // Use Wix's image transformation with proper format
+      const optimizedUrl = `https://static.wixstatic.com/media/${mediaPart}/v1/fill/w_1200,h_630,al_c,q_85,usm_0.66_1.00_0.01/${mediaPart}`
       
-      // Ensure it has proper file extension
-      if (!cleanUrl.match(/\.(jpg|jpeg|png|webp)$/i)) {
-        // If no extension, assume jpg and add parameters for optimization
-        return `${cleanUrl}~mv2.jpg`
-      }
-      
-      return cleanUrl
+      return optimizedUrl
     }
     
+    // For other URLs, return as is
     return imageUrl
   } catch (error) {
-    console.error('Invalid image URL for social media:', imageUrl, error)
+    console.error('Error formatting image URL:', error)
     return null
   }
 }
 
-// Function to generate optimized share image URL - with validation
-function getOptimizedShareImage(wixUrl: string | undefined): string | null {
-  if (!wixUrl) return null
+// Function to get optimized image URL for social sharing
+function getOptimizedShareImage(wixUrl: string | undefined): string {
+  if (!wixUrl) {
+    // Fallback to a reliable default image
+    return "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&h=630&q=80"
+  }
   
-  // Try to get optimized image for social sharing first
-  const optimizedImageUrl = getOptimizedWixImageUrl(wixUrl, 1200, 630)
-  const imageUrl = optimizedImageUrl || getWixImageUrl(wixUrl)
+  // Try to get the properly formatted image URL
+  const imageUrl = getWixImageUrl(wixUrl)
   
-  // Validate and fix the URL for social media platforms
-  return validateAndFixImageUrl(imageUrl)
+  if (imageUrl) {
+    return imageUrl
+  }
+  
+  // Final fallback to a reliable medical/health related image
+  return "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&h=630&q=80"
 }
 
 // Function to extract text from content for meta description
@@ -103,12 +81,7 @@ function extractTextForMeta(content: any): string {
     return content.replace(/<[^>]*>/g, '').trim()
   }
   
-  // For Ricos content, return a generic description since we can't parse it here
-  if (content.nodes) {
-    return 'Informative medical blog post from Medivisor India.'
-  }
-  
-  return ''
+  return 'Informative medical blog post from Medivisor India.'
 }
 
 // Function to generate meta description from content
@@ -119,7 +92,6 @@ function generateMetaDescription(content: any, excerpt?: string): string {
 
   const text = extractTextForMeta(content)
 
-  // Limit to 160 characters for SEO
   if (text.length > 160) {
     return text.substring(0, 157) + '...'
   }
@@ -141,7 +113,7 @@ async function fetchBlogBySlug(slug: string) {
           "CONTENT_TEXT",
           "URL",
           "RICH_CONTENT",
-          "SEO",
+         "SEO"
         ],
       })
       if (response.post) blog = response.post
@@ -180,13 +152,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const title = blog.title || "Medivisor India Blog"
   const description = generateMetaDescription(blog.richContent || blog.contentText || blog.content, blog.excerpt)
   
-  // Get the featured image URL - prioritize coverMedia first, then media
-  const featuredImageUrl = getOptimizedShareImage(blog.coverMedia?.image || blog.media?.wixMedia?.image)
+  // Get the optimized share image - this now uses reliable fallbacks
+  const shareImageUrl = getOptimizedShareImage(blog.coverMedia?.image || blog.media?.wixMedia?.image)
   
   const url = `https://medivisorindiatreatment.com/blog/${params.slug}`
-  
-  // Your organization logo for structured data (only used in structured data, not OG image)
-  const logoUrl = "https://medivisorindiatreatment.com/logo.png"
 
   // Article specific meta tags
   const articleMeta: any = {}
@@ -196,19 +165,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (blog.lastPublishedDate) {
     articleMeta.modifiedTime = blog.lastPublishedDate
   }
-  if (Array.isArray(blog.tags) && blog.tags.length > 0) {
+  if (blog.tags && blog.tags.length > 0) {
     articleMeta.tags = blog.tags
-  }
-
-  // Prepare images array for Open Graph - only include if valid
-  const ogImages = []
-  if (featuredImageUrl) {
-    ogImages.push({
-      url: featuredImageUrl,
-
-      alt: title,
-   
-    })
   }
 
   return {
@@ -222,17 +180,24 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       description,
       url,
       siteName: "Medivisor India Treatment",
-      images: ogImages,
+      images: [
+        {
+          url: shareImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
       locale: "en_US",
       type: "article",
       ...articleMeta,
       authors: ["Medivisor India"],
     },
     twitter: {
-      card: featuredImageUrl ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description,
-      images: featuredImageUrl ? [featuredImageUrl] : [],
+      images: [shareImageUrl],
       site: "@medivisorindia",
       creator: "@medivisorindia",
     },
@@ -247,7 +212,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
         'max-snippet': -1,
       },
     },
-    // Additional meta tags for better SEO
     keywords: blog.tags?.join(', ') || "medical treatment, healthcare, India, patient journey",
     authors: [{ name: "Medivisor India" }],
     publisher: "Medivisor India",
@@ -263,15 +227,12 @@ export async function generateStaticParams() {
 
     let posts: any[] = []
     
-    // Try queryPosts first
     if (typeof wixClient.posts.queryPosts === "function") {
       const response = await wixClient.posts.queryPosts()
         .limit(50)
         .find()
       posts = response.items || []
-    } 
-    // Fallback to listPosts
-    else if (typeof wixClient.posts.listPosts === "function") {
+    } else if (typeof wixClient.posts.listPosts === "function") {
       const response = await wixClient.posts.listPosts({
         paging: { limit: 50 },
       })
