@@ -66,14 +66,20 @@ interface Post {
   commentCount?: number
 }
 
-// Function to get Wix Image URL
+// Function to get Wix Image URL with proper error handling
 function getWixImageUrl(wixUrl: string | undefined): string | null {
-  if (!wixUrl || !wixUrl.startsWith('wix:image://')) {
-    return null
-  }
+  if (!wixUrl) return null
+  
   try {
-    const { url } = media.getImageUrl(wixUrl)
-    return url
+    // Handle both wix:image:// and direct URLs
+    if (wixUrl.startsWith('wix:image://')) {
+      const { url } = media.getImageUrl(wixUrl)
+      return url
+    } else if (wixUrl.startsWith('http')) {
+      // If it's already a direct URL, return as is
+      return wixUrl
+    }
+    return null
   } catch (error) {
     console.error('Error getting Wix image URL:', error)
     return null
@@ -82,18 +88,53 @@ function getWixImageUrl(wixUrl: string | undefined): string | null {
 
 // Function to get optimized Wix Image URL for social sharing
 function getOptimizedWixImageUrl(wixUrl: string | undefined, width: number = 1200, height: number = 630): string | null {
-  if (!wixUrl || !wixUrl.startsWith('wix:image://')) {
-    return null
-  }
+  if (!wixUrl) return null
+  
   try {
-    const { url } = media.getImageUrl(wixUrl, {
-      width,
-      height,
-      fit: 'cover'
-    })
-    return url
+    if (wixUrl.startsWith('wix:image://')) {
+      const { url } = media.getImageUrl(wixUrl, {
+        width,
+        height,
+        fit: 'cover'
+      })
+      return url
+    } else if (wixUrl.startsWith('http')) {
+      // For direct URLs, try to optimize if it's a Wix static URL
+      if (wixUrl.includes('static.wixstatic.com')) {
+        // Wix static URLs can be optimized by modifying the parameters
+        return wixUrl.replace(/\/v1\/(.*)$/, `/v1/fill/w_${width},h_${height},al_c,q_85,usm_0.66_1.00_0.01,blur_0/$1`)
+      }
+      return wixUrl
+    }
+    return null
   } catch (error) {
     console.error('Error getting optimized Wix image URL:', error)
+    return null
+  }
+}
+
+// Function to validate and fix image URL
+function validateImageUrl(imageUrl: string | null): string | null {
+  if (!imageUrl) return null
+  
+  try {
+    // Check if URL is valid
+    new URL(imageUrl)
+    
+    // Fix common Wix URL issues
+    if (imageUrl.includes('static.wixstatic.com')) {
+      // Ensure the URL uses HTTPS and has proper format
+      const secureUrl = imageUrl.replace('http://', 'https://')
+      
+      // Remove any double encoding or weird characters
+      const cleanUrl = secureUrl.replace(/%25/g, '%')
+      
+      return cleanUrl
+    }
+    
+    return imageUrl
+  } catch (error) {
+    console.error('Invalid image URL:', imageUrl, error)
     return null
   }
 }
@@ -160,11 +201,11 @@ export default function BlogPost({ slug }: BlogPostProps) {
     if (!post) return
 
     // Update document title only
-    document.title = `${post.title} | Medivisor India Treatment`
+    document.title = `${post.title} | Medivisor India`
 
     // Cleanup function to reset title when component unmounts
     return () => {
-      document.title = 'Medivisor India Treatment'
+      document.title = 'Medivisor India'
     }
   }, [post])
 
@@ -433,7 +474,7 @@ export default function BlogPost({ slug }: BlogPostProps) {
 
   const embedVideoUrl = post.media?.embedMedia?.video?.url
   const youtubeEmbedUrl = getYouTubeEmbedUrl(embedVideoUrl)
-  const imageUrl = getWixImageUrl(post.media?.wixMedia?.image || post.coverMedia?.image)
+  const imageUrl = validateImageUrl(getWixImageUrl(post.media?.wixMedia?.image || post.coverMedia?.image))
   const readTime = calculateReadTime(post.richContent || post.contentText || post.content, post.minutesToRead)
 
   return (
@@ -489,6 +530,11 @@ export default function BlogPost({ slug }: BlogPostProps) {
                             alt={post.title}
                             className="w-full h-auto object-cover"
                             loading="eager"
+                            onError={(e) => {
+                              // If image fails to load, hide the container
+                              const target = e.target as HTMLImageElement
+                              target.style.display = 'none'
+                            }}
                           />
                         </div>
                       )}
@@ -603,9 +649,9 @@ export default function BlogPost({ slug }: BlogPostProps) {
                     <h2 className="text-xl md:text-3xl font-medium text-gray-700 mb-3 leading-tight">Related Articles</h2>
                     <div className="space-y-4">
                       {relatedPosts.map((relatedPost) => {
-                        const relatedImageUrl = getWixImageUrl(
+                        const relatedImageUrl = validateImageUrl(getWixImageUrl(
                           relatedPost.media?.wixMedia?.image || relatedPost.coverMedia?.image
-                        )
+                        ))
                         return (
                           <a
                             key={relatedPost._id}
@@ -618,6 +664,10 @@ export default function BlogPost({ slug }: BlogPostProps) {
                                   src={relatedImageUrl}
                                   alt={relatedPost.title}
                                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement
+                                    target.style.display = 'none'
+                                  }}
                                 />
                               </div>
                             )}

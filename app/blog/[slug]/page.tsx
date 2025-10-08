@@ -7,14 +7,20 @@ interface Params {
   params: { slug: string }
 }
 
-// Function to get Wix Image URL for meta tags
+// Function to get Wix Image URL for meta tags with proper error handling
 function getWixImageUrl(wixUrl: string | undefined): string | null {
-  if (!wixUrl || !wixUrl.startsWith('wix:image://')) {
-    return null
-  }
+  if (!wixUrl) return null
+  
   try {
-    const { url } = media.getImageUrl(wixUrl)
-    return url
+    // Handle both wix:image:// and direct URLs
+    if (wixUrl.startsWith('wix:image://')) {
+      const { url } = media.getImageUrl(wixUrl)
+      return url
+    } else if (wixUrl.startsWith('http')) {
+      // If it's already a direct URL, return as is
+      return wixUrl
+    }
+    return null
   } catch (error) {
     console.error('Error getting Wix image URL:', error)
     return null
@@ -23,23 +29,61 @@ function getWixImageUrl(wixUrl: string | undefined): string | null {
 
 // Function to get optimized Wix Image URL for social sharing
 function getOptimizedWixImageUrl(wixUrl: string | undefined, width: number = 1200, height: number = 630): string | null {
-  if (!wixUrl || !wixUrl.startsWith('wix:image://')) {
-    return null
-  }
+  if (!wixUrl) return null
+  
   try {
-    const { url } = media.getImageUrl(wixUrl, {
-      width,
-      height,
-      fit: 'cover'
-    })
-    return url
+    if (wixUrl.startsWith('wix:image://')) {
+      const { url } = media.getImageUrl(wixUrl)
+      return url
+    } else if (wixUrl.startsWith('http')) {
+      // For direct URLs, try to optimize if it's a Wix static URL
+      if (wixUrl.includes('static.wixstatic.com')) {
+        // Wix static URLs can be optimized by modifying the parameters
+        // Use Wix's image transformation API
+        return wixUrl.replace(/\/v1\/(.*)$/, `/v1/fill/w_${width},h_${height},al_c,q_85,usm_0.66_1.00_0.01,blur_0/$1`)
+      }
+      return wixUrl
+    }
+    return null
   } catch (error) {
     console.error('Error getting optimized Wix image URL:', error)
     return null
   }
 }
 
-// Function to generate optimized share image URL - PRIORITIZE FEATURED IMAGE
+// Function to validate and fix image URL for social media
+function validateAndFixImageUrl(imageUrl: string | null): string | null {
+  if (!imageUrl) return null
+  
+  try {
+    // Check if URL is valid
+    new URL(imageUrl)
+    
+    // Fix common Wix URL issues for social media
+    if (imageUrl.includes('static.wixstatic.com')) {
+      // Ensure the URL uses HTTPS
+      const secureUrl = imageUrl.replace('http://', 'https://')
+      
+      // Remove any double encoding or weird characters
+      const cleanUrl = secureUrl.replace(/%25/g, '%')
+      
+      // Ensure it has proper file extension
+      if (!cleanUrl.match(/\.(jpg|jpeg|png|webp)$/i)) {
+        // If no extension, assume jpg and add parameters for optimization
+        return `${cleanUrl}~mv2.jpg`
+      }
+      
+      return cleanUrl
+    }
+    
+    return imageUrl
+  } catch (error) {
+    console.error('Invalid image URL for social media:', imageUrl, error)
+    return null
+  }
+}
+
+// Function to generate optimized share image URL - with validation
 function getOptimizedShareImage(wixUrl: string | undefined): string | null {
   if (!wixUrl) return null
   
@@ -47,7 +91,8 @@ function getOptimizedShareImage(wixUrl: string | undefined): string | null {
   const optimizedImageUrl = getOptimizedWixImageUrl(wixUrl, 1200, 630)
   const imageUrl = optimizedImageUrl || getWixImageUrl(wixUrl)
   
-  return imageUrl
+  // Validate and fix the URL for social media platforms
+  return validateAndFixImageUrl(imageUrl)
 }
 
 // Function to extract text from content for meta description
@@ -96,16 +141,7 @@ async function fetchBlogBySlug(slug: string) {
           "CONTENT_TEXT",
           "URL",
           "RICH_CONTENT",
-          "TAGS",
           "SEO",
-          "EXCERPT",
-          "TITLE",
-          "COVER_MEDIA",
-          "PUBLISHED_DATE",
-          "CONTENT",
-          "MEDIA",
-          "FIRST_PUBLISHED_DATE",
-          "LAST_PUBLISHED_DATE",
         ],
       })
       if (response.post) blog = response.post
@@ -160,24 +196,23 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (blog.lastPublishedDate) {
     articleMeta.modifiedTime = blog.lastPublishedDate
   }
-  if (blog.tags && blog.tags.length > 0) {
+  if (Array.isArray(blog.tags) && blog.tags.length > 0) {
     articleMeta.tags = blog.tags
   }
 
-  // Prepare images array for Open Graph
+  // Prepare images array for Open Graph - only include if valid
   const ogImages = []
   if (featuredImageUrl) {
     ogImages.push({
       url: featuredImageUrl,
-      width: 1200,
-      height: 630,
+
       alt: title,
-      type: 'image/jpeg',
+   
     })
   }
 
   return {
-    title: `${title} | Medivisor India Treatment`,
+    title: `${title} | Medivisor India`,
     description,
     alternates: {
       canonical: url,
@@ -187,19 +222,19 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       description,
       url,
       siteName: "Medivisor India Treatment",
-       images: featuredImageUrl ? [featuredImageUrl] : [],
+      images: ogImages,
       locale: "en_US",
       type: "article",
       ...articleMeta,
-      authors: ["Medivisor India Treatment"],
+      authors: ["Medivisor India"],
     },
     twitter: {
       card: featuredImageUrl ? "summary_large_image" : "summary",
       title,
       description,
       images: featuredImageUrl ? [featuredImageUrl] : [],
-      site: "@medivisorindiatreatment",
-      creator: "@medivisorindiatreatment",
+      site: "@medivisorindia",
+      creator: "@medivisorindia",
     },
     robots: {
       index: true,
