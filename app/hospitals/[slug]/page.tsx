@@ -385,7 +385,7 @@ const BranchCard = ({ branch, hospitalSlug }: { branch: any; hospitalSlug: strin
 
   return (
     <Link href={`/hospitals/branches/${branchSlug}`} className="group block">
-      <div className="relative w-full h-48 rounded-t-xs overflow-hidden bg-gray-100 mb-4">
+      <div className="relative w-full h-48 rounded-t-xs overflow-hidden bg-gray-100 mb-0">
         {branchImage ? (
           <Image
             src={branchImage}

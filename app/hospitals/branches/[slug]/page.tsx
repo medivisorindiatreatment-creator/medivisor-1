@@ -765,9 +765,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
               {branch.description && (
                 <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
                   <h2 className="text-2xl font-semibold  text-gray-800 mb-4">About {branch.name}</h2>
-                 <p className="">
-                   {renderRichText(branch.description)}
-                 </p>
+                  {renderRichText(branch.description)}
                 </section>
               )}
 

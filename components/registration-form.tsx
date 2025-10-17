@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation"
 import {
   schedule,
   type LocationId,
+  type TimeSlot,
   getFlagEmoji,
   getLocationById,
   getAllLocationIds,
-  formatDateFriendly
+  formatDateFriendly,
+  getTimeSlotsForDate
 } from "@/lib/schedule"
 
 type FormState = {
@@ -18,6 +20,7 @@ type FormState = {
   phone: string
   country: LocationId
   date: string
+  timeSlot: string
   notes: string
 }
 
@@ -27,6 +30,7 @@ type FormErrors = {
   phone?: string
   country?: string
   date?: string
+  timeSlot?: string
 }
 
 export default function ModernRegistrationForm({ className }: { className?: string }) {
@@ -41,6 +45,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
     phone: "",
     country: "png", // Default to first location
     date: "",
+    timeSlot: "",
     notes: "",
   })
 
@@ -53,9 +58,20 @@ export default function ModernRegistrationForm({ className }: { className?: stri
     return currentLocation.dates.map((date, index) => ({
       date,
       time: currentLocation.times[index] || "",
-      venue: currentLocation.venues[index] || ""
+      venue: currentLocation.venues[index] || "",
+      dateIndex: index
     }))
   }, [currentLocation])
+
+  // Get available time slots for selected date
+  const availableTimeSlots = useMemo(() => {
+    if (!form.date || !currentLocation) return []
+    
+    const selectedDateIndex = availableDates.findIndex(d => d.date === form.date)
+    if (selectedDateIndex === -1) return []
+    
+    return getTimeSlotsForDate(currentLocation, selectedDateIndex)
+  }, [form.date, currentLocation, availableDates])
 
   // Form validation
   const validateForm = (): boolean => {
@@ -83,6 +99,10 @@ export default function ModernRegistrationForm({ className }: { className?: stri
       newErrors.date = "Please select a date"
     }
 
+    if (!form.timeSlot) {
+      newErrors.timeSlot = "Please select a time slot"
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -90,7 +110,15 @@ export default function ModernRegistrationForm({ className }: { className?: stri
   const onChange = (key: keyof FormState, value: string) => {
     setForm((f) => {
       const next = { ...f, [key]: value }
-      if (key === "country") next.date = "" // Reset date when country changes
+      
+      // Reset dependent fields when parent field changes
+      if (key === "country") {
+        next.date = "" // Reset date when country changes
+        next.timeSlot = "" // Reset time slot when country changes
+      } else if (key === "date") {
+        next.timeSlot = "" // Reset time slot when date changes
+      }
+      
       return next
     })
 
@@ -113,6 +141,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
 
     try {
       const selectedDate = availableDates.find(d => d.date === form.date)
+      const selectedTimeSlot = availableTimeSlots.find(t => t.time === form.timeSlot)
       const selectedLocation = getLocationById(form.country)
 
       if (!selectedLocation) {
@@ -125,7 +154,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
         countryName: selectedLocation.label,
         countryCode: "+61",
         whatsapp: form.phone.replace(/\D/g, ""),
-        message: `Appointment Request - ${selectedLocation.label} on ${form.date} (${selectedDate?.time}) at ${selectedDate?.venue}. ${form.notes ? `Notes: ${form.notes}` : ""}`,
+        message: `Appointment Request - ${selectedLocation.label} on ${formatDateFriendly(form.date)} at ${selectedTimeSlot?.displayTime} (${selectedDate?.venue}). ${form.notes ? `Notes: ${form.notes}` : ""}`,
       }
 
       const res = await fetch("/api/submit", {
@@ -168,10 +197,9 @@ export default function ModernRegistrationForm({ className }: { className?: stri
     }
   }
 
-  // Format date for display with time and venue
-  const formatDisplayDate = (dateObj: { date: string; time: string; venue: string }) => {
-    const formattedDate = formatDateFriendly(dateObj.date)
-    return `${formattedDate}, ${dateObj.time}, ${dateObj.venue}`
+  // Format date for display (date only, no time)
+  const formatDisplayDate = (date: string) => {
+    return formatDateFriendly(date)
   }
 
   // Get display label for location
@@ -184,7 +212,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
     <form
       onSubmit={onSubmit}
       className={cn(
-        "max-w-3xl mx-auto grid gap-8 rounded-xs border border-gray-200 bg-white shadow-xs p-6 md:p-4",
+        "max-w-3xl mx-auto grid gap-4 rounded-xs border border-gray-200 bg-white shadow-xs p-6 md:p-4",
         className,
       )}
       id="registration-form"
@@ -200,7 +228,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
       </div>
 
       {/* Form Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-gray-50 p-5 py-6 rounded-xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-gray-50 p-5 py-6 rounded-xs">
         {/* Full Name */}
         <div className="grid gap-2">
           <label htmlFor="name" className="text-sm font-medium text-gray-900">
@@ -212,7 +240,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
             value={form.name}
             onChange={(e) => onChange("name", e.target.value)}
             className={cn(
-              "h-12 rounded-lg border text-sm bg-white px-2 outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
+              "h-12 rounded-xs border text-sm bg-white px-2 outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
               errors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500",
             )}
             placeholder="Enter your full name"
@@ -238,7 +266,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
             value={form.email}
             onChange={(e) => onChange("email", e.target.value)}
             className={cn(
-              "h-12 rounded-lg border text-sm bg-white px-2 outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
+              "h-12 rounded-xs border text-sm bg-white px-2 outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
               errors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500",
             )}
             placeholder="you@example.com"
@@ -255,7 +283,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
         {/* Phone */}
         <div className="grid gap-2">
           <label htmlFor="phone" className="text-sm font-medium text-gray-900">
-            Phone *
+            Mobile Number *
           </label>
           <input
             id="phone"
@@ -263,7 +291,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
             value={form.phone}
             onChange={(e) => onChange("phone", e.target.value)}
             className={cn(
-              "h-12 rounded-lg border text-sm bg-white px-2 outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
+              "h-12 rounded-xs border text-sm bg-white px-2 outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
               errors.phone ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500",
             )}
             placeholder="+61 400 000 000"
@@ -280,13 +308,13 @@ export default function ModernRegistrationForm({ className }: { className?: stri
         {/* Location */}
         <div className="grid gap-2">
           <label htmlFor="country" className="text-sm font-medium text-gray-900">
-            Location *
+            Country *
           </label>
           <select
             id="country"
             value={form.country}
             onChange={(e) => onChange("country", e.target.value as LocationId)}
-            className="h-12 rounded-lg border border-gray-300 text-sm bg-white px-4 outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            className="h-12 rounded-xs border border-gray-300 text-sm bg-white px-4 outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
           >
             {getAllLocationIds().map((locationId) => {
               const location = getLocationById(locationId)
@@ -304,7 +332,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
         {/* Date */}
         <div className="grid gap-2">
           <label htmlFor="date" className="text-sm font-medium text-gray-900">
-            Preferred Date & Time *
+            Preferred Date *
           </label>
           <select
             id="date"
@@ -313,18 +341,18 @@ export default function ModernRegistrationForm({ className }: { className?: stri
             value={form.date}
             onChange={(e) => onChange("date", e.target.value)}
             className={cn(
-              "h-12 rounded-lg border text-sm bg-white px-2 outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
+              "h-12 rounded-xs border text-sm bg-white px-2 outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
               errors.date ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500",
               !availableDates.length ? "opacity-50 cursor-not-allowed" : "",
             )}
             aria-describedby={errors.date ? "date-error" : undefined}
           >
             <option value="" disabled>
-              {availableDates.length ? "Select date & time" : "No dates available"}
+              {availableDates.length ? "Select date" : "No dates available"}
             </option>
             {availableDates.map((dateObj, index) => (
               <option key={`${dateObj.date}-${index}`} value={dateObj.date}>
-                {formatDisplayDate(dateObj)}
+                {formatDisplayDate(dateObj.date)}
               </option>
             ))}
           </select>
@@ -335,41 +363,42 @@ export default function ModernRegistrationForm({ className }: { className?: stri
           )}
         </div>
 
-        {/* Location Contact Info */}
-        <div className="md:col-span-2 grid gap-2">
-          <div className="bg-white border border-gray-100 rounded-lg p-4 shadow-xs">
-            <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
-              <span className="text-lg">{currentLocation && getFlagEmoji(form.country)}</span>
-              {currentLocation?.label} - Contact Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-800">
-                  <strong>Local Contact:</strong>
-                </p>
-                <p className="text-gray-600 mt-1">{currentLocation?.localContact || "Not specified"}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-gray-800">
-                  <strong>Meeting Fee:</strong>
-                </p>
-                <p className="text-gray-600 mt-1">{currentLocation?.feeLabel || "Not specified"}</p>
-              </div>
-            </div>
-            <div className="mt-2 border-gray-200 border-t pt-2">
-              <p className="text-gray-800 font-medium text-sm mb-2">Available Slots:</p>
-              <div className="space-y-2">
-                {availableDates.map((dateObj, index) => (
-                  <div key={index} className="flex items-start gap-2 text-sm text-gray-600">
-                    <span className="text-gray-400 mt-0.5">•</span>
-                    <span>{formatDisplayDate(dateObj)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        {/* Time Slot */}
+        <div className="grid gap-2">
+          <label htmlFor="timeSlot" className="text-sm font-medium text-gray-900">
+            Preferred Time Slot *
+          </label>
+          <select
+            id="timeSlot"
+            required
+            disabled={!form.date || !availableTimeSlots.length}
+            value={form.timeSlot}
+            onChange={(e) => onChange("timeSlot", e.target.value)}
+            className={cn(
+              "h-12 rounded-xs border text-sm bg-white px-2 outline-none focus:ring-2 focus:ring-blue-500 transition-colors",
+              errors.timeSlot ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-blue-500",
+              !form.date || !availableTimeSlots.length ? "opacity-50 cursor-not-allowed" : "",
+            )}
+            aria-describedby={errors.timeSlot ? "timeSlot-error" : undefined}
+          >
+            <option value="" disabled>
+              {!form.date ? "Select a date first" : availableTimeSlots.length ? "Select time slot" : "No slots available"}
+            </option>
+            {availableTimeSlots.map((slot, index) => (
+              <option key={`${slot.time}-${index}`} value={slot.time}>
+                {slot.displayTime}
+              </option>
+            ))}
+          </select>
+          {errors.timeSlot && (
+            <p id="timeSlot-error" className="text-red-500 text-xs mt-1">
+              {errors.timeSlot}
+            </p>
+          )}
         </div>
 
+      
+       
         {/* Notes */}
         <div className="md:col-span-2 grid gap-2">
           <label htmlFor="notes" className="text-sm font-medium text-gray-900">
@@ -379,7 +408,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
             id="notes"
             value={form.notes}
             onChange={(e) => onChange("notes", e.target.value)}
-            className="min-h-[100px] rounded-lg border border-gray-300 text-sm bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition-colors resize-vertical"
+            className="min-h-[150px] rounded-xs border border-gray-300 text-sm bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition-colors resize-vertical"
             placeholder="Briefly describe your concern or any additional information..."
           />
         </div>
@@ -391,7 +420,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
           role="status"
           aria-live="polite"
           className={cn(
-            "rounded-lg px-4 py-3 text-sm font-medium",
+            "rounded-xs px-4 py-3 text-sm font-medium",
             submitted.ok
               ? "bg-green-50 text-green-700 border border-green-200"
               : "bg-red-50 text-red-700 border border-red-200",
@@ -406,10 +435,10 @@ export default function ModernRegistrationForm({ className }: { className?: stri
         type="submit"
         disabled={loading}
         className={cn(
-          "h-12 w-full rounded-lg font-semibold transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2",
+          "h-12 w-full rounded-xs font-semibold transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2",
           loading
             ? "bg-gray-400 text-white"
-            : "bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500 focus:ring-offset-white",
+            : "bg-gray-100 text-gray-800 hover:bg-gray-200 ",
         )}
       >
         {loading ? (
@@ -430,7 +459,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
             Processing...
           </span>
         ) : (
-          "Book Appointment"
+          "Register Now "
         )}
       </button>
 
