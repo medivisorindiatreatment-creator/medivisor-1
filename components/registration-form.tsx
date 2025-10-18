@@ -13,7 +13,7 @@ import {
   getAllLocationIds,
   formatDateFriendly,
   getTimeSlotsForDate
-} from "@/lib/eye-test"
+} from "@/lib/schedule"
 
 type FormState = {
   name: string
