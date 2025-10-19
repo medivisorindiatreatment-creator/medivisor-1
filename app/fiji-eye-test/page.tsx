@@ -148,7 +148,7 @@ export default function Page() {
                                                 </div>
 
                                                 {/* Fee and Contact */}
-                                                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                                                {/* <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                                                     <div className="text-lg md:text-base">
                                                         <p className="text-gray-500 text-sm">Consultation Fee</p>
                                                         <p className="font-semibold text-[#241d1f] mt-1">
@@ -161,7 +161,7 @@ export default function Page() {
 
 
 
-                                                </div>
+                                                </div> */}
                                             </CardContent>
                                         </Card>
                                     );
