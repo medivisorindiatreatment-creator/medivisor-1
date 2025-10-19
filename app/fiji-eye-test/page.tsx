@@ -170,7 +170,7 @@ export default function Page() {
                             <div className="relative bg-gradient-to-br from-white to-gray-50 rounded-xs shadow-xs p-3 sm:p-8 md:p-10 border border-gray-100 ">
 
                                 {/* Profile Header */}
-                                <div className="flex flex-col md:flex-row md:items-center md:justify-start gap-6 sm:gap-8 mb-8 md:mb-10 text-center md:text-left">
+                                <div className="flex flex-col md:flex-row md:items-center md:justify-start gap-6 sm:gap-8 mb-8 md:mb-5 text-center md:text-left">
 
                                     {/* Profile Image */}
                                     <div className="relative mx-auto md:mx-0 w-full h-auto sm:w-40 sm:h-40 md:w-48 md:h-48 md:rounded-full md:border-4 border-[#74c044]/40 bg-white md:shadow-md overflow-hidden flex-shrink-0">
@@ -183,10 +183,10 @@ export default function Page() {
 
                                     {/* Name and Credentials */}
                                     <div className="space-y-2 sm:space-y-3 mt-4 md:mt-0">
-                                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
+                                        <h2 className="text-3xl sm:text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
                                             Dr. Rahul Bhatia
                                         </h2>
-                                        <p className="text-[#74c044] font-semibold text-base sm:text-lg tracking-wide">
+                                        <p className="text-[#74c044] font-semibold text-lg sm:text-lg tracking-wide">
                                             MBBS, MS, DNB
                                         </p>
                                        
@@ -198,7 +198,7 @@ export default function Page() {
 
                                     {/* Left Column */}
                                     <div className="space-y-5 sm:space-y-6">
-                                        <div>
+                                       <div className="bg-white rounded-xs border border-gray-100 p-4 sm:p-5 shadow-xs">
                                             <p className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-widest mb-2">
                                                 Expertise
                                             </p>
