@@ -249,7 +249,7 @@ export default function BlogCarousel() {
 
                             {/* Description with consistent sizing and ellipsis */}
                             <div className="min-h-[60px]">
-                              <p className="text-sm text-gray-700 line-clamp-3 leading-relaxed">
+                              <p className="description-1 text-[#241d1f] line-clamp-3 leading-relaxed">
                                 {post.excerpt}
                               </p>
                             </div>
