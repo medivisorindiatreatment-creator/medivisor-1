@@ -335,6 +335,7 @@ const DoctorCard = ({ item }: { item: any }) => {
 const TreatmentCard = ({ item }: { item: any }) => {
   const treatmentImage = getTreatmentImage(item.treatmentImage)
   const treatmentSlug = item.slug || generateSlug(item.name)
+  const processedDescription = item.description ? removeBannersFromDescription(item.description) : "Comprehensive medical treatment for optimal recovery."
 
   return (
     <Link
@@ -364,9 +365,10 @@ const TreatmentCard = ({ item }: { item: any }) => {
           <p className="text-gray-600 font-medium line-clamp-1">
             {item.category || 'Specialized Treatment'}
           </p>
-          <p className="text-gray-500 text-sm line-clamp-2">
-            {item.description || "Comprehensive medical treatment for optimal recovery."}
-          </p>
+          <div 
+            className="text-gray-500 text-sm line-clamp-2"
+            dangerouslySetInnerHTML={{ __html: processedDescription }}
+          />
         </div>
         {item.cost && (
           <div className="mt-4 pt-4 border-t border-gray-100">

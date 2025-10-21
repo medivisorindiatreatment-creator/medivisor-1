@@ -90,6 +90,24 @@ const getTreatmentImage = (richContent: any): string | null => {
   return null
 }
 
+// Helper function to get short plain text description from rich content
+const getShortDescription = (richContent: any, maxLength: number = 100): string => {
+  if (typeof richContent === 'string') {
+    const text = richContent.replace(/<[^>]*>/g, '').trim();
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  }
+  if (!richContent || !richContent.nodes) return '';
+  let text = '';
+  for (const node of richContent.nodes) {
+    if (node.type === 'PARAGRAPH' && text.length < maxLength) {
+      const paraText = node.nodes?.map((n: any) => n.text || '').join(' ').trim();
+      text += (text ? ' ' : '') + paraText;
+    }
+    if (text.length >= maxLength) break;
+  }
+  return text.trim().length > maxLength ? text.trim().substring(0, maxLength) + '...' : text.trim();
+}
+
 // Helper function to render rich text content
 const renderRichText = (richContent: any): JSX.Element | null => {
   if (typeof richContent === 'string') {
@@ -288,7 +306,7 @@ const HospitalCard = ({ hospital, hospitalImage, hospitalSlug }: { hospital: any
       <h5 className="font-semibold text-gray-800 text-lg mb-2 line-clamp-1">{hospital.name}</h5>
       <p className="text-gray-600 font-medium mb-2 line-clamp-1">{hospital.accreditation || 'Leading Healthcare Provider'}</p>
       <p className="text-gray-500 text-sm mb-2 line-clamp-1">{hospital.beds || 'N/A'} Beds</p>
-      {hospital.description && <p className="text-gray-500 text-sm  line-clamp-1">{hospital.description}</p>}
+      {hospital.description && <p className="text-gray-500 text-sm  line-clamp-1">{getShortDescription(hospital.description)}</p>}
     </div>
   </Link>
 )
@@ -426,14 +444,14 @@ const EmblaCarousel = ({
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
 
-  const itemsPerView = type === 'doctors' ? 3 : 3
-  const visibleSlidesClass = `min-w-0 w-80`
+  const itemsPerView = 3
+  const visibleSlidesClass = 'w-1/3'
 
   return (
     <div className="relative">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-2">
         <h3 className="text-2xl font-semibold text-gray-800 flex items-center gap-3">
-          <Icon className="w-6 h-6 text-gray-600" />
+          <Icon className="w-5 h-5 text-[#241d1f]" />
           {title} <span className="text-gray-500 font-normal">({items.length})</span>
         </h3>
         {items.length > itemsPerView && (
@@ -553,7 +571,7 @@ const TreatmentCard = ({ item }: { item: any }) => {
             {item.category || 'Specialized Treatment'}
           </p>
           <p className="text-gray-500 text-sm line-clamp-2">
-            {item.description || "Comprehensive medical treatment for optimal recovery."}
+            {getShortDescription(item.description)}
           </p>
         </div>
         {item.cost && (

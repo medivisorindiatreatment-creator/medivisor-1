@@ -29,10 +29,10 @@ function mapDoctor(item: any) {
     name: val(item, "Doctor Name", "doctorName", "name") ?? "Doctor",
     specialization: val(item, "Specialization", "specialization") ?? null,
     qualification: val(item, "Qualification", "qualification") ?? null,
-    experience: val(item, "Experience (Years)", "experience") ?? null,
+    experience: val(item, "experienceYears", "experience") ?? null,
     designation: val(item, "Designation", "designation") ?? null,
     languagesSpoken: val(item, "Languages Spoken", "languagesSpoken") ?? null,
-    about: val(item, "About Doctor", "about") ?? null,
+    about: val(item, "About Doctor", "aboutDoctor") ?? null,
     profileImage: item["profileImage"] || item.profileImage || item.profileImage || null, // Raw for rich content
     cityId: val(item, "City (ID)", "cityId") ?? null,
     stateId: val(item, "State (ID)", "stateId") ?? null,

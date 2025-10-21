@@ -157,7 +157,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
         message: `Eye Test Appointment - ${selectedLocation.label} on ${formatDateFriendly(form.date)} at ${selectedTimeSlot?.displayTime} (${selectedDate?.venue}). ${form.notes ? `Notes: ${form.notes}` : ""}`,
       }
 
-      const res = await fetch("/api/submit", {
+      const res = await fetch("/api/eye-test", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(formData),

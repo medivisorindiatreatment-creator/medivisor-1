@@ -62,6 +62,99 @@ const getTreatmentImage = (richContent: any): string | null => {
   return null
 }
 
+// Helper function to get short plain text about from rich content
+const getShortabout = (richContent: any, maxLength: number = 100): string => {
+  if (typeof richContent === 'string') {
+    const text = richContent.replace(/<[^>]*>/g, '').trim();
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  }
+  if (!richContent || !richContent.nodes) return '';
+  let text = '';
+  for (const node of richContent.nodes) {
+    if (node.type === 'PARAGRAPH' && text.length < maxLength) {
+      const paraText = node.nodes?.map((n: any) => n.text || '').join(' ').trim();
+      text += (text ? ' ' : '') + paraText;
+    }
+    if (text.length >= maxLength) break;
+  }
+  return text.trim().length > maxLength ? text.trim().substring(0, maxLength) + '...' : text.trim();
+}
+
+// Helper function to render rich text content
+const renderRichText = (richContent: any): JSX.Element | null => {
+  if (typeof richContent === 'string') {
+    // Handle HTML string with dangerouslySetInnerHTML, stripping or mapping classes if needed
+    // For simplicity, render as HTML, assuming global styles or inline styles
+    return <div className="text-gray-600 leading-relaxed prose space-y-3 prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: richContent }} />
+  }
+  if (!richContent || !richContent.nodes) return null
+
+  const renderNode = (node: any): JSX.Element | null => {
+    switch (node.type) {
+      case 'PARAGRAPH':
+        return (
+          <p key={Math.random()} className="text-gray-600 leading-relaxed mb-2">
+            {node.nodes?.map((child: any, idx: number) => renderTextNode(child, idx))}
+          </p>
+        )
+      case 'HEADING1':
+        return (
+          <h3 key={Math.random()} className="text-xl font-semibold text-gray-800 mb-2">
+            {node.nodes?.map((child: any, idx: number) => renderTextNode(child, idx))}
+          </h3>
+        )
+      case 'HEADING2':
+        return (
+          <h4 key={Math.random()} className="text-lg font-semibold text-gray-800 mb-2">
+            {node.nodes?.map((child: any, idx: number) => renderTextNode(child, idx))}
+          </h4>
+        )
+      case 'IMAGE':
+        const imgSrc = node.imageData?.image?.src?.id
+          ? `https://static.wixstatic.com/media/${node.imageData.image.src.id}`
+          : null
+        if (imgSrc) {
+          return (
+            <div key={Math.random()} className="my-4">
+              <Image
+                src={imgSrc}
+                alt="Embedded image"
+                width={600}
+                height={400}
+                className="w-full h-auto rounded-lg"
+              />
+            </div>
+          )
+        }
+        return null
+      default:
+        return null
+    }
+  }
+
+  const renderTextNode = (textNode: any, idx: number): JSX.Element | null => {
+    if (textNode.type !== 'TEXT') return null
+    const text = textNode.text || ''
+    const isBold = textNode.textStyle?.bold || false
+    const isItalic = textNode.textStyle?.italic || false
+    const isUnderline = textNode.textStyle?.underline || false
+
+    let content = text
+    if (isBold) content = <strong key={idx}>{text}</strong>
+    else if (isItalic) content = <em key={idx}>{text}</em>
+    else if (isUnderline) content = <u key={idx}>{text}</u>
+    else content = <span key={idx}>{text}</span>
+
+    return content
+  }
+
+  return (
+    <div className="space-y-4">
+      {richContent.nodes.map((node: any, idx: number) => renderNode(node))}
+    </div>
+  )
+}
+
 // Helper function to generate a URL-friendly slug
 const generateSlug = (name: string): string => {
   return name
@@ -192,7 +285,7 @@ const HospitalCard = ({ hospital, hospitalImage, hospitalSlug }: { hospital: any
       <h5 className="font-semibold text-gray-800 text-lg mb-2 line-clamp-1">{hospital.name}</h5>
       <p className="text-gray-600 font-medium mb-2 line-clamp-1">{hospital.accreditation || 'Leading Healthcare Provider'}</p>
       <p className="text-gray-500 text-sm mb-2 line-clamp-1">{hospital.beds || 'N/A'} Beds</p>
-      {hospital.description && <p className="text-gray-500 text-sm line-clamp-1">{hospital.description}</p>}
+      {hospital.about && <p className="text-gray-500 text-sm line-clamp-1">{getShortabout(hospital.about)}</p>}
     </div>
   </Link>
 )
@@ -363,7 +456,7 @@ const TreatmentCard = ({ item }: { item: any }) => {
         <div className="space-y-3">
           <h5 className="font-semibold text-gray-800 text-lg line-clamp-1 group-hover:text-blue-600 transition-colors duration-200">{item.name}</h5>
           <p className="text-gray-600 font-medium line-clamp-1">{item.category || 'Specialized Treatment'}</p>
-          <p className="text-gray-500 text-sm line-clamp-2">{item.description || "Comprehensive medical treatment for optimal recovery."}</p>
+          <p className="text-gray-500 text-sm line-clamp-2">{getShortabout(item.about) || "Comprehensive medical treatment for optimal recovery."}</p>
         </div>
         {item.cost && (
           <div className="mt-4 pt-4 border-t border-gray-100">
@@ -556,9 +649,9 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
               <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-3">Doctor Profile</h2>
                 <div className="space-y-3">
-                  {doctor.description && (
+                  {doctor.about && (
                     <div className="prose prose-lg max-w-none">
-                      <p className="text-gray-700 leading-relaxed">{doctor.description}</p>
+                      {renderRichText(doctor.about)}
                     </div>
                   )}
                   <div className="grid md:grid-cols-2 gap-4">

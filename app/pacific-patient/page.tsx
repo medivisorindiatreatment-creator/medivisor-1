@@ -112,10 +112,10 @@ export default function Page() {
                       alt={`${item.country} Flag`}
                       className="w-32 h-auto  mb-0"
                     />
-                    <p className="font-semibold text-gray-800 text-xs md:text-sm mt-3 text-center">
+                    <p className="font-semibold text-gray-800 text-[10px] md:text-sm mt-3 text-center">
                       {item.country}
                     </p>
-                    <p className="font-semibold text-gray-800 text-xs text-center">
+                    <p className="font-semibold text-gray-800 text-[10px] text-center">
                       ({item.city})
                     </p>
 
