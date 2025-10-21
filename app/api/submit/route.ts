@@ -6,7 +6,7 @@ import { Resend } from 'resend'
 // Initialize Resend client
 const resend = new Resend('re_8YGxVSjE_Q7rKy9Jgk6FzwhHeEw5GJ2fW')
 
-// Updated validation to match form data structure
+// Updated validation to include new fields
 function validate(input: any):
   | {
       ok: true
@@ -16,6 +16,10 @@ function validate(input: any):
         countryName: string
         whatsapp: string
         message: string
+        appointmentDate: string
+        appointmentTime: string
+        appointmentVenue: string
+        appointmentLocation: string
       }
     }
   | { ok: false; error: string } {
@@ -24,13 +28,31 @@ function validate(input: any):
   const countryName = String(input?.countryName ?? "").trim()
   const whatsapp = String(input?.whatsapp ?? "").trim()
   const message = String(input?.message ?? "").trim()
+  const appointmentDate = String(input?.appointmentDate ?? "").trim()
+  const appointmentTime = String(input?.appointmentTime ?? "").trim()
+  const appointmentVenue = String(input?.appointmentVenue ?? "").trim()
+  const appointmentLocation = String(input?.appointmentLocation ?? "").trim()
 
   if (!name) return { ok: false, error: "Please enter your name." }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: "Please enter a valid email." }
   if (!whatsapp) return { ok: false, error: "Please enter a valid WhatsApp number." }
-  if (!message) return { ok: false, error: "Please enter a message." }
+  if (!appointmentDate) return { ok: false, error: "Please select an appointment date." }
+  if (!appointmentTime) return { ok: false, error: "Please select an appointment time." }
 
-  return { ok: true, data: { name, email, countryName, whatsapp, message } }
+  return { 
+    ok: true, 
+    data: { 
+      name, 
+      email, 
+      countryName, 
+      whatsapp, 
+      message,
+      appointmentDate,
+      appointmentTime,
+      appointmentVenue,
+      appointmentLocation
+    } 
+  }
 }
 
 function toE164(whatsapp: string) {
@@ -51,7 +73,18 @@ export async function POST(request: Request) {
       })
     }
 
-    const { name, email, countryName, whatsapp, message } = parsed.data
+    const { 
+      name, 
+      email, 
+      countryName, 
+      whatsapp, 
+      message,
+      appointmentDate,
+      appointmentTime,
+      appointmentVenue,
+      appointmentLocation
+    } = parsed.data
+    
     const fullPhone = toE164(whatsapp)
 
     const collectionId =
@@ -76,6 +109,10 @@ export async function POST(request: Request) {
         whatsapp: fullPhone,
         phone: fullPhone,
         message,
+        appointmentDate,
+        appointmentTime,
+        appointmentVenue,
+        appointmentLocation,
         source: "registration-form",
         createdAt: nowIso,
         submissionTime: nowIso,
@@ -111,11 +148,14 @@ export async function POST(request: Request) {
               <div style="background-color: #fff; padding: 15px; border-radius: 6px; border: 1px solid #ddd;">
                 <p style="margin: 0 0 10px;"><strong>Name:</strong> <span style="font-weight: normal;">${name}</span></p>
                 <p style="margin: 0 0 10px;"><strong>Email:</strong> <span style="font-weight: normal;">${email}</span></p>
-                <p style="margin: 0 0 10px;"><strong>Country:</strong> <span style="font-weight: normal;">${countryName}</span></p>
+                <p style="margin: 0 0 10px;"><strong>Country/Location:</strong> <span style="font-weight: normal;">${appointmentLocation || countryName}</span></p>
                 <p style="margin: 0 0 10px;"><strong>WhatsApp:</strong> <span style="font-weight: normal;">${fullPhone}</span></p>
+                <p style="margin: 0 0 10px;"><strong>Appointment Date:</strong> <span style="font-weight: normal;">${appointmentDate}</span></p>
+                <p style="margin: 0 0 10px;"><strong>Appointment Time:</strong> <span style="font-weight: normal;">${appointmentTime}</span></p>
+                <p style="margin: 0 0 10px;"><strong>Venue:</strong> <span style="font-weight: normal;">${appointmentVenue || 'Not specified'}</span></p>
                 <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-                <p style="margin: 0 0 5px;"><strong>Appointment Details:</strong></p>
-                <p style="white-space: pre-wrap; margin: 0; background-color: #f0f0f0; padding: 10px; border-radius: 4px;">${message}</p>
+                <p style="margin: 0 0 5px;"><strong>Additional Message:</strong></p>
+                <p style="white-space: pre-wrap; margin: 0; background-color: #f0f0f0; padding: 10px; border-radius: 4px;">${message || 'No additional message provided'}</p>
               </div>
               
               <p style="text-align: center; margin-top: 20px; font-size: 14px; color: #888;">This email was sent from your registration form.</p>
@@ -166,7 +206,18 @@ export async function submitContact(input: unknown): Promise<{ ok: boolean; erro
   const parsed = validate(input)
   if (!parsed.ok) return { ok: false, error: parsed.error }
 
-  const { name, email, countryName, whatsapp, message } = parsed.data
+  const { 
+    name, 
+    email, 
+    countryName, 
+    whatsapp, 
+    message,
+    appointmentDate,
+    appointmentTime,
+    appointmentVenue,
+    appointmentLocation
+  } = parsed.data
+  
   const fullPhone = toE164(whatsapp)
 
   const collectionId =
@@ -188,6 +239,10 @@ export async function submitContact(input: unknown): Promise<{ ok: boolean; erro
       whatsapp: fullPhone,
       phone: fullPhone,
       message,
+      appointmentDate,
+      appointmentTime,
+      appointmentVenue,
+      appointmentLocation,
       source: "registration-form",
       createdAt: nowIso,
       submissionTime: nowIso,
@@ -223,11 +278,14 @@ export async function submitContact(input: unknown): Promise<{ ok: boolean; erro
             <div style="background-color: #fff; padding: 15px; border-radius: 6px; border: 1px solid #ddd;">
               <p style="margin: 0 0 10px;"><strong>Name:</strong> <span style="font-weight: normal;">${name}</span></p>
               <p style="margin: 0 0 10px;"><strong>Email:</strong> <span style="font-weight: normal;">${email}</span></p>
-              <p style="margin: 0 0 10px;"><strong>Country:</strong> <span style="font-weight: normal;">${countryName}</span></p>
+              <p style="margin: 0 0 10px;"><strong>Country/Location:</strong> <span style="font-weight: normal;">${appointmentLocation || countryName}</span></p>
               <p style="margin: 0 0 10px;"><strong>WhatsApp:</strong> <span style="font-weight: normal;">${fullPhone}</span></p>
+              <p style="margin: 0 0 10px;"><strong>Appointment Date:</strong> <span style="font-weight: normal;">${appointmentDate}</span></p>
+              <p style="margin: 0 0 10px;"><strong>Appointment Time:</strong> <span style="font-weight: normal;">${appointmentTime}</span></p>
+              <p style="margin: 0 0 10px;"><strong>Venue:</strong> <span style="font-weight: normal;">${appointmentVenue || 'Not specified'}</span></p>
               <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-              <p style="margin: 0 0 5px;"><strong>Appointment Details:</strong></p>
-              <p style="white-space: pre-wrap; margin: 0; background-color: #f0f0f0; padding: 10px; border-radius: 4px;">${message}</p>
+              <p style="margin: 0 0 5px;"><strong>Additional Message:</strong></p>
+              <p style="white-space: pre-wrap; margin: 0; background-color: #f0f0f0; padding: 10px; border-radius: 4px;">${message || 'No additional message provided'}</p>
             </div>
             
             <p style="text-align: center; margin-top: 20px; font-size: 14px; color: #888;">This email was sent from your registration form.</p>

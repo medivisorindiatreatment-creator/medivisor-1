@@ -84,10 +84,10 @@ export default function Page() {
             {/* Heading */}
             <div>
               <div className="md:pt-16 pt-10">
-                <h2 className="text-3xl sm:text-6xl text-center font-semibold tracking-tight text-gray-900">
+                <h2 className="text-4xl sm:text-6xl text-center font-semibold tracking-tight text-gray-900">
                   Pacific Patient Meet
                 </h2>
-                <p className="heading-sm my-4 text-center font-medium">
+                <p className="heading-lg my-2 text-center font-medium">
                   Nov 18 – 26, 2025
                 </p>
               </div>
@@ -96,30 +96,30 @@ export default function Page() {
 
 
               {/* Schedule Section */}
-              <div className="flex h-full flex-wrap justify-between gap-4 pt-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-5 h-full  justify-between pt-4">
                 {[
-                  { flag: "/icon/flag/png.png", country: "PNG", city: "Port Moresby", date: "Nov 18–19" },
+                 { flag: "/icon/flag/png.png", country: "Papua New Guinea", city: "Port Moresby", date: "Nov 18–19" },
                   { flag: "/icon/flag/solomon-flag.png", country: "Solomon Islands", city: "Honiara", date: "Nov 20–21" },
                   { flag: "/icon/flag/vanuatu.png", country: "Vanuatu", city: "Port Vila", date: "Nov 23–24" },
                   { flag: "/icon/flag/fiji.png", country: "Fiji", city: "Lautoka & Suva", date: "Nov 25–26" },
                 ].map((item, i) => (
                   <div
                     key={i}
-                    className="flex flex-col items-center justify-center  w-[calc(25%-0.75rem)]"
+                    className="flex flex-col col-span-1 items-center justify-center "
                   >
                     <img
                       src={item.flag}
                       alt={`${item.country} Flag`}
-                      className="w-32 h-auto  mb-0"
+                      className="w-full h-auto  mb-0"
                     />
-                    <p className="font-semibold text-gray-800 text-[10px] md:text-sm mt-3 text-center">
+                    <p className="font-semibold text-gray-800 text-lg md:text-sm mt-3 text-center">
                       {item.country}
                     </p>
-                    <p className="font-semibold text-gray-800 text-[10px] text-center">
+                    <p className="font-semibold text-gray-800 text-lg md:text-sm text-center">
                       ({item.city})
                     </p>
 
-                    <p className="text-sm text-gray-800 mt-0">{item.date}</p>
+                    <p className="text-lg text-gray-800 md:text-sm mt-0">{item.date}</p>
                   </div>
                 ))}
               </div>

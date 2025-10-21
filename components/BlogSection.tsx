@@ -68,7 +68,6 @@ function getYouTubeEmbedUrl(youtubeUrl: string | undefined): string | null {
   const match = youtubeUrl.match(regExp)
 
   if (match && match[1] && match[1].length === 11) {
-    // Note: The original code had a typo here. This is the correct way.
     return `https://www.youtube.com/embed/${match[1]}`
   }
   return null
@@ -76,12 +75,12 @@ function getYouTubeEmbedUrl(youtubeUrl: string | undefined): string | null {
 
 // Function to calculate read time
 function calculateReadTime(text: string | undefined): string {
-  if (!text) return " 1 min read"
+  if (!text) return "1 min read"
   const wordsPerMinute = 200 // Average reading speed
   const plainText = text.replace(/<[^>]*>/g, "")
   const wordCount = plainText.split(/\s+/).filter((word) => word.length > 0).length
   const minutes = Math.ceil(wordCount / wordsPerMinute)
-  return minutes === 0 ? " 1 min read" : `${minutes} min read`
+  return minutes === 0 ? "1 min read" : `${minutes} min read`
 }
 
 const LIMIT = 12
@@ -89,7 +88,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 export default function BlogCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", skipSnaps: false, dragFree: false })
-  const [isPlaying, setIsPlaying] = useState(false) // Initially set to false to stop autoplay
+  const [isPlaying, setIsPlaying] = useState(false)
   const autoplayRef = useRef<NodeJS.Timeout | null>(null)
   const AUTOPLAY_DELAY = 3000 // 3 seconds
 
@@ -127,12 +126,12 @@ export default function BlogCarousel() {
 
   const scrollPrev = useCallback(() => {
     emblaApi && emblaApi.scrollPrev()
-    stopAutoplay() // Stop autoplay on user interaction
+    stopAutoplay()
   }, [emblaApi, stopAutoplay])
 
   const scrollNext = useCallback(() => {
     emblaApi && emblaApi.scrollNext()
-    stopAutoplay() // Stop autoplay on user interaction
+    stopAutoplay()
   }, [emblaApi, stopAutoplay])
 
   const handleMouseEnter = useCallback(() => {
@@ -141,11 +140,9 @@ export default function BlogCarousel() {
 
   const handleMouseLeave = useCallback(() => {
     // You can choose to re-enable autoplay here if desired
-    // For this request, we are not re-enabling it.
   }, [])
 
   useEffect(() => {
-    // Removed the initial call to startAutoplay() to fulfill the request.
     return () => {
       stopAutoplay()
     }
@@ -228,18 +225,18 @@ export default function BlogCarousel() {
                             </div>
                           </CardHeader>
                         </Link>
-                        <Link href={`/blog/${post.slug}`} className=" transition-colors duration-200">
-                          <CardContent className="flex flex-col flex-grow p-3 bg-white rounded-b-xs">
-                            <div className="line-clamp-2 md:h-15">
-                              <CardTitle className="md:text-xl hover:text-primary text-[#241d1f] text-2xl font-medium leading-tight  overflow-hidden mt-2">
-
+                        <Link href={`/blog/${post.slug}`} className="transition-colors duration-200">
+                          <CardContent className="flex flex-col flex-grow p-4 bg-white rounded-b-xs">
+                            {/* Title with consistent sizing and ellipsis */}
+                            <div className="min-h-[60px] mb-2">
+                              <CardTitle className="text-lg font-semibold leading-tight text-[#241d1f] hover:text-primary transition-colors line-clamp-2">
                                 {post.title}
-
                               </CardTitle>
                             </div>
 
-                            <div className="flex justify-start gap-x-3 items-center my-2">
-                              <CardDescription className="description-1">
+                            {/* Meta information */}
+                            <div className="flex justify-start gap-x-3 items-center mb-3">
+                              <CardDescription className="text-xs text-gray-600">
                                 {post.firstPublishedDate &&
                                   new Date(post.firstPublishedDate).toLocaleDateString("en-US", {
                                     year: "numeric",
@@ -247,11 +244,15 @@ export default function BlogCarousel() {
                                     day: "numeric",
                                   })}
                               </CardDescription>
-                              <span className="description-1 ">{readTime}</span>
+                              <span className="text-xs text-gray-600">{readTime}</span>
                             </div>
-                            <p className="description-1">
-                              {post.excerpt}
-                            </p>
+
+                            {/* Description with consistent sizing and ellipsis */}
+                            <div className="min-h-[60px]">
+                              <p className="text-sm text-gray-700 line-clamp-3 leading-relaxed">
+                                {post.excerpt}
+                              </p>
+                            </div>
                           </CardContent>
                         </Link>
                       </Card>
@@ -261,24 +262,27 @@ export default function BlogCarousel() {
               </div>
             </div>
             <Button
-              className="absolute top-[45%] -translate-y-1/2 border-gray-200 cursor-pointer left-4 -ml-4 z-40 rounded-full bg-white md:w-8 w-8 h-8 md:h-8 p-0 shadow-md hover:shadow-lg transition-shadow"
+              className="absolute top-[45%] -translate-y-1/2 border-gray-200 cursor-pointer left-4 -ml-4 z-40 rounded-full bg-white w-8 h-8 p-0 shadow-md hover:shadow-lg transition-shadow"
               variant="outline"
               onClick={scrollPrev}
             >
-              <ChevronLeft className="md:w-5 w-4 w-4 md:h-5" />
+              <ChevronLeft className="w-4 h-4" />
               <span className="sr-only">Previous slide</span>
             </Button>
             <Button
-              className="absolute top-[45%] -translate-y-1/2 border-gray-200 cursor-pointer right-4 -mr-4 z-10 rounded-full bg-white md:w-8 w-8 h-8 md:h-8 p-0 shadow-md hover:shadow-lg transition-shadow"
+              className="absolute top-[45%] -translate-y-1/2 border-gray-200 cursor-pointer right-4 -mr-4 z-10 rounded-full bg-white w-8 h-8 p-0 shadow-md hover:shadow-lg transition-shadow"
               variant="outline"
               onClick={scrollNext}
             >
-              <ChevronRight className="md:w-5 w-4 w-4 md:h-5" />
+              <ChevronRight className="w-4 h-4" />
               <span className="sr-only">Next slide</span>
             </Button>
           </div>
         )}
       </div>
+
+      {/* Add CSS for consistent line clamping */}
+     
     </section>
   )
 }

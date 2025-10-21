@@ -74,6 +74,16 @@ export default function ModernRegistrationForm({ className }: { className?: stri
     return getTimeSlotsForDate(currentLocation, selectedDateIndex)
   }, [form.date, currentLocation, availableDates])
 
+  // Get selected date details
+  const selectedDateDetails = useMemo(() => {
+    return availableDates.find(d => d.date === form.date)
+  }, [form.date, availableDates])
+
+  // Get selected time slot details
+  const selectedTimeSlotDetails = useMemo(() => {
+    return availableTimeSlots.find(t => t.time === form.timeSlot)
+  }, [form.timeSlot, availableTimeSlots])
+
   // Form validation
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -141,8 +151,6 @@ export default function ModernRegistrationForm({ className }: { className?: stri
     setSubmitted(null)
 
     try {
-      const selectedDate = availableDates.find(d => d.date === form.date)
-      const selectedTimeSlot = availableTimeSlots.find(t => t.time === form.timeSlot)
       const selectedLocation = getLocationById(form.country)
 
       if (!selectedLocation) {
@@ -154,7 +162,12 @@ export default function ModernRegistrationForm({ className }: { className?: stri
         email: form.email.trim(),
         countryName: selectedLocation.label,
         whatsapp: form.phone.replace(/\D/g, ""),
-        message: `Eye Test Appointment - ${selectedLocation.label} on ${formatDateFriendly(form.date)} at ${selectedTimeSlot?.displayTime} (${selectedDate?.venue}). ${form.notes ? `Notes: ${form.notes}` : ""}`,
+        message: form.notes.trim(),
+        appointmentDate: form.date,
+        appointmentTime: selectedTimeSlotDetails?.displayTime || form.timeSlot,
+        appointmentVenue: selectedDateDetails?.venue || "",
+        appointmentLocation: selectedLocation.label,
+        serviceType: "Eye Test",
       }
 
       const res = await fetch("/api/eye-test", {
@@ -222,7 +235,7 @@ export default function ModernRegistrationForm({ className }: { className?: stri
       {/* Header */}
       <div className="text-center space-y-2">
         <h2 id="registration-title" className="text-2xl font-semibold text-gray-900">
-          Secure Your Appointment
+          Secure Your Eye Test Appointment
         </h2>
         <p className="text-gray-600 text-sm">Fill out the form below to book your eye test consultation slot.</p>
       </div>
@@ -396,6 +409,18 @@ export default function ModernRegistrationForm({ className }: { className?: stri
             </p>
           )}
         </div>
+
+        {/* Venue Display (Read-only) */}
+        {selectedDateDetails?.venue && (
+          <div className="md:col-span-2 grid gap-2">
+            <label className="text-sm font-medium text-gray-900">
+              Selected Venue
+            </label>
+            <div className="h-12 rounded-xs border border-gray-300 text-sm bg-white px-4 flex items-center">
+              {selectedDateDetails.venue}
+            </div>
+          </div>
+        )}
 
         {/* Notes */}
         <div className="md:col-span-2 grid gap-2">
