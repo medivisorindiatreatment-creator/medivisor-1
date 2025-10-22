@@ -229,7 +229,7 @@ export default function BlogCarousel() {
                           <CardContent className="flex flex-col flex-grow p-4 bg-white rounded-b-xs">
                             {/* Title with consistent sizing and ellipsis */}
                             <div className="min-h-[60px] mb-2">
-                              <CardTitle className="text-lg font-semibold leading-tight text-[#241d1f] hover:text-primary transition-colors line-clamp-2">
+                              <CardTitle className="text-lg font-medium leading-tight text-[#241d1f] hover:text-primary transition-colors line-clamp-2">
                                 {post.title}
                               </CardTitle>
                             </div>
