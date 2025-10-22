@@ -19,7 +19,8 @@ import {
   Users,
   Phone,
   Mail,
-  Clock
+  Clock,
+  User
 } from "lucide-react"
 import Link from "next/link"
 import useEmblaCarousel from "embla-carousel-react"
@@ -72,7 +73,7 @@ const getShortabout = (richContent: any, maxLength: number = 100): string => {
   let text = '';
   for (const node of richContent.nodes) {
     if (node.type === 'PARAGRAPH' && text.length < maxLength) {
-      const paraText = node.nodes?.map((n: any) => n.text || '').join(' ').trim();
+      const paraText = node.nodes?.map((n: any) => n.textData?.text || n.text || '').join(' ').trim();
       text += (text ? ' ' : '') + paraText;
     }
     if (text.length >= maxLength) break;
@@ -80,34 +81,64 @@ const getShortabout = (richContent: any, maxLength: number = 100): string => {
   return text.trim().length > maxLength ? text.trim().substring(0, maxLength) + '...' : text.trim();
 }
 
-// Helper function to render rich text content
+// Helper function to get plain text from rich content
+const getPlainText = (richContent: any): string => {
+  if (typeof richContent === 'string') {
+    return richContent.replace(/<[^>]*>/g, '').trim();
+  }
+  if (!richContent || !richContent.nodes) return '';
+  let text = '';
+  const traverse = (nodes: any[]) => {
+    for (const node of nodes) {
+      if (node.type === 'TEXT') {
+        text += (node.textData?.text || node.text || '');
+      } else if (node.nodes && node.nodes.length > 0) {
+        traverse(node.nodes);
+      }
+    }
+  };
+  traverse(richContent.nodes);
+  return text.replace(/\s+/g, ' ').trim();
+}
+
+// Helper function to render rich text content (updated for textData.text and decorations)
 const renderRichText = (richContent: any): JSX.Element | null => {
   if (typeof richContent === 'string') {
-    // Handle HTML string with dangerouslySetInnerHTML, stripping or mapping classes if needed
-    // For simplicity, render as HTML, assuming global styles or inline styles
-    return <div className="text-gray-600 leading-relaxed prose space-y-3 prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: richContent }} />
+    return <div className="text-gray-700 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: richContent }} />
   }
-  if (!richContent || !richContent.nodes) return null
+  if (!richContent || !richContent.nodes || richContent.nodes.length === 0) return null
 
-  const renderNode = (node: any): JSX.Element | null => {
+  const renderNode = (node: any, key: string | number): JSX.Element | null => {
     switch (node.type) {
       case 'PARAGRAPH':
         return (
-          <p key={Math.random()} className="text-gray-600 leading-relaxed mb-2">
-            {node.nodes?.map((child: any, idx: number) => renderTextNode(child, idx))}
+          <p key={key} className="text-gray-700 leading-relaxed mb-3">
+            {node.nodes?.map((child: any, idx: number) => renderNode(child, idx))}
           </p>
         )
       case 'HEADING1':
         return (
-          <h3 key={Math.random()} className="text-xl font-semibold text-gray-800 mb-2">
-            {node.nodes?.map((child: any, idx: number) => renderTextNode(child, idx))}
+          <h3 key={key} className="text-xl font-semibold text-gray-900 mb-3">
+            {node.nodes?.map((child: any, idx: number) => renderNode(child, idx))}
           </h3>
         )
       case 'HEADING2':
         return (
-          <h4 key={Math.random()} className="text-lg font-semibold text-gray-800 mb-2">
-            {node.nodes?.map((child: any, idx: number) => renderTextNode(child, idx))}
+          <h4 key={key} className="text-lg font-semibold text-gray-900 mb-3">
+            {node.nodes?.map((child: any, idx: number) => renderNode(child, idx))}
           </h4>
+        )
+      case 'HEADING3':
+        return (
+          <h5 key={key} className="text-base font-semibold text-gray-900 mb-3">
+            {node.nodes?.map((child: any, idx: number) => renderNode(child, idx))}
+          </h5>
+        )
+      case 'HEADING4':
+        return (
+          <h6 key={key} className="text-sm font-semibold text-gray-900 mb-3">
+            {node.nodes?.map((child: any, idx: number) => renderNode(child, idx))}
+          </h6>
         )
       case 'IMAGE':
         const imgSrc = node.imageData?.image?.src?.id
@@ -115,42 +146,76 @@ const renderRichText = (richContent: any): JSX.Element | null => {
           : null
         if (imgSrc) {
           return (
-            <div key={Math.random()} className="my-4">
+            <div key={key} className="my-4">
               <Image
                 src={imgSrc}
                 alt="Embedded image"
                 width={600}
                 height={400}
-                className="w-full h-auto rounded-lg"
+                className="w-full h-auto rounded-md"
               />
             </div>
           )
         }
         return null
+      case 'LIST_ITEM':
+      case 'LIST_NUMBERED_ITEM':
+        return (
+          <li key={key} className={`text-gray-700 leading-relaxed mb-1 ${node.type === 'LIST_NUMBERED_ITEM' ? 'list-decimal ml-6' : 'list-disc ml-6'}`}>
+            {node.nodes?.map((child: any, idx: number) => renderNode(child, idx))}
+          </li>
+        )
+      case 'LIST':
+        const isOrdered = node.listStyle === 'ordered' || node.type?.includes('NUMBERED')
+        return (
+          <ul key={key} className={isOrdered ? 'list-decimal ml-6 mb-3' : 'list-disc ml-6 mb-3'}>
+            {node.nodes?.map((child: any, idx: number) => renderNode(child, idx))}
+          </ul>
+        )
+      case 'TEXT':
+        const text = node.textData?.text || node.text || ''
+        const decorations = node.textData?.decorations || []
+        const isBold = decorations.some((dec: any) => dec?.type === 'bold' || dec === 'bold')
+        const isItalic = decorations.some((dec: any) => dec?.type === 'italic' || dec === 'italic')
+        const isUnderline = decorations.some((dec: any) => dec?.type === 'underline' || dec === 'underline')
+        const isLink = node.link?.url
+
+        let content = text
+        if (isLink) {
+          content = <a key={key} href={isLink} className="text-gray-600 hover:underline">{text}</a>
+        } else if (isBold && isItalic) {
+          content = <strong key={key}><em>{text}</em></strong>
+        } else if (isBold) {
+          content = <strong key={key}>{text}</strong>
+        } else if (isItalic) {
+          content = <em key={key}>{text}</em>
+        } else if (isUnderline) {
+          content = <u key={key}>{text}</u>
+        } else {
+          content = <span key={key}>{text}</span>
+        }
+
+        return <>{content}</>
+      case 'SPAN':
+      case 'INLINE_EMBED':
+        return (
+          <span key={key} className={node.textStyle ? `font-${node.textStyle.fontSize || 'base'} ${node.textStyle.color ? `text-${node.textStyle.color}` : ''}` : ''}>
+            {node.nodes?.map((child: any, idx: number) => renderNode(child, idx))}
+          </span>
+        )
       default:
-        return null
+        if (node.textData?.text || node.text) {
+          return <span key={key}>{node.textData?.text || node.text}</span>
+        }
+        return node.nodes?.length > 0 ? (
+          <span key={key}>{node.nodes.map((child: any, idx: number) => renderNode(child, idx))}</span>
+        ) : null
     }
-  }
-
-  const renderTextNode = (textNode: any, idx: number): JSX.Element | null => {
-    if (textNode.type !== 'TEXT') return null
-    const text = textNode.text || ''
-    const isBold = textNode.textStyle?.bold || false
-    const isItalic = textNode.textStyle?.italic || false
-    const isUnderline = textNode.textStyle?.underline || false
-
-    let content = text
-    if (isBold) content = <strong key={idx}>{text}</strong>
-    else if (isItalic) content = <em key={idx}>{text}</em>
-    else if (isUnderline) content = <u key={idx}>{text}</u>
-    else content = <span key={idx}>{text}</span>
-
-    return content
   }
 
   return (
     <div className="space-y-4">
-      {richContent.nodes.map((node: any, idx: number) => renderNode(node))}
+      {richContent.nodes.map((node: any, idx: number) => renderNode(node, idx))}
     </div>
   )
 }
@@ -167,37 +232,145 @@ const generateSlug = (name: string): string => {
 
 // Breadcrumb Component
 const Breadcrumb = ({ hospitalName, branchName, doctorName, hospitalSlug }: { hospitalName: string; branchName: string; doctorName: string; hospitalSlug: string }) => (
-  <nav className="bg-white border-b border-gray-100 py-4">
+  <nav className="bg-white border-b border-gray-200 py-4">
     <div className="container mx-auto px-4">
       <div className="flex items-center gap-1 text-sm text-gray-600">
-        <Link href="/" className="flex items-center gap-1 hover:text-gray-800 transition-colors">
+        <Link href="/" className="flex items-center gap-1 hover:text-gray-900 transition-colors">
           <Home className="w-4 h-4" />
           Home
         </Link>
         <span>/</span>
-        <Link href="/hospitals" className="hover:text-gray-800 transition-colors">
+        <Link href="/hospitals" className="hover:text-gray-900 transition-colors">
           Hospitals
         </Link>
         <span>/</span>
         <Link
           href={`/hospitals/${hospitalSlug}`}
-          className="hover:text-gray-800 transition-colors"
+          className="hover:text-gray-900 transition-colors"
         >
           {hospitalName}
         </Link>
         <span>/</span>
         <Link
           href={`/hospitals/${hospitalSlug}/branches/${generateSlug(branchName)}`}
-          className="hover:text-gray-800 transition-colors"
+          className="hover:text-gray-900 transition-colors"
         >
           {branchName}
         </Link>
         <span>/</span>
-        <span className="text-gray-800 font-medium">{doctorName}</span>
+        <span className="text-gray-900 font-medium">{doctorName}</span>
       </div>
     </div>
   </nav>
 )
+
+// Doctor Card Component for Similar Doctors
+const DoctorCard = ({ doctor, branchName }: { doctor: any, branchName: string }) => {
+  const doctorImage = getDoctorImage(doctor.profileImage)
+  const doctorSlug = generateSlug(doctor.name)
+
+  return (
+    <Link
+      href={`/doctors/${doctorSlug}`}
+      className="group h-full flex flex-col hover:no-underline bg-white rounded-xs shadow-xs overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
+    >
+      <div className="relative flex-1 min-h-48 bg-gray-50">
+        {doctorImage ? (
+          <Image
+            src={doctorImage}
+            alt={doctor.name}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+            <User className="w-12 h-12 text-gray-400" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
+      <div className="p-5 flex-1 flex flex-col justify-between">
+        <div className="space-y-2">
+          <h5 className="font-semibold text-gray-900 text-base line-clamp-1 group-hover:text-gray-600 transition-colors duration-200">{doctor.name}</h5>
+          <p className="text-gray-600 font-medium text-sm">{doctor.specialization}</p>
+          <p className="text-gray-600 text-xs">{doctor.qualification}</p>
+          <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
+            <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {doctor.experience} yrs</span>
+            <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {doctor.designation}</span>
+          </div>
+          {doctor.languagesSpoken && (
+            <p className="text-gray-500 text-xs">Lang: {doctor.languagesSpoken}</p>
+          )}
+        </div>
+        {branchName && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-gray-600 text-xs font-medium">At {branchName}</p>
+          </div>
+        )}
+      </div>
+    </Link>
+  )
+}
+
+// Similar Doctors Carousel Component
+const SimilarDoctorsCarousel = ({ doctors, currentDoctorId }: { doctors: any[], currentDoctorId: string }) => {
+  const similarDoctors = doctors
+    .filter(d => d._id !== currentDoctorId)
+    .slice(0, 6)
+
+  if (similarDoctors.length === 0) return null
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    align: 'start',
+    slidesToScroll: 1,
+    containScroll: 'trimSnaps'
+  })
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
+
+  const itemsPerView = 3
+  const visibleSlidesClass = `min-w-0 w-80`
+
+  return (
+    <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+          <User className="w-5 h-5 text-gray-600" />
+          Similar Doctors ({similarDoctors.length})
+        </h3>
+        {similarDoctors.length > itemsPerView && (
+          <div className="flex gap-2">
+            <button
+              onClick={scrollPrev}
+              className="bg-white rounded-xs p-2 shadow-xs border border-gray-200 hover:bg-gray-50 transition-colors"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="w-4 h-4 text-gray-600" />
+            </button>
+            <button
+              onClick={scrollNext}
+              className="bg-white rounded-xs p-2 shadow-xs border border-gray-200 hover:bg-gray-50 transition-colors"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="w-4 h-4 text-gray-600" />
+            </button>
+          </div>
+        )}
+      </div>
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex gap-4">
+          {similarDoctors.map((doctor) => (
+            <div key={doctor._id} className={classNames("flex-shrink-0", visibleSlidesClass)}>
+              <DoctorCard doctor={doctor} branchName={doctor.branchName} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
 
 // Similar Hospitals Carousel Component
 const SimilarHospitalsCarousel = ({ hospitals, currentHospitalId }: { hospitals: any[], currentHospitalId: string }) => {
@@ -222,37 +395,37 @@ const SimilarHospitalsCarousel = ({ hospitals, currentHospitalId }: { hospitals:
 
   return (
     <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-2xl font-semibold text-gray-800 flex items-center gap-3">
-          <Hospital className="w-6 h-6 text-gray-600" />
-          Similar Hospitals <span className="text-gray-500 font-normal">({similarHospitals.length})</span>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+          <Hospital className="w-5 h-5 text-gray-600" />
+          Similar Hospitals ({similarHospitals.length})
         </h3>
         {similarHospitals.length > itemsPerView && (
           <div className="flex gap-2">
             <button
               onClick={scrollPrev}
-              className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
+              className="bg-white rounded-xs p-2 shadow-xs border border-gray-200 hover:bg-gray-50 transition-colors"
               aria-label="Previous slide"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
+              <ChevronLeft className="w-4 h-4 text-gray-600" />
             </button>
             <button
               onClick={scrollNext}
-              className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
+              className="bg-white rounded-xs p-2 shadow-xs border border-gray-200 hover:bg-gray-50 transition-colors"
               aria-label="Next slide"
             >
-              <ChevronRight className="w-5 h-5 text-gray-600" />
+              <ChevronRight className="w-4 h-4 text-gray-600" />
             </button>
           </div>
         )}
       </div>
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-6">
+        <div className="flex gap-4">
           {similarHospitals.map((hospital) => {
             const hospitalImage = getHospitalImage(hospital.image)
             const hospitalSlug = hospital.slug || generateSlug(hospital.name)
             return (
-              <div key={hospital._id} className={classNames("flex-shrink-0 bg-white rounded-xs p-0 border border-gray-100 shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1", visibleSlidesClass)}>
+              <div key={hospital._id} className={classNames("flex-shrink-0 bg-white rounded-xs shadow-xs p-0 border border-gray-200 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 overflow-hidden", visibleSlidesClass)}>
                 <HospitalCard hospital={hospital} hospitalImage={hospitalImage} hospitalSlug={hospitalSlug} />
               </div>
             )
@@ -266,26 +439,26 @@ const SimilarHospitalsCarousel = ({ hospitals, currentHospitalId }: { hospitals:
 // Hospital Card Component
 const HospitalCard = ({ hospital, hospitalImage, hospitalSlug }: { hospital: any, hospitalImage: string | null, hospitalSlug: string }) => (
   <Link href={`/hospitals/${hospitalSlug}`} className="block group">
-    <div className="relative w-full h-48 mb-0 rounded-t-xs overflow-hidden bg-gray-100">
+    <div className="relative w-full h-48 rounded-t-xs overflow-hidden bg-gray-50">
       {hospitalImage ? (
         <Image
           src={hospitalImage}
           alt={hospital.name}
           fill
-          className="object-cover w-full group-hover:scale-105 transition-transform duration-300"
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
           <Hospital className="w-12 h-12 text-gray-400" />
         </div>
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     </div>
-    <div className="flex-1 min-w-0 p-6">
-      <h5 className="font-semibold text-gray-800 text-lg mb-2 line-clamp-1">{hospital.name}</h5>
-      <p className="text-gray-600 font-medium mb-2 line-clamp-1">{hospital.accreditation || 'Leading Healthcare Provider'}</p>
-      <p className="text-gray-500 text-sm mb-2 line-clamp-1">{hospital.beds || 'N/A'} Beds</p>
-      {hospital.about && <p className="text-gray-500 text-sm line-clamp-1">{getShortabout(hospital.about)}</p>}
+    <div className="p-5">
+      <h5 className="font-semibold text-gray-900 text-base mb-2 line-clamp-1">{hospital.name}</h5>
+      <p className="text-green-600 font-medium text-sm mb-2">{hospital.accreditation || 'Leading Provider'}</p>
+      <p className="text-gray-600 text-xs mb-2">{hospital.beds || 'N/A'} Beds</p>
+      {hospital.description && <p className="text-gray-500 text-xs line-clamp-2">{getShortabout(hospital.description)}</p>}
     </div>
   </Link>
 )
@@ -293,13 +466,13 @@ const HospitalCard = ({ hospital, hospitalImage, hospitalSlug }: { hospital: any
 // Skeleton Components
 const HeroSkeleton = () => (
   <section className="relative w-full h-[70vh]">
-    <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
-    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse" />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
     <div className="absolute bottom-0 left-0 w-full z-10 px-6 pb-12 text-white">
       <div className="container mx-auto space-y-4">
         <div className="space-y-2">
-          <div className="h-10 w-3/4 bg-white/20 rounded animate-pulse" />
-          <div className="h-6 w-1/2 bg-white/20 rounded animate-pulse" />
+          <div className="h-12 w-3/4 bg-white/10 rounded animate-pulse" />
+          <div className="h-6 w-1/2 bg-white/10 rounded animate-pulse" />
         </div>
       </div>
     </div>
@@ -309,40 +482,52 @@ const HeroSkeleton = () => (
 const OverviewSkeleton = () => (
   <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
     <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-6" />
-    <div className="space-y-4">
-      <div className="h-20 w-full bg-gray-300 rounded-xs animate-pulse" />
-      <div className="h-12 w-3/4 bg-gray-300 rounded animate-pulse" />
-      <div className="h-4 w-1/2 bg-gray-300 rounded animate-pulse" />
+    <div className="space-y-6">
+      <div className="space-y-3">
+        <div className="h-24 w-full bg-gray-100 rounded-lg animate-pulse" />
+        <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+      </div>
+      <div className="grid md:grid-cols-2 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg animate-pulse">
+            <div className="w-3 h-3 bg-gray-200 rounded-full" />
+            <div className="space-y-1">
+              <div className="h-4 w-24 bg-gray-200 rounded" />
+              <div className="h-3 w-32 bg-gray-200 rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
 )
 
-const CarouselSkeleton = ({ type }: { type: 'treatments' | 'hospitals' }) => {
+const CarouselSkeleton = ({ type }: { type: 'treatments' | 'hospitals' | 'doctors' }) => {
   const itemsPerView = 3
   const visibleSlidesClass = `min-w-0 w-80`
 
   return (
     <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-6 h-6 bg-gray-300 rounded animate-pulse" />
-          <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
-          <div className="h-6 w-12 bg-gray-200 rounded animate-pulse ml-2" />
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 bg-gray-200 rounded animate-pulse" />
+          <div className="h-6 w-32 bg-gray-200 rounded animate-pulse" />
+          <div className="h-5 w-10 bg-gray-200 rounded animate-pulse ml-2" />
         </div>
         <div className="flex gap-2">
-          <div className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 animate-pulse" />
-          <div className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 animate-pulse" />
+          <div className="bg-white rounded-xs p-2 shadow-xs border border-gray-200 animate-pulse" />
+          <div className="bg-white rounded-xs p-2 shadow-xs border border-gray-200 animate-pulse" />
         </div>
       </div>
       <div className="overflow-hidden">
         <div className="flex gap-6">
           {Array.from({ length: Math.max(itemsPerView + 1, 6) }).map((_, i) => (
-            <div key={i} className={classNames("flex-shrink-0 bg-white rounded-xs p-0 border border-gray-100 shadow-xs animate-pulse", visibleSlidesClass)}>
-              <div className="relative w-full h-48 mb-0 rounded-t-xs overflow-hidden bg-gray-100" />
-              <div className="p-6 space-y-3">
-                <div className="h-6 bg-gray-300 rounded" />
-                <div className="h-5 bg-gray-300 rounded w-3/4" />
-                <div className="h-4 bg-gray-300 rounded w-1/2" />
+            <div key={i} className={classNames("flex-shrink-0 bg-white rounded-xs shadow-xs p-0 border border-gray-200 animate-pulse overflow-hidden", visibleSlidesClass)}>
+              <div className="relative w-full h-40 bg-gray-100 rounded-t-xs" />
+              <div className="p-5 space-y-2">
+                <div className="h-5 bg-gray-200 rounded" />
+                <div className="h-4 bg-gray-200 rounded w-3/4" />
+                <div className="h-3 bg-gray-200 rounded w-1/2" />
               </div>
             </div>
           ))}
@@ -353,12 +538,12 @@ const CarouselSkeleton = ({ type }: { type: 'treatments' | 'hospitals' }) => {
 }
 
 const SidebarSkeleton = () => (
-  <aside className="lg:col-span-3 space-y-8">
-    <div className="bg-white sticky top-24 rounded-xs shadow-xs p-6 border border-gray-100">
-      <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-6" />
+  <aside className="lg:col-span-3 space-y-6">
+    <div className="bg-white sticky top-24 rounded-xs shadow-xs p-4 border border-gray-100">
+      <div className="h-6 w-24 bg-gray-200 rounded animate-pulse mb-6" />
       <div className="space-y-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-16 bg-gray-300 rounded-xs animate-pulse" />
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-12 bg-gray-100 rounded-lg animate-pulse" />
         ))}
       </div>
     </div>
@@ -389,41 +574,41 @@ const EmblaCarouselTreatments = ({
   const visibleSlidesClass = `min-w-0 w-80`
 
   return (
-    <div className="relative">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-2xl font-semibold text-gray-800 flex items-center gap-3">
-          <Icon className="w-6 h-6 text-gray-600" />
-          {title} <span className="text-gray-500 font-normal">({items.length})</span>
+    <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+          <Icon className="w-5 h-5 text-gray-600" />
+          {title} ({items.length})
         </h3>
         {items.length > itemsPerView && (
           <div className="flex gap-2">
             <button
               onClick={scrollPrev}
-              className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
+              className="bg-white rounded-xs p-2 shadow-xs border border-gray-200 hover:bg-gray-50 transition-colors"
               aria-label="Previous slide"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
+              <ChevronLeft className="w-4 h-4 text-gray-600" />
             </button>
             <button
               onClick={scrollNext}
-              className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
+              className="bg-white rounded-xs p-2 shadow-xs border border-gray-200 hover:bg-gray-50 transition-colors"
               aria-label="Next slide"
             >
-              <ChevronRight className="w-5 h-5 text-gray-600" />
+              <ChevronRight className="w-4 h-4 text-gray-600" />
             </button>
           </div>
         )}
       </div>
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-6">
+        <div className="flex gap-4">
           {items.map((item, index) => (
-            <div key={item._id || index} className={classNames("flex-shrink-0 bg-white rounded-xs p-0 border border-gray-100 shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1", visibleSlidesClass)}>
+            <div key={item._id || index} className={classNames("flex-shrink-0 bg-white rounded-xs shadow-xs p-0 border border-gray-200 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 overflow-hidden", visibleSlidesClass)}>
               <TreatmentCard item={item} />
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -437,30 +622,30 @@ const TreatmentCard = ({ item }: { item: any }) => {
       href={`/treatment/${treatmentSlug}`}
       className="group h-full flex flex-col hover:no-underline"
     >
-      <div className="relative flex-1 min-h-48 rounded-t-xs overflow-hidden bg-gray-100">
+      <div className="relative flex-1 min-h-40 rounded-t-xs overflow-hidden bg-gray-50">
         {treatmentImage ? (
           <Image
             src={treatmentImage}
             alt={item.name}
             fill
-            className="object-cover w-full group-hover:scale-105 transition-transform duration-300"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Scissors className="w-12 h-12 text-gray-400" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+            <Scissors className="w-10 h-10 text-gray-400" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
-      <div className="p-6 flex-1 flex flex-col justify-between">
-        <div className="space-y-3">
-          <h5 className="font-semibold text-gray-800 text-lg line-clamp-1 group-hover:text-blue-600 transition-colors duration-200">{item.name}</h5>
-          <p className="text-gray-600 font-medium line-clamp-1">{item.category || 'Specialized Treatment'}</p>
-          <p className="text-gray-500 text-sm line-clamp-2">{getShortabout(item.about) || "Comprehensive medical treatment for optimal recovery."}</p>
+      <div className="p-5 flex-1 flex flex-col justify-between">
+        <div className="space-y-2">
+          <h5 className="font-semibold text-gray-900 text-base line-clamp-1 group-hover:text-gray-600 transition-colors duration-200">{item.name}</h5>
+          {item.category && <p className="text-gray-600 font-medium text-xs line-clamp-1">{item.category}</p>}
+          <p className="text-gray-500 text-xs line-clamp-2">{getShortabout(item.description) || "Comprehensive medical treatment."}</p>
         </div>
         {item.cost && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <p className="text-blue-600 font-semibold text-sm">Starting from ${item.cost}</p>
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-gray-600 font-semibold text-xs">From ${item.cost}</p>
           </div>
         )}
       </div>
@@ -474,9 +659,11 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
   const [branch, setBranch] = useState<any>(null)
   const [hospital, setHospital] = useState<HospitalWithBranchPreview | null>(null)
   const [allHospitals, setAllHospitals] = useState<any[]>([])
+  const [allDoctors, setAllDoctors] = useState<any[]>([])
   const [relatedTreatments, setRelatedTreatments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false)
 
   useEffect(() => {
     const fetchDoctorData = async () => {
@@ -497,8 +684,8 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
           let foundBranch = null
           let foundHospital = null
           let treatments: any[] = []
+          let allDoctorsLocal: any[] = []
 
-          // Search through all hospitals -> branches -> doctors
           for (const hospitalItem of data.items) {
             const hospitalSlug = generateSlug(hospitalItem.name)
             if (hospitalItem.branches && hospitalItem.branches.length > 0) {
@@ -507,7 +694,6 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
                 if (branchItem.doctors && branchItem.doctors.length > 0) {
                   for (const doctorItem of branchItem.doctors) {
                     const doctorNameSlug = generateSlug(doctorItem.name)
-                    // For simplicity, match on doctor slug only; in production, use combined slug like `${hospitalSlug}-${branchNameSlug}-${doctorNameSlug}`
                     if (doctorNameSlug === doctorSlug) {
                       foundDoctor = doctorItem
                       foundBranch = branchItem
@@ -515,6 +701,7 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
                       treatments = branchItem.treatments || []
                       break
                     }
+                    allDoctorsLocal.push({ ...doctorItem, branchName: branchItem.name })
                   }
                 }
                 if (foundDoctor) break
@@ -527,11 +714,13 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
             console.log('Found doctor:', foundDoctor.name)
             console.log('In branch:', foundBranch.name)
             console.log('In hospital:', foundHospital.name)
+            console.log('Doctor about:', foundDoctor.about)
             setDoctor(foundDoctor)
             setBranch(foundBranch)
             setHospital(foundHospital)
             setRelatedTreatments(treatments)
             setAllHospitals(data.items)
+            setAllDoctors(allDoctorsLocal)
           } else {
             throw new Error("Doctor not found")
           }
@@ -549,18 +738,18 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
     fetchDoctorData()
   }, [params])
 
-  // Loading State with Skeleton
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <HeroSkeleton />
         <Breadcrumb hospitalName="Hospital Name" branchName="Branch Name" doctorName="Doctor Name" hospitalSlug="" />
-        <section className="py-12 relative z-10">
+        <section className="py-12">
           <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-12 gap-4">
-              <main className="lg:col-span-9 space-y-8">
+            <div className="grid lg:grid-cols-12 gap-6">
+              <main className="lg:col-span-9 space-y-6">
                 <OverviewSkeleton />
                 <CarouselSkeleton type="treatments" />
+                <CarouselSkeleton type="doctors" />
                 <CarouselSkeleton type="hospitals" />
               </main>
               <SidebarSkeleton />
@@ -571,18 +760,17 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
     )
   }
 
-  // Error State
   if (error || !doctor || !hospital || !branch) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6 relative">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
         <Breadcrumb hospitalName="Hospital Name" branchName="Branch Name" doctorName="Doctor Name" hospitalSlug="" />
-        <div className="text-center space-y-6 max-w-md p-4 bg-white rounded-xs shadow-xs border border-gray-100">
+        <div className="text-center space-y-6 max-w-md p-6 bg-white rounded-xs shadow-xs border border-gray-200">
           <Stethoscope className="w-16 h-16 text-gray-400 mx-auto" />
-          <h2 className="text-2xl font-semibold text-gray-800">Doctor Not Found</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Doctor Not Found</h2>
           <p className="text-gray-600 leading-relaxed">{error || "The requested doctor could not be found. Please check the URL or try searching again."}</p>
           <Link
             href="/hospitals"
-            className="inline-block w-full bg-gray-800 text-white px-6 py-3 rounded-xs hover:bg-gray-900 transition-all font-semibold shadow-xs hover:shadow-md"
+            className="inline-block w-full bg-gray-800 text-white px-6 py-3 rounded-md hover:bg-gray-900 transition-colors font-semibold"
           >
             Go to Hospital Search
           </Link>
@@ -591,112 +779,128 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
     )
   }
 
-  // Derived Data
   const doctorImage = getDoctorImage(doctor.profileImage)
   const hospitalImage = getHospitalImage(hospital.image)
   const heroImage = doctorImage || hospitalImage
   const hospitalSlug = hospital.slug || generateSlug(hospital.name)
   const branchSlug = generateSlug(branch.name)
 
+  const hasAboutContent = doctor.about && (
+    (typeof doctor.about === 'string' && doctor.about.trim()) ||
+    (doctor.about.nodes && doctor.about.nodes.length > 0)
+  )
+
+  const plainAbout = hasAboutContent ? getPlainText(doctor.about) : ''
+  const isLongAbout = plainAbout.length > 200
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Header */}
-      <section className="relative w-full h-[70vh]">
+      <section className="relative w-full bg-gray-100 h-[70vh]">
         {heroImage ? (
           <Image
             src={heroImage}
             alt={`${doctor.name} profile`}
             fill
             priority
-            className="object-cover object-center"
+            className="object-contain  object-right"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300" />
+          <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full z-10 px-6 pb-12 text-white">
+        {/* <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" /> */}
+        <div className="absolute md:w-1/2 bottom-0 left-0 w-full z-10 px-6 pb-12 text-gray-700">
           <div className="container mx-auto space-y-4">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight">
-               {doctor.name}
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+              {doctor.name}
             </h1>
-            <p className="text-lg max-w-2xl leading-relaxed text-gray-200">
-              {doctor.specialization} - {doctor.qualification} at {hospital.name} {branch.name}
+            <p className="text-lg max-w-2xl leading-relaxed text-gray-700">
+              {doctor.specialization} - {doctor.qualification} at {hospital.name}, {branch.name}
             </p>
             <div className="flex flex-wrap gap-3 mt-4">
               {doctor.designation && (
-                <span className="flex items-center gap-2 bg-blue-500/20 backdrop-blur-sm px-4 py-2 rounded-xs text-sm font-medium border border-blue-500/30">
+                <span className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-md text-sm font-medium">
                   <Users className="w-4 h-4" />
                   {doctor.designation}
                 </span>
               )}
-              {branch.emergencyContact && (
-                <span className="flex items-center gap-2 bg-red-500/20 backdrop-blur-sm px-4 py-2 rounded-xs text-sm font-medium border border-red-500/30">
-                  <Clock className="w-4 h-4" />
-                  24/7 Emergency: {branch.emergencyContact}
-                </span>
-              )}
+             
             </div>
           </div>
         </div>
       </section>
       <Breadcrumb hospitalName={hospital.name} branchName={branch.name} doctorName={doctor.name} hospitalSlug={hospitalSlug} />
-      {/* Main Content */}
-      <section className="py-10 relative z-10">
+      <section className="py-12">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-12 gap-4">
-            <main className="lg:col-span-9 space-y-4">
-              {/* Doctor Overview */}
+          <div className="grid lg:grid-cols-12 gap-6">
+            <main className="lg:col-span-9 space-y-6">
               <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-3">Doctor Profile</h2>
-                <div className="space-y-3">
-                  {doctor.about && (
-                    <div className="prose prose-lg max-w-none">
-                      {renderRichText(doctor.about)}
+                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Doctor Profile</h2>
+                <div className="space-y-6">
+                  {hasAboutContent && (
+                    <div className="relative">
+                      <div className={`prose prose-lg max-w-none ${!isAboutExpanded ? 'line-clamp-4 overflow-hidden relative' : ''}`}>
+                        {renderRichText(doctor.about)}
+                        {!isAboutExpanded && isLongAbout && (
+                          <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                        )}
+                      </div>
+                      {isLongAbout && (
+                        <button 
+                          onClick={() => setIsAboutExpanded(!isAboutExpanded)}
+                          className="mt-3 inline-flex items-center gap-1 px-4 py-2 bg-gray-50 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-100 transition-colors border border-gray-200"
+                        >
+                          {isAboutExpanded ? 'Read Less' : 'Read More'} 
+                          <ChevronRight className={`w-4 h-4 transition-transform ${isAboutExpanded ? 'rotate-90' : ''}`} />
+                        </button>
+                      )}
                     </div>
                   )}
-                  <div className="grid md:grid-cols-2 gap-4">
+                  {!hasAboutContent && doctor.about && (
+                    <p className="text-gray-500 italic">No detailed information available.</p>
+                  )}
+                  <div className="grid md:grid-cols-2 gap-6">
                     {doctor.specialization && (
-                      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xs border border-gray-100">
-                        <div className="w-3 h-3 bg-blue-600 rounded-full flex-shrink-0"></div>
+                      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <div className="w-3 h-3 bg-gray-500 rounded-full flex-shrink-0"></div>
                         <div>
-                          <p className="font-medium text-gray-800">Specialization</p>
-                          <p className="text-gray-600">{doctor.specialization}</p>
+                          <p className="font-medium text-gray-900">Specialization</p>
+                          <p className="text-gray-600 text-sm">{doctor.specialization}</p>
                         </div>
                       </div>
                     )}
                     {doctor.qualification && (
-                      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xs border border-gray-100">
+                      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
                         <Award className="w-5 h-5 text-gray-600 flex-shrink-0" />
                         <div>
-                          <p className="font-medium text-gray-800">Qualification</p>
-                          <p className="text-gray-600">{doctor.qualification}</p>
+                          <p className="font-medium text-gray-900">Qualification</p>
+                          <p className="text-gray-600 text-sm">{doctor.qualification}</p>
                         </div>
                       </div>
                     )}
                     {doctor.designation && (
-                      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xs border border-gray-100">
+                      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
                         <Users className="w-5 h-5 text-gray-600 flex-shrink-0" />
                         <div>
-                          <p className="font-medium text-gray-800">Designation</p>
-                          <p className="text-gray-600">{doctor.designation}</p>
+                          <p className="font-medium text-gray-900">Designation</p>
+                          <p className="text-gray-600 text-sm">{doctor.designation}</p>
                         </div>
                       </div>
                     )}
                     {doctor.experience && (
-                      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xs border border-gray-100">
+                      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
                         <Calendar className="w-5 h-5 text-gray-600 flex-shrink-0" />
                         <div>
-                          <p className="font-medium text-gray-800">Experience</p>
-                          <p className="text-gray-600">{doctor.experience} years</p>
+                          <p className="font-medium text-gray-900">Experience</p>
+                          <p className="text-gray-600 text-sm">{doctor.experience} years</p>
                         </div>
                       </div>
                     )}
                     {doctor.contactNumber && (
-                      <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xs border border-blue-200">
-                        <Phone className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <Phone className="w-5 h-5 text-gray-600 flex-shrink-0" />
                         <div>
-                          <p className="font-medium text-gray-800">Contact</p>
-                          <p className="text-blue-600 font-semibold">{doctor.contactNumber}</p>
+                          <p className="font-medium text-gray-900">Contact</p>
+                          <p className="text-gray-600 font-semibold text-sm">{doctor.contactNumber}</p>
                         </div>
                       </div>
                     )}
@@ -704,23 +908,20 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
                 </div>
               </section>
 
-              {/* Related Treatments Section */}
               {relatedTreatments && relatedTreatments.length > 0 && (
-                <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
-                  <EmblaCarouselTreatments
-                    items={relatedTreatments}
-                    title="Treatments Offered"
-                    Icon={Scissors}
-                  />
-                </section>
+                <EmblaCarouselTreatments
+                  items={relatedTreatments}
+                  title="Treatments Offered"
+                  Icon={Scissors}
+                />
               )}
 
-              {/* Similar Hospitals Section */}
+              <SimilarDoctorsCarousel doctors={allDoctors} currentDoctorId={doctor._id} />
+
               <SimilarHospitalsCarousel hospitals={allHospitals} currentHospitalId={hospital._id} />
             </main>
 
-            {/* Sidebar */}
-            <aside className="lg:col-span-3 space-y-8">
+            <aside className="lg:col-span-3 space-y-6">
               <ContactForm />
             </aside>
           </div>

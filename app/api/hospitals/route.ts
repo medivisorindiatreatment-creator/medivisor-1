@@ -1,4 +1,4 @@
-// app/api/hospitals/route.ts - Updated to include references when fetching branches for nesting data
+// app/api/hospitals/route.ts - Updated to include treatment references in doctors
 import { NextResponse } from "next/server"
 import { wixClient } from "@/lib/wixClient"
 import { de } from "date-fns/locale"
@@ -20,10 +20,8 @@ function val(item: any, ...keys: string[]): string | null | undefined {
   return undefined
 }
 
-// Map doctor data from Doctor Master
+// Map doctor data from Doctor Master with treatment references
 function mapDoctor(item: any) {
-  
-
   return {
     _id: item._id || item.ID,
     name: val(item, "Doctor Name", "doctorName", "name") ?? "Doctor",
@@ -37,6 +35,8 @@ function mapDoctor(item: any) {
     cityId: val(item, "City (ID)", "cityId") ?? null,
     stateId: val(item, "State (ID)", "stateId") ?? null,
     countryId: val(item, "Country (ID)", "countryId") ?? null,
+    // Treatment multi-reference field
+    treatments: mapMultiReferenceField(item.treatment, "treatment", "treatmentName", "name"),
   }
 }
 
@@ -121,6 +121,7 @@ function mapMultiReferenceField(field: any, ...nameFields: string[]): any[] {
             qualification: val(item, "Qualification", "qualification"),
             experience: val(item, "Experience (Years)", "experience"),
             profileImage: val(item, "Profile Image", "profileImage"),
+            treatments: mapMultiReferenceField(item.treatment, "Treatment Name", "treatmentName", "name"),
           }),
           ...(nameFields.includes("Treatment Name") && {
             description: val(item, "Description", "description"),
@@ -202,7 +203,11 @@ async function fetchDoctorsData(doctorIds: string[]) {
   if (!doctorIds.length) return {}
 
   try {
-    const doctors = await wixClient.items.query(DOCTOR_COLLECTION_ID).hasSome("_id", doctorIds).find()
+    const doctors = await wixClient.items
+      .query(DOCTOR_COLLECTION_ID)
+      .hasSome("_id", doctorIds)
+      .include("treatment") // Include treatment references for doctors
+      .find()
 
     return doctors.items.reduce(
       (acc, doctor) => {
@@ -497,14 +502,25 @@ export async function GET(req: Request) {
       })
     })
 
-    // Step 6: Fetch additional data for references
+    // Step 6: Fetch additional data for references with treatment data for doctors
     const [doctorsData, citiesData, treatmentsData] = await Promise.all([
       fetchDoctorsData(Array.from(allDoctorIds)),
       fetchCitiesData(Array.from(allCityIds)),
       fetchTreatmentsData(Array.from(allTreatmentIds)),
     ])
 
-    // Step 7: Build final hospital objects with enriched branch data
+    // Step 7: Enrich doctors data with complete treatment information
+    Object.keys(doctorsData).forEach((doctorId) => {
+      const doctor = doctorsData[doctorId]
+      if (doctor.treatments && doctor.treatments.length > 0) {
+        doctor.treatments = doctor.treatments.map((treatmentRef: any) => {
+          const treatmentData = treatmentsData[treatmentRef._id]
+          return treatmentData || treatmentRef
+        })
+      }
+    })
+
+    // Step 8: Build final hospital objects with enriched branch data
     const hospitals = hospitalsRes.items.map((hospital) => {
       const hospitalBranches = branchesByHospital[hospital._id!] || []
 

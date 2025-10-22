@@ -17,6 +17,8 @@ import {
   ChevronRight,
   ChevronLeft,
   Home,
+  X,
+  ChevronDown,
 } from "lucide-react"
 
 const getWixImageUrl = (richContent: any): string | null => {
@@ -176,8 +178,19 @@ const HospitalCard = ({ hospital }: HospitalCardProps) => {
   const imageUrl = getWixImageUrl(hospital.image) || getWixImageUrl(hospital.logo)
   const displayTreatments = hospital.treatments?.slice(0, 2) || []
   const remainingTreatments = hospital.treatments?.length - 2 || 0
-  const displayBranches = hospital.branches?.slice(0, 2) || []
-  const remainingBranches = hospital.branches?.length - 2 || 0
+
+  // Get unique branch names with their cities
+  const branchData = useMemo(() => {
+    const branches = hospital.branches?.map(branch => ({
+      name: branch.name,
+      cities: branch.city?.map(c => c.name).filter(Boolean) || []
+    })) || []
+
+    return branches
+  }, [hospital.branches])
+
+  const displayBranches = branchData.slice(0, 2)
+  const remainingBranches = branchData.length - 2
 
   return (
     <Link href={`/hospitals/${slug}`} className="block">
@@ -246,32 +259,47 @@ const HospitalCard = ({ hospital }: HospitalCardProps) => {
           )}
 
           {/* Branches Section */}
-          {displayBranches.length > 0 && (
+          {branchData.length > 0 && (
             <section className="mb-4">
+              {/* Heading */}
               <div className="flex items-center justify-between border-t border-gray-100 pt-3">
                 <p className="text-xs font-semibold text-gray-900 uppercase">Branches</p>
               </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {displayBranches.map((branch) => (
-                  <span
-                    key={branch._id}
-                    className="inline-flex items-center gap-1 bg-gray-50 px-3 py-1.5 rounded border border-gray-100 text-sm"
-                  >
-                    <Building2 className="w-3 h-3" />
-                    {branch.name}
-                  </span>
+
+              {/* City List */}
+              <div className="space-y-0 items-center flex gap-x-2 mt-2">
+                {displayBranches.map((branch, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    {/* <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" /> */}
+                    <div className="flex-1 min-w-0">
+                      {branch.cities.length > 0 && (
+                        <p className="inline-flex items-center gap-1 bg-gray-50 px-3 py-1.5 rounded border border-gray-100 text-sm">
+                          {branch.cities.slice(0, 2).join(", ")}
+                          {branch.cities.length > 2 && (
+                            <span className="text-gray-500 font-medium">
+                              +{branch.cities.length - 2} more
+                            </span>
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 ))}
+
+                {/* Show remaining branches count */}
                 {remainingBranches > 0 && (
-                  <span className="inline-flex items-center text-xs text-gray-700">
-                    +{remainingBranches} more
-                  </span>
+                  <div className="flex items-center gap-2 text-sm text-gray-700 pt-0">
+                  
+                       <span className="inline-flex items-center text-xs text-gray-700">+{remainingBranches} more </span>
+                  </div>
                 )}
               </div>
             </section>
           )}
 
+
           {/* Stats Grid */}
-          <footer className="border-t border-gray-100 pt-3">
+          <footer className="border-t border-gray-100 pt-3 mt-auto">
             <div className="grid grid-cols-2 gap-2">
               {hospital.beds && (
                 <div className="text-center rounded bg-gray-50 p-3 border border-gray-100">
@@ -305,6 +333,140 @@ const HospitalCard = ({ hospital }: HospitalCardProps) => {
   )
 }
 
+// Sub-component: Search Dropdown
+interface SearchDropdownProps {
+  value: string
+  onChange: (value: string) => void
+  placeholder: string
+  options: { id: string; name: string }[]
+  selectedOption: string
+  onOptionSelect: (id: string) => void
+  onClear: () => void
+  type: "hospital" | "city" | "treatment"
+}
+
+const SearchDropdown = ({
+  value,
+  onChange,
+  placeholder,
+  options,
+  selectedOption,
+  onOptionSelect,
+  onClear,
+  type,
+}: SearchDropdownProps) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const filteredOptions = options.filter(option =>
+    option.name.toLowerCase().includes(value.toLowerCase())
+  )
+
+  const selectedOptionName = options.find(opt => opt.id === selectedOption)?.name
+
+  const getIcon = () => {
+    switch (type) {
+      case "hospital":
+        return <Hospital className="w-4 h-4 text-gray-500" />
+      case "city":
+        return <MapPin className="w-4 h-4 text-gray-500" />
+      case "treatment":
+        return <Stethoscope className="w-4 h-4 text-gray-500" />
+      default:
+        return <Search className="w-4 h-4 text-gray-500" />
+    }
+  }
+
+  const getPlaceholder = () => {
+    switch (type) {
+      case "hospital":
+        return "Search hospitals..."
+      case "city":
+        return "Search cities..."
+      case "treatment":
+        return "Search treatments..."
+      default:
+        return placeholder
+    }
+  }
+
+  return (
+    <div className="relative space-y-2">
+      <label className="block text-sm font-medium text-gray-800 flex items-center gap-2">
+        {getIcon()}
+        {type === "hospital" ? "Hospital" : type === "city" ? "City" : "Treatment"}
+      </label>
+
+      <div className="relative">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+          {getIcon()}
+        </div>
+        <input
+          type="text"
+          placeholder={getPlaceholder()}
+          value={selectedOptionName || value}
+          onChange={(e) => {
+            onChange(e.target.value)
+            if (selectedOption) onOptionSelect("")
+            setIsOpen(true)
+          }}
+          onFocus={() => setIsOpen(true)}
+          className="pl-9 pr-10 py-2.5 border border-gray-200 rounded-lg w-full text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder:text-gray-400"
+        />
+
+        {(value || selectedOption) && (
+          <button
+            onClick={() => {
+              onChange("")
+              onOptionSelect("")
+              onClear()
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
+
+      {isOpen && (value || filteredOptions.length > 0) && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute top-full left-0 right-0 z-20 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto mt-1">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => {
+                    onOptionSelect(option.id)
+                    onChange("")
+                    setIsOpen(false)
+                  }}
+                  className="w-full px-4 py-2.5 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 flex items-center gap-3"
+                >
+                  {getIcon()}
+                  <div className="font-medium text-gray-900">{option.name}</div>
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                No {type === "hospital" ? "hospitals" : type === "city" ? "cities" : "treatments"} found
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 // Sub-component: Filter Sidebar
 interface FilterSidebarProps {
   search: string
@@ -313,10 +475,13 @@ interface FilterSidebarProps {
   setCityQuery: (value: string) => void
   treatmentQuery: string
   setTreatmentQuery: (value: string) => void
+  selectedHospitalId: string
+  setSelectedHospitalId: (value: string) => void
   selectedCityId: string
   setSelectedCityId: (value: string) => void
   selectedTreatmentId: string
   setSelectedTreatmentId: (value: string) => void
+  hospitals: { id: string; name: string }[]
   cities: { id: string; name: string }[]
   treatments: { id: string; name: string }[]
   showFilters: boolean
@@ -331,10 +496,13 @@ const FilterSidebar = ({
   setCityQuery,
   treatmentQuery,
   setTreatmentQuery,
+  selectedHospitalId,
+  setSelectedHospitalId,
   selectedCityId,
   setSelectedCityId,
   selectedTreatmentId,
   setSelectedTreatmentId,
+  hospitals,
   cities,
   treatments,
   showFilters,
@@ -342,15 +510,14 @@ const FilterSidebar = ({
   clearFilters,
 }: FilterSidebarProps) => (
   <aside
-    className={`fixed lg:static inset-y-0 left-0 z-20 w-full lg:w-72 bg-white border border-gray-100 rounded-lg shadow-sm transform transition-transform duration-300 ease-in-out ${
-      showFilters ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-    } overflow-y-auto lg:sticky lg:top-6`}
+    className={`fixed lg:static inset-y-0 left-0 z-20 w-full lg:w-80 bg-white border border-gray-100 rounded-lg shadow-sm transform transition-transform duration-300 ease-in-out ${showFilters ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      } overflow-y-auto lg:sticky lg:top-6 max-h-[calc(100vh-2rem)]`}
   >
     {/* Header */}
-    <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50">
+    <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50 sticky top-0 z-10">
       <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
         <Filter className="w-5 h-5 text-gray-600" />
-        Filters
+        Search & Filters
       </h2>
       <button
         onClick={() => setShowFilters(false)}
@@ -363,86 +530,57 @@ const FilterSidebar = ({
 
     {/* Filter Content */}
     <div className="p-5 space-y-6">
-      {/* Search by Hospital Name */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-800">Search Hospital</label>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Enter hospital name..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 pr-3 py-2.5 border border-gray-200 rounded-lg w-full text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder:text-gray-400"
-          />
-        </div>
-      </div>
+      {/* Hospital Search */}
+      <SearchDropdown
+        value={search}
+        onChange={setSearch}
+        placeholder="Search hospitals..."
+        options={hospitals}
+        selectedOption={selectedHospitalId}
+        onOptionSelect={setSelectedHospitalId}
+        onClear={() => {
+          setSearch("")
+          setSelectedHospitalId("")
+        }}
+        type="hospital"
+      />
 
       {/* City Filter */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-800 flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-gray-500" />
-          City
-        </label>
-        <input
-          type="text"
-          placeholder="Search city..."
-          value={cityQuery}
-          onChange={(e) => {
-            setCityQuery(e.target.value)
-            if (selectedCityId) setSelectedCityId("")
-          }}
-          className="w-full border border-gray-200 rounded-lg py-2.5 px-3 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder:text-gray-400"
-        />
-        <select
-          value={selectedCityId}
-          onChange={(e) => setSelectedCityId(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg py-2.5 px-3 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-        >
-          <option value="">All Cities</option>
-          {cities.map((city) => (
-            <option key={city.id} value={city.id}>
-              {city.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <SearchDropdown
+        value={cityQuery}
+        onChange={setCityQuery}
+        placeholder="Search cities..."
+        options={cities}
+        selectedOption={selectedCityId}
+        onOptionSelect={setSelectedCityId}
+        onClear={() => {
+          setCityQuery("")
+          setSelectedCityId("")
+        }}
+        type="city"
+      />
 
       {/* Treatment Filter */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-800 flex items-center gap-2">
-          <Stethoscope className="w-4 h-4 text-gray-500" />
-          Treatment
-        </label>
-        <input
-          type="text"
-          placeholder="Search treatment..."
-          value={treatmentQuery}
-          onChange={(e) => {
-            setTreatmentQuery(e.target.value)
-            if (selectedTreatmentId) setSelectedTreatmentId("")
-          }}
-          className="w-full border border-gray-200 rounded-lg py-2.5 px-3 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder:text-gray-400"
-        />
-        <select
-          value={selectedTreatmentId}
-          onChange={(e) => setSelectedTreatmentId(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg py-2.5 px-3 text-sm bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-        >
-          <option value="">All Treatments</option>
-          {treatments.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <SearchDropdown
+        value={treatmentQuery}
+        onChange={setTreatmentQuery}
+        placeholder="Search treatments..."
+        options={treatments}
+        selectedOption={selectedTreatmentId}
+        onOptionSelect={setSelectedTreatmentId}
+        onClear={() => {
+          setTreatmentQuery("")
+          setSelectedTreatmentId("")
+        }}
+        type="treatment"
+      />
 
       {/* Clear Filters Button */}
       <button
         onClick={clearFilters}
-        className="w-full py-2.5 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 hover:border-gray-400 transition-colors text-sm font-medium"
+        className="w-full py-2.5 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 hover:border-gray-400 transition-colors text-sm font-medium flex items-center justify-center gap-2"
       >
+        <X className="w-4 h-4" />
         Clear All Filters
       </button>
     </div>
@@ -453,17 +591,23 @@ const FilterSidebar = ({
 interface MobileFilterToggleProps {
   showFilters: boolean
   setShowFilters: (value: boolean) => void
+  resultsCount: number
 }
 
-const MobileFilterToggle = ({ setShowFilters }: MobileFilterToggleProps) => (
-  <div className="lg:hidden mb-3">
-    <button
-      onClick={() => setShowFilters(true)}
-      className="w-full py-3 px-4 bg-white border border-gray-300 rounded-lg flex items-center justify-center gap-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-    >
-      <Filter className="w-4 h-4" />
-      Show Filters
-    </button>
+const MobileFilterToggle = ({ setShowFilters, resultsCount }: MobileFilterToggleProps) => (
+  <div className="lg:hidden mb-4">
+    <div className="flex items-center justify-between mb-3">
+      <p className="text-sm text-gray-600">
+        Showing <span className="font-semibold text-gray-900">{resultsCount}</span> hospitals
+      </p>
+      <button
+        onClick={() => setShowFilters(true)}
+        className="py-2.5 px-4 bg-white border border-gray-300 rounded-lg flex items-center justify-center gap-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+      >
+        <Filter className="w-4 h-4" />
+        Search & Filters
+      </button>
+    </div>
   </div>
 )
 
@@ -476,16 +620,16 @@ interface ResultsHeaderProps {
 const ResultsHeader = ({ hospitals, clearFilters }: ResultsHeaderProps) => (
   <>
     {!hospitals.length ? null : (
-      <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-gray-600">
-          Showing <span className="font-semibold text-gray-900">{hospitals.length}</span> hospitals
+      <div className="hidden lg:flex items-center justify-between mb-6">
+        <p className="text-lg font-semibold text-gray-900">
+          Found <span className="text-blue-600">{hospitals.length}</span> hospitals
         </p>
         <button
           onClick={clearFilters}
-          className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors flex items-center gap-1"
+          className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-400"
         >
+          <X className="w-4 h-4" />
           Clear all filters
-          <ChevronRight className="w-4 h-4" />
         </button>
       </div>
     )}
@@ -505,7 +649,7 @@ const NoResults = () => (
 
 // Sub-component: Loading Skeletons
 const LoadingSkeletons = () => (
-  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
     {Array.from({ length: 6 }).map((_, index) => (
       <HospitalCardSkeleton key={index} />
     ))}
@@ -516,10 +660,12 @@ const LoadingSkeletons = () => (
 export default function HospitalDirectory() {
   const [hospitals, setHospitals] = useState<HospitalType[]>([])
   const [search, setSearch] = useState("")
+  const [hospitalsList, setHospitalsList] = useState<{ id: string; name: string }[]>([])
   const [cities, setCities] = useState<{ id: string; name: string }[]>([])
   const [treatments, setTreatments] = useState<{ id: string; name: string }[]>([])
   const [cityQuery, setCityQuery] = useState("")
   const [treatmentQuery, setTreatmentQuery] = useState("")
+  const [selectedHospitalId, setSelectedHospitalId] = useState("")
   const [selectedCityId, setSelectedCityId] = useState("")
   const [selectedTreatmentId, setSelectedTreatmentId] = useState("")
   const [loading, setLoading] = useState(false)
@@ -530,7 +676,11 @@ export default function HospitalDirectory() {
   const filterParams = useMemo(() => {
     const params = new URLSearchParams()
 
-    if (search) params.append("q", search)
+    if (selectedHospitalId) {
+      params.append("hospitalId", selectedHospitalId)
+    } else if (search) {
+      params.append("q", search)
+    }
     if (selectedCityId) {
       params.append("cityId", selectedCityId)
     } else if (cityQuery) {
@@ -546,7 +696,7 @@ export default function HospitalDirectory() {
     params.append("_t", Date.now().toString())
 
     return params
-  }, [search, cityQuery, selectedCityId, treatmentQuery, selectedTreatmentId])
+  }, [search, selectedHospitalId, cityQuery, selectedCityId, treatmentQuery, selectedTreatmentId])
 
   // Fetch hospitals with debounced callback
   const fetchHospitals = useCallback(async () => {
@@ -597,10 +747,15 @@ export default function HospitalDirectory() {
       if (!res.ok) throw new Error("Failed to fetch filter options")
       const data = await res.json()
 
+      const hospitalMap: Record<string, string> = {}
       const cityMap: Record<string, string> = {}
       const treatmentMap: Record<string, string> = {}
 
       data.items?.forEach((hospital: any) => {
+        if (hospital?._id && hospital?.name) {
+          hospitalMap[hospital._id] = hospital.name
+        }
+
         hospital.branches?.forEach((branch: any) => {
           branch.city?.forEach((city: any) => {
             if (city?._id && city?.name) cityMap[city._id] = city.name
@@ -611,6 +766,7 @@ export default function HospitalDirectory() {
         })
       })
 
+      setHospitalsList(Object.entries(hospitalMap).map(([id, name]) => ({ id, name })))
       setCities(Object.entries(cityMap).map(([id, name]) => ({ id, name })))
       setTreatments(Object.entries(treatmentMap).map(([id, name]) => ({ id, name })))
     } catch (e) {
@@ -640,6 +796,7 @@ export default function HospitalDirectory() {
     setSearch("")
     setCityQuery("")
     setTreatmentQuery("")
+    setSelectedHospitalId("")
     setSelectedCityId("")
     setSelectedTreatmentId("")
   }
@@ -648,7 +805,7 @@ export default function HospitalDirectory() {
     if (initialLoad || loading) return <LoadingSkeletons />
     if (hospitals.length === 0) return <NoResults />
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {hospitals.map((hospital) => (
           <HospitalCard key={hospital._id} hospital={hospital} />
         ))}
@@ -692,10 +849,13 @@ export default function HospitalDirectory() {
             setCityQuery={setCityQuery}
             treatmentQuery={treatmentQuery}
             setTreatmentQuery={setTreatmentQuery}
+            selectedHospitalId={selectedHospitalId}
+            setSelectedHospitalId={setSelectedHospitalId}
             selectedCityId={selectedCityId}
             setSelectedCityId={setSelectedCityId}
             selectedTreatmentId={selectedTreatmentId}
             setSelectedTreatmentId={setSelectedTreatmentId}
+            hospitals={hospitalsList}
             cities={cities}
             treatments={treatments}
             showFilters={showFilters}
@@ -705,7 +865,10 @@ export default function HospitalDirectory() {
 
           {/* Main Content */}
           <main className="flex-1">
-            <MobileFilterToggle setShowFilters={setShowFilters} />
+            <MobileFilterToggle
+              setShowFilters={setShowFilters}
+              resultsCount={hospitals.length}
+            />
             <ResultsHeader hospitals={hospitals} clearFilters={clearFilters} />
             {renderContent()}
           </main>

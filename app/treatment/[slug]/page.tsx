@@ -80,8 +80,6 @@ const getShortDescription = (richContent: any, maxLength: number = 100): string 
 // Helper function to render rich text content
 const renderRichText = (richContent: any): JSX.Element | null => {
   if (typeof richContent === 'string') {
-    // Handle HTML string with dangerouslySetInnerHTML, stripping or mapping classes if needed
-    // For simplicity, render as HTML, assuming global styles or inline styles
     return <div className="text-gray-600 leading-relaxed prose space-y-3 prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: richContent }} />
   }
   if (!richContent || !richContent.nodes) return null
@@ -162,6 +160,69 @@ const generateSlug = (name: string): string => {
     .replace(/-+/g, '-')
 }
 
+// Helper function to find related doctors based on treatment category
+const findRelatedDoctors = (treatmentCategory: string, allHospitals: any[]): any[] => {
+  if (!treatmentCategory) return []
+
+  const relatedDoctors: any[] = []
+  const categoryLower = treatmentCategory.toLowerCase()
+
+  allHospitals.forEach(hospital => {
+    hospital.branches?.forEach((branch: any) => {
+      branch.doctors?.forEach((doctor: any) => {
+        const doctorSpecialization = doctor.specialization?.toLowerCase() || ''
+        const doctorQualification = doctor.qualification?.toLowerCase() || ''
+        
+        // Match doctors whose specialization or qualification contains the treatment category
+        if (doctorSpecialization.includes(categoryLower) || 
+            doctorQualification.includes(categoryLower) ||
+            categoryLower.includes(doctorSpecialization)) {
+          relatedDoctors.push(doctor)
+        }
+      })
+    })
+  })
+
+  // Remove duplicates based on doctor ID
+  return relatedDoctors.filter((doctor, index, self) => 
+    index === self.findIndex(d => d._id === doctor._id)
+  )
+}
+
+// Helper function to find related hospitals based on treatment category
+const findRelatedHospitals = (treatmentCategory: string, allHospitals: any[], currentHospitalId: string): any[] => {
+  if (!treatmentCategory) return []
+
+  const relatedHospitals: any[] = []
+  const categoryLower = treatmentCategory.toLowerCase()
+
+  allHospitals.forEach(hospital => {
+    if (hospital._id === currentHospitalId) return // Skip current hospital
+    
+    // Check if hospital has treatments in the same category
+    const hasRelatedTreatments = hospital.branches?.some((branch: any) => 
+      branch.treatments?.some((treatment: any) => 
+        treatment.category?.toLowerCase().includes(categoryLower) ||
+        categoryLower.includes(treatment.category?.toLowerCase())
+      )
+    )
+
+    // Check if hospital has doctors in the same specialization
+    const hasRelatedDoctors = hospital.branches?.some((branch: any) => 
+      branch.doctors?.some((doctor: any) => 
+        doctor.specialization?.toLowerCase().includes(categoryLower) ||
+        categoryLower.includes(doctor.specialization?.toLowerCase())
+      )
+    )
+
+    if (hasRelatedTreatments || hasRelatedDoctors) {
+      relatedHospitals.push(hospital)
+    }
+  })
+
+  return relatedHospitals
+}
+
 // Breadcrumb Component
 const Breadcrumb = ({ hospitalName, branchName, treatmentName, hospitalSlug }: { hospitalName: string; branchName: string; treatmentName: string; hospitalSlug: string }) => (
   <nav className="bg-white border-b border-gray-200 py-4">
@@ -198,11 +259,7 @@ const Breadcrumb = ({ hospitalName, branchName, treatmentName, hospitalSlug }: {
 
 // Similar Hospitals Carousel Component
 const SimilarHospitalsCarousel = ({ hospitals, currentHospitalId }: { hospitals: any[], currentHospitalId: string }) => {
-  const similarHospitals = hospitals
-    .filter(h => h._id !== currentHospitalId)
-    .slice(0, 6)
-
-  if (similarHospitals.length === 0) return null
+  if (hospitals.length === 0) return null
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
@@ -222,9 +279,9 @@ const SimilarHospitalsCarousel = ({ hospitals, currentHospitalId }: { hospitals:
       <div className="flex justify-between items-center mb-8">
         <h3 className="text-2xl font-semibold text-gray-800 flex items-center gap-3">
           <Hospital className="w-6 h-6 text-gray-600" />
-          Similar Hospitals <span className="text-gray-500 font-normal">({similarHospitals.length})</span>
+          Related Hospitals <span className="text-gray-500 font-normal">({hospitals.length})</span>
         </h3>
-        {similarHospitals.length > itemsPerView && (
+        {hospitals.length > itemsPerView && (
           <div className="flex gap-2">
             <button
               onClick={scrollPrev}
@@ -245,7 +302,7 @@ const SimilarHospitalsCarousel = ({ hospitals, currentHospitalId }: { hospitals:
       </div>
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex gap-6">
-          {similarHospitals.map((hospital) => {
+          {hospitals.map((hospital) => {
             const hospitalImage = getHospitalImage(hospital.image)
             const hospitalSlug = hospital.slug || generateSlug(hospital.name)
             return (
@@ -478,6 +535,7 @@ export default function TreatmentDetail({ params }: { params: Promise<{ slug: st
   const [hospital, setHospital] = useState<HospitalWithBranchPreview | null>(null)
   const [allHospitals, setAllHospitals] = useState<any[]>([])
   const [relatedDoctors, setRelatedDoctors] = useState<any[]>([])
+  const [relatedHospitals, setRelatedHospitals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -499,7 +557,6 @@ export default function TreatmentDetail({ params }: { params: Promise<{ slug: st
           let foundTreatment = null
           let foundBranch = null
           let foundHospital = null
-          let doctors: any[] = []
 
           // Search through all hospitals -> branches -> treatments
           for (const hospitalItem of data.items) {
@@ -510,12 +567,10 @@ export default function TreatmentDetail({ params }: { params: Promise<{ slug: st
                 if (branchItem.treatments && branchItem.treatments.length > 0) {
                   for (const treatmentItem of branchItem.treatments) {
                     const treatmentNameSlug = generateSlug(treatmentItem.name)
-                    // For simplicity, match on treatment slug only; in production, use combined slug like `${hospitalSlug}-${branchNameSlug}-${treatmentNameSlug}`
                     if (treatmentNameSlug === treatmentSlug) {
                       foundTreatment = treatmentItem
                       foundBranch = branchItem
                       foundHospital = hospitalItem
-                      doctors = branchItem.doctors || []
                       break
                     }
                   }
@@ -530,11 +585,28 @@ export default function TreatmentDetail({ params }: { params: Promise<{ slug: st
             console.log('Found treatment:', foundTreatment.name)
             console.log('In branch:', foundBranch.name)
             console.log('In hospital:', foundHospital.name)
+            
             setTreatment(foundTreatment)
             setBranch(foundBranch)
             setHospital(foundHospital)
-            setRelatedDoctors(doctors)
             setAllHospitals(data.items)
+
+            // Find related doctors and hospitals based on treatment category
+            const treatmentCategory = foundTreatment.category
+            if (treatmentCategory) {
+              const doctors = findRelatedDoctors(treatmentCategory, data.items)
+              const hospitals = findRelatedHospitals(treatmentCategory, data.items, foundHospital._id)
+              
+              setRelatedDoctors(doctors)
+              setRelatedHospitals(hospitals)
+              
+              console.log(`Found ${doctors.length} related doctors for category: ${treatmentCategory}`)
+              console.log(`Found ${hospitals.length} related hospitals for category: ${treatmentCategory}`)
+            } else {
+              console.log('No treatment category found, showing no related content')
+              setRelatedDoctors([])
+              setRelatedHospitals([])
+            }
           } else {
             throw new Error("Treatment not found")
           }
@@ -688,14 +760,16 @@ export default function TreatmentDetail({ params }: { params: Promise<{ slug: st
                 <section className="bg-white rounded-2xl shadow-sm p-8 border border-gray-200">
                   <EmblaCarouselDoctors
                     items={relatedDoctors}
-                    title="Specialist Doctors for this Treatment"
+                    title={`Specialist ${treatment.category} Doctors`}
                     Icon={Stethoscope}
                   />
                 </section>
               )}
 
-              {/* Similar Hospitals Section */}
-              <SimilarHospitalsCarousel hospitals={allHospitals} currentHospitalId={hospital._id} />
+              {/* Related Hospitals Section */}
+              {relatedHospitals && relatedHospitals.length > 0 && (
+                <SimilarHospitalsCarousel hospitals={relatedHospitals} currentHospitalId={hospital._id} />
+              )}
             </main>
 
             {/* Sidebar */}
