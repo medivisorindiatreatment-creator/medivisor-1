@@ -105,12 +105,12 @@ const HeroSlider = () => {
           <Banner1 />
         </div>
         <div key="banner2">
-          <a href="/pacific-patient">
+          <a href="/fiji-eye-test ">
             <Banner2 />
           </a>
         </div>
         <div key="banner3">
-          <a href="/fiji-eye-test">
+          <a href="/pacific-patient">
             <Banner3 />
           </a>
         </div>
