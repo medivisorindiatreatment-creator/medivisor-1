@@ -4,7 +4,7 @@ export interface Hospital {
   _id: string
   slug?: string | null
   name: string
-  image?: string | null // Wix image url (wix:image://...)
+  hospitalImage?: string | null // Wix image url (wix:image://...)
   logo?: string | null // Wix image url (wix:image://...)
   yearEstablished?: string | number | null
   accreditation?: string | null
@@ -67,6 +67,7 @@ export interface Branch {
   state?: string | null
   country?: string | null
   phone?: string | null
+  yearEstablished?: string | number | null
   email?: string | null
   totalBeds?: number | string | null
   icuBeds?: number | string | null

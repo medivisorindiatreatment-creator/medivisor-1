@@ -31,63 +31,77 @@ import useEmblaCarousel from "embla-carousel-react"
 import classNames from "classnames"
 import ContactForm from "@/components/ContactForm"
 
-// Helper function to extract the main hospital image URL from rich content
-const getHospitalImage = (richContent: any): string | null => {
-  if (typeof richContent === 'string') return richContent
-  if (!richContent || !richContent.nodes) return null
-  const imageNode = richContent.nodes.find((node: any) => node.type === 'IMAGE')
-  if (imageNode?.imageData?.image?.src?.id) {
-    const id = imageNode.imageData.image.src.id
-    return `https://static.wixstatic.com/media/${id}`
-  }
-  return null
+// Helper function to get Wix image URL from direct string
+const getWixImageUrl = (imageStr: string): string | null => {
+  if (!imageStr || typeof imageStr !== 'string') return null;
+  if (!imageStr.startsWith('wix:image://v1/')) return null;
+
+  const parts = imageStr.split('/');
+  if (parts.length < 4) return null;
+
+  const id = parts[3];
+  return `https://static.wixstatic.com/media/${id}`;
 }
 
-// Helper function to extract branch image URL from rich content
-const getBranchImage = (richContent: any): string | null => {
-  if (typeof richContent === 'string') return richContent
-  if (!richContent || !richContent.nodes) return null
-  const imageNode = richContent.nodes.find((node: any) => node.type === 'IMAGE')
-  if (imageNode?.imageData?.image?.src?.id) {
-    const id = imageNode.imageData.image.src.id
-    return `https://static.wixstatic.com/media/${id}`
+// Helper function to extract the main hospital image URL
+const getHospitalImage = (content: any): string | null => {
+  if (typeof content === 'string') {
+    return getWixImageUrl(content);
   }
-  return null
+  if (!content?.nodes) return null;
+  const imageNode = content.nodes.find((node: any) => node.type === 'IMAGE');
+  return imageNode?.imageData?.image?.src?.id
+    ? `https://static.wixstatic.com/media/${imageNode.imageData.image.src.id}`
+    : null;
 }
 
-// Helper function to extract hospital logo URL from rich content
-const getHospitalLogo = (richContent: any): string | null => {
-  if (!richContent || !richContent.nodes) return null
-  const imageNode = richContent.nodes?.[0]
+// Helper function to extract branch image URL
+const getBranchImage = (content: any): string | null => {
+  if (typeof content === 'string') {
+    return getWixImageUrl(content);
+  }
+  if (!content?.nodes) return null;
+  const imageNode = content.nodes.find((node: any) => node.type === 'IMAGE');
+  return imageNode?.imageData?.image?.src?.id
+    ? `https://static.wixstatic.com/media/${imageNode.imageData.image.src.id}`
+    : null;
+}
+
+// Helper function to extract hospital logo URL
+const getHospitalLogo = (content: any): string | null => {
+  if (typeof content === 'string') {
+    return getWixImageUrl(content);
+  }
+  if (!content?.nodes) return null;
+  const imageNode = content.nodes?.[0];
   if (imageNode?.type === 'IMAGE' && imageNode.imageData?.image?.src?.id) {
-    const id = imageNode.imageData.image.src.id
-    return `https://static.wixstatic.com/media/${id}`
+    return `https://static.wixstatic.com/media/${imageNode.imageData.image.src.id}`;
   }
-  return null
+  return null;
 }
 
-// Helper function to extract doctor image URL from rich content
-const getDoctorImage = (richContent: any): string | null => {
-  if (typeof richContent === 'string') return richContent
-  if (!richContent || !richContent.nodes) return null
-  const imageNode = richContent.nodes.find((node: any) => node.type === 'IMAGE')
-  if (imageNode?.imageData?.image?.src?.id) {
-    const id = imageNode.imageData.image.src.id
-    return `https://static.wixstatic.com/media/${id}`
+// Helper function to extract doctor image URL
+const getDoctorImage = (content: any): string | null => {
+  if (typeof content === 'string') {
+    return getWixImageUrl(content);
   }
-  return null
+  if (!content?.nodes) return null;
+  const imageNode = content.nodes.find((node: any) => node.type === 'IMAGE');
+  return imageNode?.imageData?.image?.src?.id
+    ? `https://static.wixstatic.com/media/${imageNode.imageData.image.src.id}`
+    : null;
 }
 
-// Helper function to extract treatment image URL from rich content
-const getTreatmentImage = (richContent: any): string | null => {
-  if (typeof richContent === 'string') return richContent
-  if (!richContent || !richContent.nodes) return null
-  const imageNode = richContent.nodes.find((node: any) => node.type === 'IMAGE')
-  if (imageNode?.imageData?.image?.src?.id) {
-    const id = imageNode.imageData.image.src.id
-    return `https://static.wixstatic.com/media/${id}`
+// Helper function to extract treatment image URL
+const getTreatmentImage = (content: any): string | null => {
+  if (typeof content === 'string') {
+    return getWixImageUrl(content);
   }
-  return null
+  if (!content?.nodes) return null;
+  const imageNode = content.nodes.find((node: any) => node.type === 'IMAGE');
+  return imageNode?.imageData?.image?.src?.id
+    ? `https://static.wixstatic.com/media/${imageNode.imageData.image.src.id}`
+    : null;
 }
 
 // Helper function to get short plain text description from rich content
@@ -138,9 +152,12 @@ const renderRichText = (richContent: any): JSX.Element | null => {
           </h4>
         )
       case 'IMAGE':
-        const imgSrc = node.imageData?.image?.src?.id
-          ? `https://static.wixstatic.com/media/${node.imageData.image.src.id}`
-          : null
+        let imgSrc = null;
+        if (typeof node.imageData?.image?.src === 'string') {
+          imgSrc = getWixImageUrl(node.imageData.image.src);
+        } else if (node.imageData?.image?.src?.id) {
+          imgSrc = `https://static.wixstatic.com/media/${node.imageData.image.src.id}`;
+        }
         if (imgSrc) {
           return (
             <div key={Math.random()} className="my-4">
@@ -220,13 +237,9 @@ const Breadcrumb = ({ hospitalName, branchName, hospitalSlug }: { hospitalName: 
   </nav>
 )
 
-// Similar Hospitals Carousel Component
-const SimilarHospitalsCarousel = ({ hospitals, currentHospitalId }: { hospitals: any[], currentHospitalId: string }) => {
-  const similarHospitals = hospitals
-    .filter(h => h._id !== currentHospitalId)
-    .slice(0, 6)
-
-  if (similarHospitals.length === 0) return null
+// Similar Branches Carousel Component
+const SimilarBranchesCarousel = ({ branches, currentCityDisplay }: { branches: any[], currentCityDisplay: string }) => {
+  if (branches.length === 0) return null
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
@@ -242,23 +255,23 @@ const SimilarHospitalsCarousel = ({ hospitals, currentHospitalId }: { hospitals:
   const visibleSlidesClass = `min-w-0 w-80`
 
   return (
-    <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
+    <section className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-2xl font-semibold text-gray-800 flex items-center gap-3">
-          Similar Hospitals <span className="text-gray-700 text-base font-normal">({similarHospitals.length})</span>
+          Nearby Branches in {currentCityDisplay} <span className="text-gray-700 text-base font-normal">({branches.length})</span>
         </h3>
-        {similarHospitals.length > itemsPerView && (
+        {branches.length > itemsPerView && (
           <div className="flex gap-2">
             <button
               onClick={scrollPrev}
-              className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
+              className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
               aria-label="Previous slide"
             >
               <ChevronLeft className="w-5 h-5 text-gray-600" />
             </button>
             <button
               onClick={scrollNext}
-              className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
+              className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
               aria-label="Next slide"
             >
               <ChevronRight className="w-5 h-5 text-gray-600" />
@@ -268,12 +281,12 @@ const SimilarHospitalsCarousel = ({ hospitals, currentHospitalId }: { hospitals:
       </div>
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex gap-6">
-          {similarHospitals.map((hospital) => {
-            const hospitalImage = getHospitalImage(hospital.image)
-            const hospitalSlug = hospital.slug || generateSlug(hospital.name)
+          {branches.map((branchItem) => {
+            const branchImage = getBranchImage(branchItem.branchImage)
+            const hospitalSlug = generateSlug(branchItem.hospitalName)
             return (
-              <div key={hospital._id} className={classNames("flex-shrink-0 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden", visibleSlidesClass)}>
-                <HospitalCard hospital={hospital} hospitalImage={hospitalImage} hospitalSlug={hospitalSlug} />
+              <div key={branchItem._id} className={classNames("flex-shrink-0 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden", visibleSlidesClass)}>
+                <BranchCard branch={branchItem} branchImage={branchImage} hospitalSlug={hospitalSlug} />
               </div>
             )
           })}
@@ -283,19 +296,17 @@ const SimilarHospitalsCarousel = ({ hospitals, currentHospitalId }: { hospitals:
   )
 }
 
-// Hospital Card Component
-const HospitalCard = ({ hospital, hospitalImage, hospitalSlug }: { hospital: any, hospitalImage: string | null, hospitalSlug: string }) => {
-  const accreditations = hospital.accreditation ? hospital.accreditation.split(/[, ]+/).map(a => a.trim()).filter(Boolean) : []
-  const firstBranch = hospital.branches && hospital.branches.length > 0 ? hospital.branches[0] : null
-  const branchDisplay = firstBranch ? (firstBranch.name || firstBranch.address?.split(',')[0] || 'Branch') : 'N/A'
+// Branch Card Component
+const BranchCard = ({ branch, branchImage, hospitalSlug }: { branch: any, branchImage: string | null, hospitalSlug: string }) => {
+  const firstCity = branch.city && branch.city.length > 0 ? branch.city[0].name : 'N/A'
 
   return (
-    <Link href={`/hospitals/${hospitalSlug}`} className="block h-full">
+    <Link href={`/hospitals/branches/${hospitalSlug}-${generateSlug(branch.name)}`} className="block h-full">
       <div className="relative w-full h-48 overflow-hidden bg-gray-100">
-        {hospitalImage ? (
+        {branchImage ? (
           <Image
-            src={hospitalImage}
-            alt={hospital.name}
+            src={branchImage}
+            alt={branch.name}
             fill
             className="object-cover"
           />
@@ -306,31 +317,94 @@ const HospitalCard = ({ hospital, hospitalImage, hospitalSlug }: { hospital: any
         )}
       </div>
       <div className="p-4 space-y-3">
-        <h3 className="font-semibold text-gray-800 text-base line-clamp-1">{hospital.name}</h3>
-        <p className="text-gray-600 text-sm leading-relaxed">{getShortDescription(hospital.description, 80)}</p>
-        {hospital.yearEstablished && (
+        <h3 className="font-semibold text-gray-800 text-base line-clamp-1">{branch.name}</h3>
+        <p className="text-gray-600 text-sm leading-relaxed">{getShortDescription(branch.description, 80)}</p>
+        {branch.yearEstablished && (
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <Calendar className="w-4 h-4" />
-            <span>Est. {hospital.yearEstablished}</span>
+            <span>Est. {branch.yearEstablished}</span>
           </div>
         )}
        
-        {hospital.beds && (
+        {branch.totalBeds && (
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <Bed className="w-4 h-4" />
-            <span>{hospital.beds} Beds</span>
+            <span>{branch.totalBeds} Beds</span>
           </div>
         )}
-        {hospital.branches && hospital.branches.length > 0 && (
-          <div className="pt-2">
-            <p className="text-xs font-medium text-gray-700 mb-1">Branches</p>
-            <div className="flex items-center gap-1 text-xs text-gray-600">
-              <MapPin className="w-3 h-3 flex-shrink-0" />
-              <span>{branchDisplay}</span>
-              {hospital.branches.length > 1 && (
-                <span className="text-gray-500">+{hospital.branches.length - 1} more</span>
-              )}
-            </div>
+        <div className="pt-2">
+          <p className="text-xs font-medium text-gray-700 mb-1">Location</p>
+          <div className="flex items-center gap-1 text-xs text-gray-600">
+            <MapPin className="w-3 h-3 flex-shrink-0" />
+            <span>{firstCity}</span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// Doctor Card Component (assuming used in carousel)
+const DoctorCard = ({ doctor }: { doctor: any }) => {
+  const doctorImage = getDoctorImage(doctor.profileImage)
+  const doctorSlug = doctor.slug || generateSlug(doctor.name)
+
+  return (
+    <Link href={`/doctors/${doctorSlug}`} className="group flex flex-col h-full bg-white border border-gray-100 rounded-lg shadow-sm overflow-hidden">
+      <div className="relative h-60 overflow-hidden bg-gray-50">
+        {doctorImage ? (
+          <Image
+            src={doctorImage}
+            alt={doctor.name}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <Stethoscope className="w-12 h-12 text-gray-400" />
+          </div>
+        )}
+      </div>
+      <div className="p-4 flex-1 flex flex-col">
+        <h3 className="font-semibold text-gray-900 text-base mb-2 line-clamp-1">{doctor.name}</h3>
+        <p className="text-gray-600 text-sm mb-3">{doctor.specialization}</p>
+        <p className="text-gray-500 text-xs line-clamp-2 flex-1">{getShortDescription(doctor.about)}</p>
+      </div>
+    </Link>
+  )
+}
+
+// Treatment Card Component (assuming used in carousel)
+const TreatmentCard = ({ item }: { item: any }) => {
+  const treatmentImage = getTreatmentImage(item.treatmentImage || item.image)
+
+  return (
+    <Link href={`/treatment/${item.slug || generateSlug(item.name)}`} className="group flex flex-col h-full bg-white border border-gray-100 rounded-lg shadow-sm overflow-hidden">
+      <div className="relative h-48 overflow-hidden bg-gray-50">
+        {treatmentImage ? (
+          <Image
+            src={treatmentImage}
+            alt={item.name}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <Scissors className="w-12 h-12 text-gray-400" />
+          </div>
+        )}
+      </div>
+      <div className="p-4 flex-1 flex flex-col">
+        <h3 className="font-semibold text-gray-900 text-base mb-2 line-clamp-1">{item.name}</h3>
+        <p className="text-gray-500 text-sm line-clamp-1">
+          {item.category || 'Specialized Treatment'}
+        </p>
+        <p className="text-gray-500 text-sm line-clamp-2">
+          {getShortDescription(item.description)}
+        </p>
+        {item.cost && (
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <p className="text-blue-600 font-semibold text-sm">Starting from ${item.cost}</p>
           </div>
         )}
       </div>
@@ -338,118 +412,7 @@ const HospitalCard = ({ hospital, hospitalImage, hospitalSlug }: { hospital: any
   )
 }
 
-// Skeleton Components
-const HeroSkeleton = () => (
-  <section className="relative w-full h-[70vh]">
-    <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
-    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
-    <div className="absolute bottom-0 left-0 w-full z-10 px-6 pb-12 text-white">
-      <div className="container mx-auto space-y-4">
-        <div className="flex justify-start">
-          <div className="w-32 h-16 bg-white/20 rounded animate-pulse" />
-        </div>
-        <div className="space-y-2">
-          <div className="h-10 w-3/4 bg-white/20 rounded animate-pulse" />
-          <div className="h-6 w-1/2 bg-white/20 rounded animate-pulse" />
-        </div>
-        <div className="flex flex-wrap gap-3 mt-4">
-          <div className="h-8 w-32 bg-white/20 rounded animate-pulse" />
-          <div className="h-8 w-32 bg-white/20 rounded animate-pulse" />
-        </div>
-      </div>
-    </div>
-  </section>
-)
-
-const OverviewSkeleton = () => (
-  <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
-    <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-6" />
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="text-center p-6 bg-gray-50 rounded-xs border border-gray-100">
-          <div className="w-8 h-8 bg-gray-300 rounded-full mx-auto mb-3 animate-pulse" />
-          <div className="h-8 bg-gray-300 rounded animate-pulse mx-auto mb-2" />
-          <div className="h-4 w-20 bg-gray-300 rounded animate-pulse mx-auto" />
-        </div>
-      ))}
-    </div>
-  </section>
-)
-
-const AboutSkeleton = () => (
-  <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
-    <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-6" />
-    <div className="space-y-4">
-      <div className="h-6 bg-gray-300 rounded animate-pulse" />
-      <div className="h-6 bg-gray-300 rounded animate-pulse w-3/4" />
-      <div className="h-6 bg-gray-300 rounded animate-pulse" />
-    </div>
-  </section>
-)
-
-const CarouselSkeleton = ({ type }: { type: 'doctors' | 'treatments' | 'hospitals' }) => {
-  const itemsPerView = 3
-  const visibleSlidesClass = `min-w-0 w-1/3`
-
-  return (
-    <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-6 h-6 bg-gray-300 rounded animate-pulse" />
-          <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
-          <div className="h-6 w-12 bg-gray-200 rounded animate-pulse ml-2" />
-        </div>
-        <div className="flex gap-2">
-          <div className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 animate-pulse" />
-          <div className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 animate-pulse" />
-        </div>
-      </div>
-      <div className="overflow-hidden">
-        <div className="flex gap-6">
-          {Array.from({ length: Math.max(itemsPerView + 1, 6) }).map((_, i) => (
-            <div key={i} className={classNames("flex-shrink-0 bg-white rounded-xs p-0 border border-gray-100 shadow-xs animate-pulse", visibleSlidesClass)}>
-              <div className="relative w-full h-48 mb-0 rounded-t-xs overflow-hidden bg-gray-100" />
-              <div className="p-6 space-y-3">
-                <div className="h-6 bg-gray-300 rounded" />
-                <div className="h-5 bg-gray-300 rounded w-3/4" />
-                <div className="h-4 bg-gray-300 rounded w-1/2" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-const FacilitiesSkeleton = () => (
-  <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
-    <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-6" />
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 p-4 bg-gray-50 rounded-xs border border-gray-100">
-          <div className="w-3 h-3 bg-gray-300 rounded-full animate-pulse flex-shrink-0" />
-          <div className="h-4 w-32 bg-gray-300 rounded animate-pulse" />
-        </div>
-      ))}
-    </div>
-  </section>
-)
-
-const SidebarSkeleton = () => (
-  <aside className="lg:col-span-3 space-y-8">
-    <div className="bg-white sticky top-24 rounded-xs shadow-xs p-6 border border-gray-100">
-      <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-6" />
-      <div className="space-y-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-16 bg-gray-300 rounded-xs animate-pulse" />
-        ))}
-      </div>
-    </div>
-  </aside>
-)
-
-// Embla Carousel Component for Doctors and Treatments
+// Embla Carousel Component (assuming definition)
 const EmblaCarousel = ({
   items,
   title,
@@ -472,29 +435,33 @@ const EmblaCarousel = ({
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
 
   const itemsPerView = 3
-  const visibleSlidesClass = 'w-1/3'
+  const visibleSlidesClass = `min-w-0 w-80`
+
+  const renderCard = (item: any) => {
+    switch (type) {
+      case 'doctors':
+        return <DoctorCard doctor={item} />
+      case 'treatments':
+        return <TreatmentCard item={item} />
+      default:
+        return null
+    }
+  }
 
   return (
-    <div className="relative">
+    <section className="relative">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-2xl font-semibold text-gray-800 flex items-center gap-3">
-          {title} <span className="text-gray-800 text-base font-normal">({items.length})</span>
+          <Icon className="w-6 h-6 text-gray-600" />
+          {title}
         </h3>
         {items.length > itemsPerView && (
           <div className="flex gap-2">
-            <button
-              onClick={scrollPrev}
-              className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
-              aria-label="Previous slide"
-            >
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            <button onClick={scrollPrev} className="bg-white rounded-lg p-2 shadow-sm border border-gray-200">
+              <ChevronLeft className="w-4 h-4" />
             </button>
-            <button
-              onClick={scrollNext}
-              className="bg-white rounded-xs p-3 shadow-xs border border-gray-100 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
-              aria-label="Next slide"
-            >
-              <ChevronRight className="w-5 h-5 text-gray-600" />
+            <button onClick={scrollNext} className="bg-white rounded-lg p-2 shadow-sm border border-gray-200">
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -502,113 +469,110 @@ const EmblaCarousel = ({
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex gap-6">
           {items.map((item, index) => (
-            <div key={item._id || index} className={classNames("flex-shrink-0 bg-white rounded-xs p-0 border border-gray-100 shadow-xs hover:shadow-xs", visibleSlidesClass)}>
-              {type === 'doctors' ? (
-                <DoctorCard item={item} />
-              ) : (
-                <TreatmentCard item={item} />
-              )}
+            <div key={item._id || index} className={classNames("flex-shrink-0", visibleSlidesClass)}>
+              {renderCard(item)}
             </div>
           ))}
         </div>
       </div>
+    </section>
+  )
+}
+
+// Skeleton Components (assuming definitions)
+const HeroSkeleton = () => (
+  <section className="relative w-full h-[70vh] bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse">
+    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+    <div className="absolute bottom-0 left-0 w-full z-10 px-6 pb-12">
+      <div className="container mx-auto space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-gray-300 rounded-full" />
+          <div className="space-y-2">
+            <div className="h-8 bg-gray-300 rounded w-64" />
+            <div className="h-4 bg-gray-300 rounded w-96" />
+          </div>
+        </div>
+      </div>
     </div>
-  )
-}
+  </section>
+)
 
-// Doctor Card Component
-const DoctorCard = ({ item }: { item: any }) => {
-  const doctorImage = getDoctorImage(item.profileImage)
-  const doctorSlug = item.slug || generateSlug(item.name)
-
-  return (
-    <Link
-      href={`/doctors/${doctorSlug}`}
-      className="group h-full flex flex-col hover:no-underline"
-    >
-      <div className="relative flex-1 min-h-48 rounded-t-xs overflow-hidden bg-gray-100">
-        {doctorImage ? (
-          <Image
-            src={doctorImage}
-            alt={item.name}
-            fill
-            className="object-cover w-full "
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Stethoscope className="w-12 h-12 text-gray-400" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </div>
-      <div className="p-6 flex-1 flex flex-col justify-between">
-        <div className="space-y-3">
-          <h5 className="title-text font-semibold text-gray-900 text-base mb-2 line-clamp-1">
-            {item.name}
-          </h5>
-          <p className="description-1 line-clamp-1">
-            {item.specialization}
-          </p>
-          <p className="description-1 line-clamp-2">
-            {item.qualification}
-          </p>
-          {item.designation && (
-            <p className="description-1 line-clamp-2">
-              {item.designation}
-            </p>
-          )}
+const OverviewSkeleton = () => (
+  <div className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse">
+    <div className="h-8 bg-gray-300 rounded w-48 mb-6" />
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="text-center p-6">
+          <div className="w-8 h-8 bg-gray-300 rounded-full mx-auto mb-3" />
+          <div className="h-6 bg-gray-300 rounded mx-auto w-20" />
+          <div className="h-4 bg-gray-300 rounded mx-auto w-16 mt-2" />
         </div>
-      </div>
-    </Link>
-  )
-}
+      ))}
+    </div>
+  </div>
+)
 
-// Treatment Card Component (updated to match DoctorCard design)
-const TreatmentCard = ({ item }: { item: any }) => {
-  const treatmentImage = getTreatmentImage(item.treatmentImage)
-  const treatmentSlug = item.slug || generateSlug(item.name)
+const AboutSkeleton = () => (
+  <div className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse">
+    <div className="h-8 bg-gray-300 rounded w-48 mb-4" />
+    <div className="space-y-4">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="h-4 bg-gray-300 rounded" />
+      ))}
+    </div>
+  </div>
+)
 
-  return (
-    <Link
-      href={`/treatment/${treatmentSlug}`}
-      className="group h-full flex flex-col hover:no-underline"
-    >
-      <div className="relative flex-1 min-h-48 rounded-t-xs overflow-hidden bg-gray-100">
-        {treatmentImage ? (
-          <Image
-            src={treatmentImage}
-            alt={item.name}
-            fill
-            className="object-cover w-full "
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Scissors className="w-12 h-12 text-gray-400" />
+const CarouselSkeleton = ({ type }: { type: string }) => (
+  <div className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse">
+    <div className="h-8 bg-gray-300 rounded w-64 mb-4" />
+    <div className="flex gap-4 overflow-hidden">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="flex-shrink-0 w-80">
+          <div className="h-48 bg-gray-300 rounded-lg mb-4" />
+          <div className="space-y-2">
+            <div className="h-5 bg-gray-300 rounded w-3/4" />
+            <div className="h-4 bg-gray-300 rounded" />
           </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </div>
-      <div className="p-6 flex-1 flex flex-col justify-between">
-        <div className="space-y-3">
-          <h5 className="font-semibold text-gray-800 text-lg line-clamp-1 group-hover:text-gray-800 transition-colors duration-200">
-            {item.name}
-          </h5>
-          <p className="text-gray-600 font-medium line-clamp-1">
-            {item.category || 'Specialized Treatment'}
-          </p>
-          <p className="text-gray-500 text-sm line-clamp-2">
-            {getShortDescription(item.description)}
-          </p>
         </div>
-        {item.cost && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <p className="text-blue-600 font-semibold text-sm">Starting from ${item.cost}</p>
+      ))}
+    </div>
+  </div>
+)
+
+const FacilitiesSkeleton = () => (
+  <div className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse">
+    <div className="h-8 bg-gray-300 rounded w-48 mb-4" />
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+          <div className="w-3 h-3 bg-gray-300 rounded-full" />
+          <div className="h-4 bg-gray-300 rounded w-32" />
+        </div>
+      ))}
+    </div>
+  </div>
+)
+
+const SidebarSkeleton = () => (
+  <div className="space-y-6">
+    <div className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse">
+      <div className="h-6 bg-gray-300 rounded w-32 mb-4" />
+      <div className="space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="flex gap-2">
+            <div className="w-10 h-10 bg-gray-300 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 bg-gray-300 rounded" />
+              <div className="h-3 bg-gray-300 rounded w-3/4" />
+            </div>
           </div>
-        )}
+        ))}
       </div>
-    </Link>
-  )
-}
+    </div>
+    <div className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse h-96" />
+  </div>
+)
 
 // Main Branch Detail Component
 export default function BranchDetail({ params }: { params: Promise<{ slug: string }> }) {
@@ -703,13 +667,13 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6 relative">
         <Breadcrumb hospitalName="Hospital Name" branchName="Branch Name" hospitalSlug="" />
-        <div className="text-center space-y-6 max-w-md p-8 bg-white rounded-xs shadow-xs border border-gray-100">
+        <div className="text-center space-y-6 max-w-md p-8 bg-white rounded-lg shadow-sm border border-gray-100">
           <Building2 className="w-16 h-16 text-gray-400 mx-auto" />
           <h2 className="text-2xl font-semibold text-gray-800">Branch Not Found</h2>
           <p className="text-gray-600 leading-relaxed">{error || "The requested branch could not be found. Please check the URL or try searching again."}</p>
           <Link
             href="/hospitals"
-            className="inline-block w-full bg-gray-800 text-white px-6 py-3 rounded-xs hover:bg-gray-900 transition-all font-semibold shadow-xs hover:shadow-md"
+            className="inline-block w-full bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-all font-semibold shadow-sm hover:shadow-md"
           >
             Go to Hospital Search
           </Link>
@@ -724,6 +688,18 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
   const heroImage = branchImage || hospitalImage
   const hospitalLogo = getHospitalLogo(hospital.logo)
   const hospitalSlug = hospital.slug || generateSlug(hospital.name)
+
+  // Compute similar branches in nearby cities (same city)
+  const currentCities = branch.city ? branch.city.map((c: any) => c.name) : []
+  const similarBranches = allHospitals
+    .filter((h: any) => h._id !== hospital._id)
+    .flatMap((h: any) =>
+      h.branches
+        .filter((b: any) => b.city && b.city.some((c: any) => currentCities.includes(c.name)))
+        .map((b: any) => ({ ...b, hospitalName: h.name }))
+    )
+    .slice(0, 6)
+  const currentCityDisplay = branch.city?.[0]?.name || 'Nearby Cities'
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -751,7 +727,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
                     src={hospitalLogo}
                     alt={`${hospital.name} logo`}
                     fill
-                    className="object-cover w-auto rounded-full h-16"
+                    className="object-contain rounded-full"
                   />
                 </div>
               )}
@@ -760,18 +736,18 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
               {branch.name}
             </h1>
            </div>
-            <p className="text-lg max-w-2xl leading-relaxed text-gray-200">
-              {hospital.name} - {branch.address || "A dedicated healthcare facility providing comprehensive medical services"}
-            </p>
+            {/* <p className="text-lg max-w-2xl leading-relaxed text-gray-200">
+               {branch.address || "A dedicated healthcare facility providing comprehensive medical services"}
+            </p> */}
             <div className="flex flex-wrap gap-3 mt-4">
               {branch.address && (
-                <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xs text-sm font-medium border border-white/20">
+                <span className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium border border-white/20">
                   <MapPin className="w-4 h-4" />
                   {branch.address}
                 </span>
               )}
               {branch.emergencyContact && (
-                <span className="flex items-center gap-2 bg-red-500/20 backdrop-blur-sm px-4 py-2 rounded-xs text-sm font-medium border border-red-500/30">
+                <span className="flex items-center gap-2 bg-red-500/20 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium border border-red-500/30">
                   <Clock className="w-4 h-4" />
                   24/7: {branch.emergencyContact}
                 </span>
@@ -784,18 +760,16 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
       {/* Main Content */}
       <section className="py-10 relative z-10">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-12 gap-4">
+          <div className="grid lg:grid-cols-12 gap-4 md:px-0 px-2">
             <main className="lg:col-span-9 space-y-4">
               {/* Key Statistics */}
-              <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
+              <section className="md:bg-white md:rounded-lg md:shadow-sm md:p-4 md:border border-gray-100">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">Branch Overview</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {branch.totalBeds && (
                     <StatCard icon={Bed} value={branch.totalBeds} label="Total Beds" />
                   )}
-                  {branch.icuBeds && (
-                    <StatCard icon={Users} value={branch.icuBeds} label="ICU Beds" />
-                  )}
+               
                   {branch.operatingRooms && (
                     <StatCard icon={Scissors} value={branch.operatingRooms} label="Operating Rooms" />
                   )}
@@ -807,15 +781,15 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
 
               {/* About Branch Section */}
               {branch.description && (
-                <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
-                  <h2 className="text-2xl font-semibold  text-gray-800 mb-4">About {branch.name}</h2>
+                <section className="md:bg-white md:rounded-lg md:shadow-sm md:p-4 md:border border-gray-100">
+                  <h2 className="text-2xl font-semibold  text-gray-800 mt-5 md:mt-0 mb-2 md:mb-4">About {branch.name}</h2>
                   {renderRichText(branch.description)}
                 </section>
               )}
 
               {/* Doctors Section */}
               {branch.doctors && branch.doctors.length > 0 && (
-                <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
+                <section className="md:bg-white md:rounded-lg md:shadow-sm md:p-4 md:border border-gray-100">
                   <EmblaCarousel
                     items={branch.doctors}
                     title="Our Specialist Doctors"
@@ -827,7 +801,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
 
               {/* Treatments Section */}
               {branch.treatments && branch.treatments.length > 0 && (
-                <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
+                <section className="md:bg-white md:rounded-lg md:shadow-sm md:p-4 mt-5 md:mt-0 md:border border-gray-100">
                   <EmblaCarousel
                     items={branch.treatments}
                     title="Available Treatments"
@@ -839,11 +813,11 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
 
               {/* Facilities & Services */}
               {branch.facilities && branch.facilities.length > 0 && (
-                <section className="bg-white rounded-xs shadow-xs p-4 border border-gray-100">
+                <section className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
                   <h2 className="text-2xl font-semibold text-gray-800 mb-4">Facilities & Services</h2>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {branch.facilities.map((facility: string, index: number) => (
-                      <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 rounded-xs border border-gray-100">
+                      <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
                         <div className="w-3 h-3 bg-gray-600 rounded-full flex-shrink-0"></div>
                         <span className="text-gray-700 font-medium">{facility}</span>
                       </div>
@@ -852,8 +826,8 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
                 </section>
               )}
 
-              {/* Similar Hospitals Section */}
-              <SimilarHospitalsCarousel hospitals={allHospitals} currentHospitalId={hospital._id} />
+              {/* Similar Branches Section */}
+              <SimilarBranchesCarousel branches={similarBranches} currentCityDisplay={currentCityDisplay} />
             </main>
 
             {/* Sidebar */}
@@ -869,9 +843,9 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
 
 // Stat Card Component
 const StatCard = ({ icon: Icon, value, label }: { icon: any; value: string | number; label: string }) => (
-  <div className="text-center p-6 bg-gray-50 rounded-xs border border-gray-100 hover:shadow-xs ">
+  <div className="text-center p-6 bg-white md:bg-gray-50 rounded-lg border border-gray-100 hover:shadow-sm ">
     <Icon className="w-8 h-8 text-gray-600 mx-auto mb-3" />
     <p className="text-3xl font-semibold text-gray-800">{value}</p>
     <p className="text-gray-500 mt-2 text-sm">{label}</p>
   </div>
-) 
+)

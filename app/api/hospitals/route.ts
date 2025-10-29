@@ -7,7 +7,8 @@ const COLLECTIONS = {
   DOCTORS: "DoctorMaster", 
   CITIES: "CityMaster",
   TREATMENTS: "TreatmentMaster",
-  HOSPITALS: "HospitalMaster"
+  HOSPITALS: "HospitalMaster",
+  ACCREDITATIONS: "Accreditation"
 }
 
 // Utility function to get value from nested fields
@@ -30,7 +31,7 @@ const DataMappers = {
     image: item["Hospital Image"] || item.hospitalImage || item.image,
     logo: item["Logo"] || item.logo,
     yearEstablished: getValue(item, "Year Established", "yearEstablished"),
-    accreditation: getValue(item, "Accreditation", "accreditation"),
+    accreditation: ReferenceMapper.multiReference(item.accreditation, "Title", "title", "accreditationName", "name"),
     beds: getValue(item, "No. of Beds", "noOfBeds", "beds"),
     emergencyServices: getValue(item, "Emergency Services", "emergencyServices"),
     description: getValue(item, "Description", "description"),
@@ -48,6 +49,7 @@ const DataMappers = {
     email: getValue(item, "Email", "email"),
     totalBeds: getValue(item, "Total Beds", "totalBeds"),
     icuBeds: getValue(item, "ICU Beds", "icuBeds"),
+     yearEstablished: getValue(item, "Year Established", "yearEstablished"),
     emergencyContact: getValue(item, "Emergency Contact", "emergencyContact"),
     branchImage: getValue(item, "Branch Image", "branchImage", "image"),
     description: getValue(item, "Description", "description"),
@@ -86,6 +88,14 @@ const DataMappers = {
     treatmentImage: item["Treatment Image"] || item.treatmentImage || item.image,
     duration: getValue(item, "Duration", "duration"),
     cost: getValue(item, "Cost", "cost", "price"),
+  }),
+
+  accreditation: (item: any) => ({
+    _id: item._id || item.ID,
+    name: getValue(item, "Title", "title", "name") || "Accreditation",
+    image: getValue(item, "Image", "image"),
+    issuingBody: getValue(item, "Issuing Body", "issuingBody"),
+    year: getValue(item, "Year", "year"),
   })
 }
 
@@ -125,6 +135,14 @@ const ReferenceMapper = {
           if (nameFields.includes("city name")) {
             mappedItem.state = getValue(item, "state", "stateName")
             mappedItem.country = getValue(item, "contery", "country")
+          }
+
+          // Accreditation specific
+          if (nameFields.some(f => f.toLowerCase().includes('accredit') || f === 'Title' || f === 'title')) {
+            mappedItem.image = getValue(item, "Image", "image")
+            mappedItem.description = getValue(item, "Description", "description")
+            mappedItem.issuingBody = getValue(item, "Issuing Body", "issuingBody")
+            mappedItem.year = getValue(item, "Year", "year")
           }
 
           return mappedItem
@@ -350,6 +368,7 @@ export async function GET(req: Request) {
     // Build hospital query
     let hospitalQuery = wixClient.items
       .query(COLLECTIONS.HOSPITALS)
+      .include("accreditation")
       .descending("_createdDate")
       .limit(params.pageSize)
       .skip(params.page * params.pageSize)
@@ -507,8 +526,15 @@ async function enrichHospitalsWithRelatedData(
       })
     })
 
+    // Enrich hospital accreditation with full data if needed (already mapped via include and ReferenceMapper)
+    const mappedHospital = DataMappers.hospital(hospital)
+    mappedHospital.accreditation = mappedHospital.accreditation.map((acc: any) => {
+      // If full data is already there from include, use it; otherwise, could fetch but since included, it's fine
+      return acc
+    })
+
     return {
-      ...DataMappers.hospital(hospital),
+      ...mappedHospital,
       branches: enrichedBranches,
       doctors: Array.from(uniqueDoctors.values()),
       treatments: Array.from(uniqueTreatments.values())

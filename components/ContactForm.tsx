@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -58,6 +58,32 @@ export default function ContactForm() {
     whatsapp: "",
     message: "",
   })
+
+  // Detect user's country on load using IP geolocation
+  useEffect(() => {
+    const fetchUserCountry = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        const iso = data.country_code;
+        const match = countries.find((c) => c.iso === iso);
+        if (match) {
+          setForm((prev) => ({
+            ...prev,
+            countryIso: match.iso,
+            countryName: match.name,
+            countryCode: match.dial,
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to detect user country:', error);
+        // Fallback to default (US)
+      }
+    };
+
+    fetchUserCountry();
+  }, [countries]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -125,8 +151,8 @@ const onSubmit = async (e: React.FormEvent) => {
   return (
     <div className="w-full sticky top-16 h-fit lg:col-span-4">
           <div className="overflow-hidden rounded-xs border border-gray-100 bg-white text-gray-800 shadow-xs">
-            <div className="p-4 md:p-3 border-b border-gray-200">
-              <h3 className="title-text">How can we help you?</h3>
+            <div className="p-4 md:p-3 border-b bg-red-500 border-gray-200">
+              <h3 className=" text-xl md:text-xl font-semibold  text-white">How can we help you?</h3>
             </div>
             <div className="p-4 md:p-6">
               {/* Status Alerts */}
