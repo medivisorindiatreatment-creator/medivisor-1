@@ -106,6 +106,7 @@
     "tailwindcss": "^4.1.11",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.8.3",
+    "use-debounce": "^10.0.6",
     "vaul": "^1.1.2",
     "wix-data": "^0.0.1-security",
     "wouter": "^3.7.1",

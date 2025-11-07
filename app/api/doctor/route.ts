@@ -15,7 +15,7 @@ export async function GET(_req: NextRequest) {
       Owner: d._owner || null,
       DoctorName: d["Doctor Name"] || d.doctorName || "Unknown",
       ProfileImage: d["Profile Image"] || d.profileImage || null,
-      Specialization: d["Specialization"] || d.specialization || null,
+      Specialization: d["specialization"] || d.specialization || null,
       Qualification: d["Qualification"] || d.qualification || null,
       "Experience (Years)": d["Experience (Years)"] || d.experienceYears || null,
       Designation: d["Designation"] || d.designation || null,

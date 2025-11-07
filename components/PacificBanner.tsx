@@ -28,7 +28,7 @@ export default function Banner() {
             <div>
             <div className="">
               <h2 className="text-4xl sm:text-6xl text-center font-semibold tracking-tight text-gray-900">
-                Pacific Patient Meet
+                Pacific Patient Visit
               </h2>
               <p className="heading-lg my-2 text-center font-medium">
                 Nov 18 – 26, 2025

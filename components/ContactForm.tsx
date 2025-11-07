@@ -152,7 +152,7 @@ const onSubmit = async (e: React.FormEvent) => {
     <div className="w-full sticky top-16 h-fit lg:col-span-4">
           <div className="overflow-hidden rounded-xs border border-gray-100 bg-white text-gray-800 shadow-xs">
             <div className="p-4 md:p-3 border-b bg-red-500 border-gray-200">
-              <h3 className=" text-xl md:text-xl font-semibold  text-white">How can we help you?</h3>
+              <h3 className=" text-xl md:text-xl font-medium  text-white">How can we help you?</h3>
             </div>
             <div className="p-4 md:p-6">
               {/* Status Alerts */}

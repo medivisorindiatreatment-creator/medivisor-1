@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import Image from "next/image"
 import type { HospitalWithBranchPreview } from "@/types/hospital"
 import {
@@ -19,12 +19,18 @@ import {
   Phone,
   Mail,
   User,
-  MapPin
+  MapPin,
+  Heart,
+  Search,
+  X,
+  Filter,
+  ChevronDown
 } from "lucide-react"
 import Link from "next/link"
 import useEmblaCarousel from "embla-carousel-react"
 import classNames from "classnames"
 import ContactForm from "@/components/ContactForm"
+import { useRouter } from "next/navigation"
 
 // ==============================
 // Interfaces
@@ -305,7 +311,7 @@ const Breadcrumb = ({ hospitalName, branchName, doctorName, hospitalSlug }: { ho
         </Link>
         <span>/</span>
         <Link
-          href={`/hospitals/${hospitalSlug}/branches/${generateSlug(branchName)}`}
+          href={`/hospitals/branches/${hospitalSlug}-${generateSlug(branchName)}-`}
           className="hover:text-gray-900 transition-colors"
         >
           {branchName}
@@ -316,185 +322,6 @@ const Breadcrumb = ({ hospitalName, branchName, doctorName, hospitalSlug }: { ho
     </div>
   </nav>
 )
-
-// Hospital Card Component
-const HospitalCard = ({ hospital }: { hospital: any }) => {
-  const hospitalImage = getHospitalImage(hospital.image)
-  const hospitalLogo = getHospitalLogo(hospital.logo)
-  const hospitalSlug = hospital.slug || generateSlug(hospital.name)
-
-  const branchesInfo = hospital.branches && hospital.branches.length > 0 ? (
-    <p className="description-2 flex items-center gap-1">
-      <MapPin className="w-3 h-3" />
-      {hospital.branches[0].name}
-      {hospital.branches.length > 1 && (
-        <span className="ml-1">+{hospital.branches.length - 1} more</span>
-      )}
-    </p>
-  ) : null
-
-  return (
-    <Link
-      href={`/hospitals/${hospitalSlug}`}
-      className="group flex flex-col bg-white rounded-xs shadow-xs border border-gray-100 hover:border-gray-100  overflow-hidden"
-    >
-      {/* Image Section */}
-      <div className="relative h-48 bg-gray-50">
-        {hospitalImage ? (
-          <Image
-            src={hospitalImage}
-            alt={hospital.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-            <Building2 className="w-12 h-12 text-gray-400" />
-          </div>
-        )}
-        {/* Accreditation Logos Overlay */}
-        {hospital.accreditation && hospital.accreditation.length > 0 && (
-          <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
-            {hospital.accreditation.slice(0, 3).map((acc: AccreditationType, idx: number) => (
-              <div key={acc._id || idx} className="bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-sm border border-gray-200">
-                {acc.image ? (
-                  <img
-                    src={getAccreditationImage(acc.image)}
-                    alt={acc.name}
-                    className="w-5 h-5 rounded-full object-contain"
-                    onError={(e) => { e.currentTarget.style.display = "none"; }}
-                  />
-                ) : (
-                  <Award className="w-5 h-5 text-gray-600" />
-                )}
-              </div>
-            ))}
-            {hospital.accreditation.length > 3 && (
-              <div className="bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-sm border border-gray-200 text-xs text-gray-600 w-5 h-5 flex items-center justify-center">
-                +{hospital.accreditation.length - 3}
-              </div>
-            )}
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-800/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-xs" />
-      </div>
-
-      {/* Content Section */}
-      <div className="flex flex-col justify-between bg-white md:bg-gray-100 p-5  flex-1">
-        <div className="space-y-1">
-         <div className="flex gap-x-1 items-center">
-           {/* {hospitalLogo && (
-            <div className="w-20 h-8 relative">
-              <Image
-                src={hospitalLogo}
-                alt={`${hospital.name} logo`}
-                fill
-                className="object-contain"
-              />
-            </div>
-          )} */}
-
-          <h5 className="title-text line-clamp-1 group-hover:text-gray-700 transition-colors duration-200">
-            {hospital.name}
-          </h5>
-         </div>
-
-          {hospital.description && (
-            <p className="description-1 line-clamp-2">
-              {getShortabout(hospital.description)}
-            </p>
-          )}
-        </div>
-
-        {/* Footer Section */}
-        <div className="mt-4 pt-3 border-t border-gray-100 space-y-2">
-          {hospital.yearEstablished && (
-            <p className="description-2 flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              Est. {hospital.yearEstablished}
-            </p>
-          )}
-
-          {hospital.beds && (
-            <p className="description-2 flex items-center gap-1">
-              <Bed className="w-4 h-4" />
-              {hospital.beds} Beds
-            </p>
-          )}
-
-         
-
-          {branchesInfo && (
-           <div className="border-t  border-gray-200 space-y-1">
-             <h3 className="heading-xs pt-2">
-              Branches
-            </h3>
-            <p className="description-1 font-medium">
-               {branchesInfo}
-            </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </Link>
-  )
-}
-
-// Hospitals Carousel Component
-const HospitalsCarousel = ({ hospitals }: { hospitals: any[] }) => {
-  if (hospitals.length === 0) return null
-
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: false,
-    align: 'start',
-    slidesToScroll: 1,
-    containScroll: 'trimSnaps'
-  })
-
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
-
-  const itemsPerView = 3
-  const visibleSlidesClass = `min-w-0 w-full md:w-[calc(33.333%-0.666rem)]`
-
-  return (
-    <section className="md:bg-white p-2 md:rounded-lg md:shadow-sm md:p-6 md:border border-gray-100">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-          <Hospital className="w-5 h-5 text-gray-600" />
-          All Hospitals ({hospitals.length})
-        </h3>
-        {hospitals.length > itemsPerView && (
-          <div className="flex gap-2">
-            <button
-              onClick={scrollPrev}
-              className="bg-white rounded-lg p-2 shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
-              aria-label="Previous slide"
-            >
-              <ChevronLeft className="w-4 h-4 text-gray-600" />
-            </button>
-            <button
-              onClick={scrollNext}
-              className="bg-white rounded-lg p-2 shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
-              aria-label="Next slide"
-            >
-              <ChevronRight className="w-4 h-4 text-gray-600" />
-            </button>
-          </div>
-        )}
-      </div>
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-4">
-          {hospitals.map((hospital) => (
-            <div key={hospital._id || hospital.id} className={classNames("flex-shrink-0", visibleSlidesClass)}>
-              <HospitalCard hospital={hospital} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
 
 const DoctorCard = ({ doctor }: { doctor: any }) => {
   const doctorImage = getDoctorImage(doctor.profileImage)
@@ -599,6 +426,456 @@ const SimilarDoctorsCarousel = ({ doctors, currentDoctorId }: { doctors: any[]; 
         </div>
       </div>
     </section>
+  )
+}
+
+// Branch Card Component
+const BranchCard = ({ branch, hospital }: { branch: any; hospital: any }) => {
+  const hospitalImage = getHospitalImage(hospital.image)
+  const hospitalSlug = hospital.slug || generateSlug(hospital.name)
+  const branchSlug = generateSlug(branch.name)
+  const branchCity = branch.city?.[0]?.name || 'City not available' // Extract city from branch.city array or fallback
+
+  return (
+    <Link
+      href={`/hospitals/${hospitalSlug}/branches/${branchSlug}`}
+      className="group flex flex-col bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 overflow-hidden"
+    >
+      {/* Image Section */}
+      <div className="relative h-48 bg-gray-50">
+        {hospitalImage ? (
+          <Image
+            src={hospitalImage}
+            alt={`${hospital.name} - ${branch.name}`}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+            <Building2 className="w-12 h-12 text-gray-400" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-800/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg" />
+      </div>
+
+      {/* Content Section */}
+      <div className="flex flex-col justify-between p-5 flex-1">
+        <div className="space-y-2">
+          <h5 className="title-text line-clamp-1 group-hover:text-gray-700 transition-colors duration-200">
+            {branch.name}
+          </h5>
+        </div>
+
+        {/* Footer Section */}
+        <div className="mt-4 pt-3 border-t border-gray-100 space-y-2">
+          <p className="description-2 flex items-center gap-1">
+            <MapPin className="w-4 h-4" />
+            {branchCity}
+          </p>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// Branches Carousel Component - Updated to show all branches from all hospitals
+const BranchesCarousel = ({ allBranchesWithHospitals }: { allBranchesWithHospitals: Array<{branch: any, hospital: any}> }) => {
+  if (allBranchesWithHospitals.length === 0) return null
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    align: 'start',
+    slidesToScroll: 1,
+    containScroll: 'trimSnaps'
+  })
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
+
+  const itemsPerView = 3
+  const visibleSlidesClass = `min-w-0 w-full md:w-[calc(33.333%-0.666rem)]`
+
+  return (
+    <section className="md:bg-white p-2 md:rounded-lg md:shadow-sm md:p-6 md:border border-gray-100">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+          <Hospital className="w-5 h-5 text-gray-600" />
+          All Hospital Branches ({allBranchesWithHospitals.length})
+        </h3>
+        {allBranchesWithHospitals.length > itemsPerView && (
+          <div className="flex gap-2">
+            <button
+              onClick={scrollPrev}
+              className="bg-white rounded-lg p-2 shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="w-4 h-4 text-gray-600" />
+            </button>
+            <button
+              onClick={scrollNext}
+              className="bg-white rounded-lg p-2 shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="w-4 h-4 text-gray-600" />
+            </button>
+          </div>
+        )}
+      </div>
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex gap-4">
+          {allBranchesWithHospitals.map(({branch, hospital}) => (
+            <div key={branch._id || branch.id} className={classNames("flex-shrink-0", visibleSlidesClass)}>
+              <BranchCard branch={branch} hospital={hospital} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Sub-component: Search Dropdown (from branches page)
+interface SearchDropdownProps {
+  value: string
+  onChange: (value: string) => void
+  placeholder: string
+  options: { id: string; name: string }[]
+  selectedOption: string
+  onOptionSelect: (id: string) => void
+  onClear: () => void
+  type: "city" | "treatment" | "specialty"
+}
+
+const SearchDropdown = ({
+  value,
+  onChange,
+  placeholder,
+  options,
+  selectedOption,
+  onOptionSelect,
+  onClear,
+  type,
+}: SearchDropdownProps) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const filteredOptions = useMemo(() => 
+    options.filter(option =>
+      option.name.toLowerCase().includes(value.toLowerCase())
+    ), [options, value])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
+  const selectedOptionName = options.find(opt => opt.id === selectedOption)?.name
+
+  const getIcon = () => {
+    switch (type) {
+      case "city":
+        return <MapPin className="w-4 h-4 text-gray-500" />
+      case "treatment":
+        return <Stethoscope className="w-4 h-4 text-gray-500" />
+      case "specialty":
+        return <Heart className="w-4 h-4 text-gray-500" />
+      default:
+        return <Search className="w-4 h-4 text-gray-500" />
+    }
+  }
+
+  const getPlaceholder = () => {
+    switch (type) {
+      case "city":
+        return "e.g., Mumbai, Delhi..."
+      case "treatment":
+        return "e.g., MRI Scan, Chemotherapy..."
+      case "specialty":
+        return "e.g., Cardiology, Neurology..."
+      default:
+        return placeholder
+    }
+  }
+
+  const getLabel = () => {
+    switch (type) {
+      case "city":
+        return "Filter by City"
+      case "treatment":
+        return "Filter by Treatment"
+      case "specialty":
+        return "Filter by Specialty"
+      default:
+        return ""
+    }
+  }
+
+  const getNoResultsText = () => {
+    switch (type) {
+      case "city":
+        return "cities"
+      case "treatment":
+        return "treatments"
+      case "specialty":
+        return "specialties"
+      default:
+        return ""
+    }
+  }
+
+  return (
+    <div ref={dropdownRef} className="relative space-y-2">
+      <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+        {getIcon()}
+        <span className="">{getLabel()}</span>
+      </label>
+
+      <div className="relative">
+       
+        <input
+          type="text"
+          placeholder={getPlaceholder()}
+          value={selectedOptionName || value}
+          onChange={(e) => {
+            onChange(e.target.value)
+            if (selectedOption) onOptionSelect("")
+            setIsOpen(true)
+          }}
+          onFocus={() => setIsOpen(true)}
+          className="pl-3 pr-3 py-3 border border-gray-200 rounded-md w-full text-sm bg-white focus:bg-white focus:ring-2 focus:ring-gray-200 focus:border-gray-200 transition-all placeholder:text-gray-400 shadow-sm"
+        />
+
+        {(value || selectedOption) && (
+          <button
+            onClick={() => {
+              onChange("")
+              onOptionSelect("")
+              onClear()
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+            aria-label="Clear filter"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+          aria-label="Toggle dropdown"
+        >
+          <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
+
+      {isOpen && (value || filteredOptions.length > 0) && (
+        <>
+          <div
+            className="fixed inset-0 z-10 lg:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute top-full left-0 right-0 z-20 bg-white border border-gray-200 rounded-md shadow-sm max-h-60 overflow-y-auto mt-1">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => {
+                    onOptionSelect(option.id)
+                    onChange("")
+                    setIsOpen(false)
+                  }}
+                  className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-200 last:border-b-0 flex items-center gap-3 min-h-[44px]"
+                >
+                  {getIcon()}
+                  <div className="font-medium text-gray-900">{option.name}</div>
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-4 text-sm text-gray-500 text-center">
+                No {getNoResultsText()} match your search. Try a different term.
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// Hospital Search Component (adapted from branches page for doctor page)
+const HospitalSearch = ({
+  allHospitals
+}: {
+  allHospitals: any[]
+}) => {
+  const router = useRouter()
+
+  const cityOptions = useMemo(() => {
+    const cityMap: Record<string, string> = {}
+    allHospitals.forEach((hospital: any) => {
+      hospital.branches?.forEach((branch: any) => {
+        branch.city?.forEach((city: any) => {
+          if (city?._id && city?.name) cityMap[city._id] = city.name
+        })
+      })
+    })
+    return Object.entries(cityMap).map(([id, name]) => ({ id, name }))
+  }, [allHospitals])
+
+  const treatmentOptions = useMemo(() => {
+    const treatmentMap: Record<string, string> = {}
+    allHospitals.forEach((hospital: any) => {
+      hospital.treatments?.forEach((t: any) => {
+        if (t?._id && t?.name) treatmentMap[t._id] = t.name
+      })
+      hospital.branches?.forEach((branch: any) =>
+        branch.treatments?.forEach((t: any) => {
+          if (t?._id && t?.name) treatmentMap[t._id] = t.name
+        })
+      )
+    })
+    return Object.entries(treatmentMap).map(([id, name]) => ({ id, name }))
+  }, [allHospitals])
+
+  const specializationOptions = useMemo(() => {
+    const specializationSet = new Set<string>()
+    allHospitals.forEach((hospital: any) => {
+      hospital.branches?.forEach((branch: any) => {
+        branch.treatments?.forEach((t: any) => {
+          if (t?.category) specializationSet.add(t.category)
+        })
+        branch.doctors?.forEach((d: any) => {
+          if (d.specialization) specializationSet.add(d.specialization)
+        })
+        branch.specialties?.forEach((s: any) => {
+          if (s.name) specializationSet.add(s.name)
+        })
+      })
+      hospital.treatments?.forEach((t: any) => {
+        if (t?.category) specializationSet.add(t.category)
+      })
+      hospital.doctors?.forEach((d: any) => {
+        if (d.specialization) specializationSet.add(d.specialization)
+      })
+    })
+    return Array.from(specializationSet).map(name => ({ id: name, name }))
+  }, [allHospitals])
+
+  // States for filters
+  const [cityQuery, setCityQuery] = useState("")
+  const [treatmentQuery, setTreatmentQuery] = useState("")
+  const [specializationQuery, setSpecializationQuery] = useState("")
+  const [selectedCityId, setSelectedCityId] = useState("")
+  const [selectedTreatmentId, setSelectedTreatmentId] = useState("")
+  const [selectedSpecialization, setSelectedSpecialization] = useState("")
+
+  const clearFilters = () => {
+    setCityQuery("")
+    setTreatmentQuery("")
+    setSpecializationQuery("")
+    setSelectedCityId("")
+    setSelectedTreatmentId("")
+    setSelectedSpecialization("")
+  }
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    let url = '/hospitals?'
+    let params: string[] = []
+
+    if (selectedCityId || cityQuery) {
+      params.push(`city=${encodeURIComponent(selectedCityId || cityQuery)}`)
+    }
+    if (selectedTreatmentId || treatmentQuery) {
+      params.push(`treatment=${encodeURIComponent(selectedTreatmentId || treatmentQuery)}`)
+    }
+    if (selectedSpecialization || specializationQuery) {
+      params.push(`specialty=${encodeURIComponent(selectedSpecialization || specializationQuery)}`)
+    }
+
+    if (params.length > 0) {
+      router.push(url + params.join('&'))
+    } else {
+      router.push('/hospitals')
+    }
+  }
+
+  return (
+    <div className="bg-white rounded-md shadow-sm p-4 border border-gray-200">
+      <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+        <Building2 className="w-5 h-5" />
+        Search Hospitals
+      </h3>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <SearchDropdown
+          value={cityQuery}
+          onChange={setCityQuery}
+          placeholder="Search cities..."
+          options={cityOptions}
+          selectedOption={selectedCityId}
+          onOptionSelect={setSelectedCityId}
+          onClear={() => {
+            setCityQuery("")
+            setSelectedCityId("")
+          }}
+          type="city"
+        />
+        <SearchDropdown
+          value={treatmentQuery}
+          onChange={setTreatmentQuery}
+          placeholder="Search treatments..."
+          options={treatmentOptions}
+          selectedOption={selectedTreatmentId}
+          onOptionSelect={setSelectedTreatmentId}
+          onClear={() => {
+            setTreatmentQuery("")
+            setSelectedTreatmentId("")
+          }}
+          type="treatment"
+        />
+        <SearchDropdown
+          value={specializationQuery}
+          onChange={setSpecializationQuery}
+          placeholder="Search specialties..."
+          options={specializationOptions}
+          selectedOption={selectedSpecialization}
+          onOptionSelect={setSelectedSpecialization}
+          onClear={() => {
+            setSpecializationQuery("")
+            setSelectedSpecialization("")
+          }}
+          type="specialty"
+        />
+        <button
+          type="submit"
+          className="w-full bg-[#74BF44] text-white py-2 rounded-md hover:bg-[#74BF44]/80 transition-colors font-medium shadow-sm hover:shadow-md"
+        >
+          Search
+        </button>
+        <button
+          type="button"
+          onClick={clearFilters}
+          className="w-full bg-gray-100 text-gray-700 py-2 rounded-md hover:bg-gray-200 transition-colors font-medium shadow-sm hover:shadow-md"
+        >
+          Clear Filters
+        </button>
+      </form>
+      <p className="text-xs text-gray-500 mt-2 text-center">
+        Redirects to hospital list with filtered results
+      </p>
+    </div>
   )
 }
 
@@ -806,6 +1083,13 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
     .flatMap(group => group.slice(0, 2))
     .slice(0, 6)
 
+  // All branches from all hospitals
+  const allBranchesWithHospitals = useMemo(() => {
+    return allHospitals.flatMap((h: any) => 
+      (h.branches || []).map((b: any) => ({ branch: b, hospital: h }))
+    )
+  }, [allHospitals])
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -950,15 +1234,15 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
                   </div>
                 </div>
               </section>
-              {allHospitals.length > 0 && (
-                <HospitalsCarousel hospitals={allHospitals} />
+              {allBranchesWithHospitals.length > 0 && (
+                <BranchesCarousel allBranchesWithHospitals={allBranchesWithHospitals} />
               )}
               {similarDoctors.length > 0 && (
                 <SimilarDoctorsCarousel doctors={similarDoctors} currentDoctorId={doctor._id || doctor.id} />
               )}
             </main>
             <aside className="lg:col-span-3 space-y-6">
-          
+              <HospitalSearch allHospitals={allHospitals} />
               <ContactForm />
             </aside>
           </div>
