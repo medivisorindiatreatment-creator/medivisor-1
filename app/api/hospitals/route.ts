@@ -1,4 +1,4 @@
-// app/api/hospitals/route.ts - UPDATED: Doctor Specialization Mapping Fix
+// app/api/hospitals/route.ts - UPDATED: Treatment-Specialist Relationship Fix
 import { NextResponse } from "next/server";
 import { wixClient } from "@/lib/wixClient";
 
@@ -108,13 +108,13 @@ function getValue(item: any, ...keys: string[]): string | null {
   return null;
 }
 
-// DATA MAPPERS - ENHANCED WITH DOCTOR SPECIALIZATION FIX
+// DATA MAPPERS - UPDATED WITH CORRECT TREATMENT-SPECIALIST RELATIONSHIP
 const DataMappers = {
   hospital: (item: any) => ({
     _id: item._id || item.ID,
     hospitalName: getValue(item, "hospitalName", "Hospital Name") || "Hospital",
     description: extractRichText(item.description || item.data?.description || item.Description),
-    specialty: ReferenceMapper.multiReference(item.specialty, "specialtyName", "specialty", "title", "name"),
+    specialty: ReferenceMapper.multiReference(item.specialty, "specialty", "Specialty Name", "title", "name"),
     yearEstablished: getValue(item, "yearEstablished", "Year Established"),
     hospitalImage: item.hospitalImage || item.data?.hospitalImage || item["hospitalImage"],
     logo: item.logo || item.data?.logo || item.Logo,
@@ -125,7 +125,7 @@ const DataMappers = {
     branchName: getValue(item, "branchName", "Branch Name") || "Branch",
     address: getValue(item, "address", "Address"),
     city: ReferenceMapper.multiReference(item.city, "cityName", "city name", "name"),
-    specialty: ReferenceMapper.multiReference(item.specialty, "specialtyName", "specialty", "title", "name"),
+    specialty: ReferenceMapper.multiReference(item.specialty, "specialization", "Specialty Name", "title", "name"),
     accreditation: ReferenceMapper.multiReference(item.accreditation, "title", "Title"),
     description: extractRichText(item.description || item.data?.description || item.Description),
     totalBeds: getValue(item, "totalBeds", "Total Beds"),
@@ -136,7 +136,7 @@ const DataMappers = {
     
     // ENHANCED: Combined specialties + treatments
     specialization: [
-      ...ReferenceMapper.multiReference(item.specialty, "specialtyName", "specialty", "title", "name"),
+      ...ReferenceMapper.multiReference(item.specialty, "specialty", "Specialty Name", "title", "name"),
       ...ReferenceMapper.multiReference(
         item.treatment || item["treatment"],
         "treatmentName",
@@ -159,7 +159,7 @@ const DataMappers = {
     // Handle specialization field properly - it should reference SpecialistsMaster
     const specialization = ReferenceMapper.multiReference(
       item.specialization || item["specialization"], 
-      "specialtyName", "specialty", "title", "name"
+      "specialty", "Specialty Name", "title", "name"
     );
     
     return {
@@ -190,15 +190,16 @@ const DataMappers = {
 
   specialty: (item: any) => ({
     _id: item._id,
-    specialtyName: getValue(item, "specialtyName", "specialty", "title", "name"),
+    specialty: getValue(item, "specialty", "Specialty Name", "title", "name"),
   }),
 
   // Specialist Mapper (from SpecialistsMaster)
   specialist: (item: any) => ({
     _id: item._id || item.ID,
-    name: getValue(item, "specialtyName", "specialty", "title", "name") || "Specialist",
+    name: getValue(item, "specialty", "Specialty Name", "title", "name") || "Specialist",
+    // Treatment field is in SpecialistsMaster that references TreatmentMaster
     treatments: ReferenceMapper.multiReference(
-      item.treatment || item["treatment"] || item["SpecialistsMaster_treatment"],
+      item.treatment || item["treatment"],
       "treatmentName",
       "Treatment Name",
       "title",
@@ -206,18 +207,21 @@ const DataMappers = {
     ),
   }),
 
+  // UPDATED: Treatment mapper with correct specialist relationship
   treatment: (item: any) => ({
-    _id: item._id,
-    name: getValue(item, "treatmentName", "treatment", "title", "name"),
+    _id: item._id || item.ID,
+    name: getValue(item, "treatmentName", "Treatment Name", "title", "name"),
     description: extractRichText(item.Description || item.description),
-    startingCost: getValue(item, "startingCost", "Starting Cost"),
-    image: item["treatment image"] || item.treatmentImage || item.data?.["treatment image"],
+    startingCost: getValue(item, "averageCost", "Starting Cost"),
+    treatmentImage: item["treatmentImage"] || item.treatmentImage || item.data?.["treatment image"],
     popular: getValue(item, "popular") === "true",
-    // Reverse reference: which specialists offer this treatment
+    // CORRECTED: SpecialistsMaster_treatment is in TreatmentMaster (reverse reference)
     offeredBySpecialists: ReferenceMapper.multiReference(
-      item["SpecialistsMaster_treatment"],
-      "specialtyName",
-      "specialty"
+      item.SpecialistsMaster_treatment || item["SpecialistsMaster_treatment"],
+      "specialty",
+      "Specialty Name",
+      "title",
+      "name"
     ),
   }),
 };
@@ -310,19 +314,15 @@ const DataFetcher = {
       });
     });
 
-    // Fetch the actual specialization data
-    const specializations = await DataFetcher.fetchByIds(
-      COLLECTIONS.SPECIALTIES, 
-      Array.from(specializationIds), 
-      DataMappers.specialist
-    );
+    // Fetch the actual specialization data with treatments
+    const specialists = await DataFetcher.fetchSpecialistsWithTreatments(Array.from(specializationIds));
 
     return res.items.reduce((acc, d) => {
       const doctor = DataMappers.doctor(d);
       
-      // Enrich specialization with actual specialist data
+      // Enrich specialization with actual specialist data including treatments
       doctor.specialization = doctor.specialization.map((spec: any) => 
-        specializations[spec._id] || spec
+        specialists[spec._id] || spec
       );
 
       acc[d._id!] = doctor;
@@ -330,13 +330,13 @@ const DataFetcher = {
     }, {} as Record<string, any>);
   },
 
-  // Fetch Specialists with Treatments
+  // UPDATED: Fetch Specialists with Treatments (correct relationship)
   async fetchSpecialistsWithTreatments(specialistIds: string[]) {
     if (!specialistIds.length) return {};
     const res = await wixClient.items
       .query(COLLECTIONS.SPECIALTIES)
       .hasSome("_id", specialistIds)
-      .include("treatment")
+      .include("treatment") // Multi-reference field in SpecialistsMaster
       .find();
 
     const treatmentIds = new Set<string>();
@@ -348,13 +348,44 @@ const DataFetcher = {
       });
     });
 
-    const treatments = await DataFetcher.fetchByIds(COLLECTIONS.TREATMENTS, Array.from(treatmentIds), DataMappers.treatment);
+    // Fetch treatments with their specialist relationships
+    const treatments = await DataFetcher.fetchTreatmentsWithSpecialists(Array.from(treatmentIds));
 
     return res.items.reduce((acc, item) => {
       const spec = DataMappers.specialist(item);
       acc[item._id!] = {
         ...spec,
         treatments: spec.treatments.map(t => treatments[t._id] || t),
+      };
+      return acc;
+    }, {} as Record<string, any>);
+  },
+
+  // NEW: Fetch Treatments with their Specialist relationships
+  async fetchTreatmentsWithSpecialists(treatmentIds: string[]) {
+    if (!treatmentIds.length) return {};
+    const res = await wixClient.items
+      .query(COLLECTIONS.TREATMENTS)
+      .hasSome("_id", treatmentIds)
+      .include("SpecialistsMaster_treatment") // Reverse reference field
+      .find();
+
+    const specialistIds = new Set<string>();
+    res.items.forEach(t => {
+      const specialists = t.SpecialistsMaster_treatment || t.data?.SpecialistsMaster_treatment || [];
+      (Array.isArray(specialists) ? specialists : [specialists]).forEach((s: any) => {
+        const id = s?._id || s?.ID || s;
+        id && specialistIds.add(id);
+      });
+    });
+
+    const specialists = await DataFetcher.fetchByIds(COLLECTIONS.SPECIALTIES, Array.from(specialistIds), DataMappers.specialist);
+
+    return res.items.reduce((acc, item) => {
+      const treatment = DataMappers.treatment(item);
+      acc[item._id!] = {
+        ...treatment,
+        offeredBySpecialists: treatment.offeredBySpecialists.map((s: any) => specialists[s._id] || s),
       };
       return acc;
     }, {} as Record<string, any>);
@@ -395,7 +426,7 @@ const QueryBuilder = {
   },
 };
 
-// ENRICH DATA - INCLUDES DOCTOR SPECIALIZATION FIX
+// ENRICH DATA - UPDATED WITH CORRECT TREATMENT RELATIONSHIPS
 async function enrichHospitals(
   hospitals: any[],
   filterIds: { city: string[]; doctor: string[]; specialty: string[]; accreditation: string[]; branch: string[]; treatment: string[] }
@@ -441,11 +472,11 @@ async function enrichHospitals(
   });
 
   const [doctors, cities, specialties, accreditations, treatments, specialists] = await Promise.all([
-    DataFetcher.fetchDoctors(Array.from(doctorIds)), // Now returns enriched doctors with proper specializations
+    DataFetcher.fetchDoctors(Array.from(doctorIds)), // Now returns enriched doctors with proper specializations and treatments
     DataFetcher.fetchByIds(COLLECTIONS.CITIES, Array.from(cityIds), DataMappers.city),
     DataFetcher.fetchByIds(COLLECTIONS.SPECIALTIES, Array.from(specialtyIds), DataMappers.specialty),
     DataFetcher.fetchByIds(COLLECTIONS.ACCREDITATIONS, Array.from(accreditationIds), DataMappers.accreditation),
-    DataFetcher.fetchByIds(COLLECTIONS.TREATMENTS, Array.from(treatmentIds), DataMappers.treatment),
+    DataFetcher.fetchTreatmentsWithSpecialists(Array.from(treatmentIds)), // Now includes specialist relationships
     DataFetcher.fetchSpecialistsWithTreatments(Array.from(specialtyIds)),
   ]);
 
@@ -465,7 +496,7 @@ async function enrichHospitals(
 
     const enrichedBranches = filteredBranches.map((b) => ({
       ...b,
-      doctors: b.doctors.map((d: any) => doctors[d._id] || d), // Now includes enriched specializations
+      doctors: b.doctors.map((d: any) => doctors[d._id] || d), // Now includes enriched specializations with treatments
       city: b.city.map((c: any) => cities[c._id] || c),
       specialization: b.specialization.map((s: any) => allSpecializations[s._id] || s),
       accreditation: b.accreditation.map((a: any) => accreditations[a._id] || a),
@@ -538,7 +569,7 @@ export async function GET(req: Request) {
       params.branchText ? DataFetcher.searchIds(COLLECTIONS.BRANCHES, ["branchName"], params.branchText) : Promise.resolve([]),
       params.cityText ? DataFetcher.searchIds(COLLECTIONS.CITIES, ["cityName"], params.cityText) : Promise.resolve([]),
       params.doctorText ? DataFetcher.searchIds(COLLECTIONS.DOCTORS, ["doctorName"], params.doctorText) : Promise.resolve([]),
-      params.specialtyText ? DataFetcher.searchIds(COLLECTIONS.SPECIALTIES, ["specialtyName"], params.specialtyText) : Promise.resolve([]),
+      params.specialtyText ? DataFetcher.searchIds(COLLECTIONS.SPECIALTIES, ["specialty"], params.specialtyText) : Promise.resolve([]),
       params.accreditationText ? DataFetcher.searchIds(COLLECTIONS.ACCREDITATIONS, ["title"], params.accreditationText) : Promise.resolve([]),
       params.treatmentText ? DataFetcher.searchIds(COLLECTIONS.TREATMENTS, ["treatmentName"], params.treatmentText) : Promise.resolve([]),
     ]);

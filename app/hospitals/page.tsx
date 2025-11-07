@@ -105,7 +105,7 @@ interface CityType {
 
 interface BranchType {
   _id: string;
-  name: string;
+  branchName: string;
   address: string | null;
   city: CityType[] | null;
   contactNumber: string | null;
@@ -402,7 +402,7 @@ const HospitalCard = ({ branch, hospitalName, hospitalLogo, treatmentName }: Hos
         <div className="p-4 flex-1 flex flex-col">
           <header className="mb-2">
             <h2 className="text-xl font-medium leading-tight line-clamp-2 group-hover:text-gray-900 transition-colors text-gray-900">
-              {branch.name}
+              {branch.branchName}
             </h2>
 
             {primaryCity && (

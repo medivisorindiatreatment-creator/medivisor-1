@@ -5,15 +5,15 @@ import Image from "next/image";
 
 export default function Banner() {
   return (
-    <div className="relative px-2 bg-[#fffef7] overflow-hidden">
-      <div className=" grid md:grid-cols-2 items-center md:gap-12">
+    <div className="relative px-2 bg-[#fff] border-b border-gray-200 overflow-hidden">
+      <div className=" grid md:grid-cols-2 items-end md:gap-12">
         {/* Left - Image */}
         <div className="relative order-2 md:order-1 group w-full h-full">
-          <div className="w-full h-[50vh]  md:h-[calc(100vh-100px)]">
+          <div className="w-full h-[35vh]  md:h-[calc(90vh-100px)]">
             <Image
-              src="/teams/sushant-sir.png"
+              src="/banner/doctor-1.jpeg"
               alt="Mr. Kumar Sushant - Director, Medivisor India Treatment"
-              className="w-full h-full absolute bottom-0 object-cover md:object-cover"
+              className="w-full h-auto absolute md:left-10 bottom-0 object-cover md:object-contain"
               width={800}
               height={600}
               priority
@@ -62,15 +62,15 @@ export default function Banner() {
               ))}
             </div>
           </div>
-          <div className="bg-[#74c044] z-[9] absolute bottom-0 md:-left-1/2 border border-white rounded-xs p-3 shadow-xs">
+          {/* <div className="bg-[#74c044] z-[9] absolute bottom-0 md:-left-1/2 border border-white rounded-xs p-3 shadow-xs">
             <h3 className="text-xl font-bold text-gray-100">Mr. Kumar Sushant</h3>
             <p className="text-gray-100 text-sm">Director, Medivisor India Treatment</p>
-          </div>
+          </div> */}
 
           {/* Link to Main Content */}
           <div className="pt-6 relative flex justify-center z-10">
             <Link href="/pacific-patient#schedule">
-              <Button size="lg" className="bg-[#E22026] hover:bg-[#E22026]/90 text-white font-semibold px-8 py-3 rounded-md text-lg">
+              <Button size="lg" className="bg-[#E22026] hover:bg-[#E22026]/90 text-white font-medium px-8 py-3 rounded-md text-lg">
                 View Full Schedule & Register
               </Button>
             </Link>

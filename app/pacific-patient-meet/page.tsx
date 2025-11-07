@@ -30,17 +30,17 @@ function flagForLabel(label: string) {
 }
 
 export const metadata = {
-  title: 'Pacific Patient Meet I Nov 18-26 I PNG, Solomon, Vanuatu, Fiji',
+  title: 'Pacific Patient Visit I Nov 18-26 I PNG, Solomon, Vanuatu, Fiji',
   description: 'Hello Friends, A Medivisor medical team is coming to your country! If you or your loved ones are suffering from any long-term illness or have been recently diagnosed with a condition that cannot be treated locally, this is your chance to meet the Medivisor team in person and explore the best possible treatment options in India.',
   openGraph: {
-    title: 'Pacific Patient Meet I Nov 18-26 I PNG, Solomon, Vanuatu, Fiji',
+    title: 'Pacific Patient Visit I Nov 18-26 I PNG, Solomon, Vanuatu, Fiji',
     description: 'Hello Friends, A Medivisor medical team is coming to your country! If you or your loved ones are suffering from any long-term illness or have been recently diagnosed with a condition that cannot be treated locally, this is your chance to meet the Medivisor team in person and explore the best possible treatment options in India.',
     images: [
       {
         url: 'https://medivisorindiatreatment.com/thumbnail/pacific-meet.jpg',
         width: 1200,
         height: 630,
-        alt: 'Pacific Patient Meet Banner - Mr. Kumar Sushant, Director, Medivisor India Treatment',
+        alt: 'Pacific Patient Visit Banner - Mr. Kumar Sushant, Director, Medivisor India Treatment',
       },
     ],
     url: 'https://medivisorindiatreatment.com/pacific-patient',
@@ -49,12 +49,12 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Pacific Patient Meet I Nov 18-26 I PNG, Solomon, Vanuatu, Fiji',
+    title: 'Pacific Patient Visit I Nov 18-26 I PNG, Solomon, Vanuatu, Fiji',
     description: 'Hello Friends, A Medivisor medical team is coming to your country! If you or your loved ones are suffering from any long-term illness or have been recently diagnosed with a condition that cannot be treated locally, this is your chance to meet the Medivisor team in person and explore the best possible treatment options in India.',
     images: ['https://medivisorindiatreatment.com/thumbnail/pacific-meet.jpg'],
   },
   other: {
-    'whatsapp-title': 'Pacific Patient Meet | Medivisor Director in Pacific Islands Nov 18-26, 2025',
+    'whatsapp-title': 'Pacific Patient Visit | Medivisor Director in Pacific Islands Nov 18-26, 2025',
     'whatsapp-description': 'Meet Mr. Kumar Sushant for expert medical guidance on your condition. Limited slots! Register now.',
   },
 };

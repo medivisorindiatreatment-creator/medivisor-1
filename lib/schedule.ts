@@ -115,7 +115,7 @@ export const schedule: ScheduleLocation[] = [
     city: "Suva & Lautoka",
     dates: ["2025-11-25", "2025-11-26"],
     times: ["9 AM to 6 PM", "9 AM to 6 PM"],
-    venues: ["Suva Office", "Lautoka Office"],
+    venues: ["Hotel Novotel, Lami", "Hotel Novotel, Namaka"],
     feeLabel: "50 FJD / 25 USD",
     localContact: "Suva: Reshmi Kumar (9470588), Lautoka: Ashlin Chandra (9470527)",
     availableSlots: [
