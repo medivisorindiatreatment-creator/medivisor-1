@@ -28,6 +28,20 @@ export default function Banner() {
           <div className=" container mx-auto px-6 lg:px-12">
             <div>
               <div className="">
+                <div className="flex py-2 md:py-4 items-center justify-between">
+                  <div>
+                    <img src="/Medivisor-logo.svg" className="md:w-60 w-40 mx-auto" />
+                  </div>
+                  <div className=" relative  justify-center z-10">
+                    {/* <p className="text-sm text-center font-medium text-gray-600">Powered By</p> */}
+
+                    <div>
+                      <Link href="/pacific-patient#schedule">
+                        <img src="/hospital-logo/yasodha.png" className="md:w-60 w-40 mx-auto" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
                 <h2 className="text-4xl sm:text-6xl text-center font-semibold tracking-tight text-gray-900">
                   Pacific Patient Visit
                 </h2>
@@ -69,20 +83,12 @@ export default function Banner() {
           </div> */}
 
             {/* Link to Main Content */}
-            <div className="pt-6 relative flex justify-center z-10">
-              <Link href="/pacific-patient#schedule">
-                <Button size="lg" className="bg-[#E22026] hover:bg-[#E22026]/90 text-white font-medium px-8 py-3 rounded-md text-lg">
-                  View Full Schedule & Register
-                </Button>
-              </Link>
-            </div>
+
           </div>
         </div>
       </div>
 
-      {/* Decorative Gradient Circles */}
-      <div className="absolute -top-10 -left-10 w-40 h-40 bg-red-100 rounded-full blur-3xl opacity-50"></div>
-      <div className="absolute bottom-0 right-0 w-56 h-56 bg-green-100 rounded-full blur-3xl opacity-50"></div>
+     
     </div>
   );
 }
