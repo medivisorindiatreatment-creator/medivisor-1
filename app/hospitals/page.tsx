@@ -5,20 +5,20 @@ import React, { useState, useEffect, useCallback, useMemo, useRef, Suspense } fr
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Banner from "@/components/BannerService"
-import { 
-  Filter, 
-  Loader2, 
-  Hospital, 
-  Building2, 
-  Award, 
-  MapPin, 
-  Stethoscope, 
-  Home, 
-  X, 
-  DollarSign, 
-  Search, 
-  Users, 
-  Star 
+import {
+  Filter,
+  Loader2,
+  Hospital,
+  Building2,
+  Award,
+  MapPin,
+  Stethoscope,
+  Home,
+  X,
+  DollarSign,
+  Search,
+  Users,
+  Star
 } from "lucide-react"
 
 // =============================================================================
@@ -39,71 +39,71 @@ const isUUID = (str: string): boolean => {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str)
 }
 
-interface BaseItem { 
-  _id: string; 
-  name?: string; 
-  title?: string; 
-  doctorName?: string; 
-  popular?: boolean 
+interface BaseItem {
+  _id: string;
+  name?: string;
+  title?: string;
+  doctorName?: string;
+  popular?: boolean
 }
 
-interface SpecialtyType extends BaseItem { 
-  name: string; 
-  title?: string; 
-  department?: DepartmentType[] 
+interface SpecialtyType extends BaseItem {
+  name: string;
+  title?: string;
+  department?: DepartmentType[]
 }
 
-interface DepartmentType extends BaseItem { 
-  name: string 
+interface DepartmentType extends BaseItem {
+  name: string
 }
 
-interface AccreditationType extends BaseItem { 
-  title: string; 
-  image: string | null 
+interface AccreditationType extends BaseItem {
+  title: string;
+  image: string | null
 }
 
-interface CityType { 
-  _id: string; 
-  cityName: string; 
-  state: string | null; 
-  country: string | null 
+interface CityType {
+  _id: string;
+  cityName: string;
+  state: string | null;
+  country: string | null
 }
 
-interface TreatmentType extends BaseItem { 
-  name: string; 
-  description: string | null; 
-  category: string | null; 
-  duration: string | null; 
-  cost: string | null; 
-  treatmentImage?: string | null 
+interface TreatmentType extends BaseItem {
+  name: string;
+  description: string | null;
+  category: string | null;
+  duration: string | null;
+  cost: string | null;
+  treatmentImage?: string | null
 }
 
-interface DoctorType extends BaseItem { 
-  doctorName: string; 
-  specialization: SpecialtyType[] | string[] | string | null; 
-  qualification: string | null; 
-  experienceYears: string | null; 
-  designation: string | null; 
-  aboutDoctor: string | null; 
-  profileImage: string | null 
+interface DoctorType extends BaseItem {
+  doctorName: string;
+  specialization: SpecialtyType[] | string[] | string | null;
+  qualification: string | null;
+  experienceYears: string | null;
+  designation: string | null;
+  aboutDoctor: string | null;
+  profileImage: string | null
 }
 
-interface ExtendedDoctorType extends DoctorType { 
+interface ExtendedDoctorType extends DoctorType {
   baseId: string;
-  locations: { 
-    hospitalName: string; 
-    hospitalId: string; 
-    branchName?: string; 
-    branchId?: string; 
-    cities: CityType[] 
+  locations: {
+    hospitalName: string;
+    hospitalId: string;
+    branchName?: string;
+    branchId?: string;
+    cities: CityType[]
   }[];
   departments: DepartmentType[];
-  filteredLocations?: { 
-    hospitalName: string; 
-    hospitalId: string; 
-    branchName?: string; 
-    branchId?: string; 
-    cities: CityType[] 
+  filteredLocations?: {
+    hospitalName: string;
+    hospitalId: string;
+    branchName?: string;
+    branchId?: string;
+    cities: CityType[]
   }[];
 }
 
@@ -123,50 +123,50 @@ interface ExtendedTreatmentType extends TreatmentType {
   filteredBranchesAvailableAt?: TreatmentLocation[];
 }
 
-interface BranchSpecialist { 
-  _id: string; 
-  name: string; 
-  department: DepartmentType[]; 
-  treatments: TreatmentType[] 
+interface BranchSpecialist {
+  _id: string;
+  name: string;
+  department: DepartmentType[];
+  treatments: TreatmentType[]
 }
 
-interface BranchType extends BaseItem { 
-  branchName: string; 
-  address: string | null; 
-  city: CityType[]; 
-  totalBeds: string | null; 
-  noOfDoctors: string | null; 
-  yearEstablished: string | null; 
-  branchImage: string | null; 
-  description: string | null; 
-  doctors: DoctorType[]; 
-  treatments: TreatmentType[]; 
-  specialists: BranchSpecialist[]; 
-  specialization: SpecialtyType[]; 
-  accreditation: AccreditationType[] 
+interface BranchType extends BaseItem {
+  branchName: string;
+  address: string | null;
+  city: CityType[];
+  totalBeds: string | null;
+  noOfDoctors: string | null;
+  yearEstablished: string | null;
+  branchImage: string | null;
+  description: string | null;
+  doctors: DoctorType[];
+  treatments: TreatmentType[];
+  specialists: BranchSpecialist[];
+  specialization: SpecialtyType[];
+  accreditation: AccreditationType[]
 }
 
-interface HospitalType extends BaseItem { 
-  hospitalName: string; 
-  logo: string | null; 
-  yearEstablished: string | null; 
-  description: string | null; 
-  branches: BranchType[]; 
-  doctors: DoctorType[]; 
-  treatments: TreatmentType[]; 
-  departments?: DepartmentType[] 
+interface HospitalType extends BaseItem {
+  hospitalName: string;
+  logo: string | null;
+  yearEstablished: string | null;
+  description: string | null;
+  branches: BranchType[];
+  doctors: DoctorType[];
+  treatments: TreatmentType[];
+  departments?: DepartmentType[]
 }
 
-interface ApiResponse { 
-  items: HospitalType[]; 
-  total: number 
+interface ApiResponse {
+  items: HospitalType[];
+  total: number
 }
 
 type FilterKey = "city" | "treatment" | "specialization" | "department" | "doctor" | "branch"
 
-interface FilterValue { 
-  id: string; 
-  query: string 
+interface FilterValue {
+  id: string;
+  query: string
 }
 
 interface FilterState {
@@ -196,14 +196,14 @@ const getVisibleFiltersByView = (view: FilterState['view']): FilterKey[] => {
 const enforceOnePrimaryFilter = (key: FilterKey, prevFilters: FilterState, newFilterValue: FilterValue): FilterState => {
   let newFilters = { ...prevFilters, [key]: newFilterValue }
   const primaryKeys: FilterKey[] = ['doctor', 'treatment', 'branch']
- 
+
   if (primaryKeys.includes(key) && (newFilterValue.id || newFilterValue.query)) {
     primaryKeys.forEach(primaryKey => {
       if (primaryKey !== key) {
         newFilters = { ...newFilters, [primaryKey]: { id: "", query: "" } }
       }
     })
-    
+
     if (key === 'doctor' || key === 'treatment' || key === 'branch') {
       if (key !== 'department') newFilters = { ...newFilters, department: { id: "", query: "" } }
       if (key !== 'specialization') newFilters = { ...newFilters, specialization: { id: "", query: "" } }
@@ -212,7 +212,7 @@ const enforceOnePrimaryFilter = (key: FilterKey, prevFilters: FilterState, newFi
   return newFilters
 }
 
-const matchesSpecialization = (specialization: any, id: string, text: string) => { 
+const matchesSpecialization = (specialization: any, id: string, text: string) => {
   if (!specialization) return false
   const specs = Array.isArray(specialization) ? specialization : [specialization]
   const lowerText = text.toLowerCase()
@@ -225,7 +225,7 @@ const matchesSpecialization = (specialization: any, id: string, text: string) =>
   })
 }
 
-const getMatchingBranches = (hospitals: HospitalType[], filters: FilterState, allExtendedTreatments: ExtendedTreatmentType[]) => { 
+const getMatchingBranches = (hospitals: HospitalType[], filters: FilterState, allExtendedTreatments: ExtendedTreatmentType[]) => {
   const { city, specialization, branch, department, treatment } = filters
   const lowerCity = city.query.toLowerCase()
   const lowerSpec = specialization.query.toLowerCase()
@@ -249,12 +249,12 @@ const getMatchingBranches = (hospitals: HospitalType[], filters: FilterState, al
     .filter((b) => {
       if ((city.id || lowerCity) && !b.city.some((c) => (city.id && c._id === city.id) || (lowerCity && (c.cityName ?? '').toLowerCase().includes(lowerCity)))) return false
       if ((branch.id || lowerBranch) && !(branch.id === b._id) && !(lowerBranch && (b.branchName ?? '').toLowerCase().includes(lowerBranch))) return false
-      
+
       if (treatment.id || lowerTreatment) {
         const allBranchTreatmentIds = new Set<string>()
         b.treatments?.forEach(t => allBranchTreatmentIds.add(t._id))
         b.specialists?.forEach(spec => spec.treatments?.forEach(t => allBranchTreatmentIds.add(t._id)))
-        
+
         let hasMatchingTreatment = false
         if (matchingTreatmentIds.size > 0) {
           for (const treatmentId of matchingTreatmentIds) {
@@ -266,16 +266,16 @@ const getMatchingBranches = (hospitals: HospitalType[], filters: FilterState, al
         }
         if (!hasMatchingTreatment) return false
       }
-      
+
       const allDepartments = (b.specialists || []).flatMap(spec => spec.department || [])
       if ((department.id || lowerDept) && !allDepartments.some((d) => (department.id && d._id === department.id) || (lowerDept && (d.name ?? '').toLowerCase().includes(lowerDept)))) return false
-      
+
       if (specialization.id || lowerSpec) {
         const hasSpec = b.specialization?.some((s) => (specialization.id && s._id === specialization.id) || (lowerSpec && ((s.name ?? '').toLowerCase().includes(lowerSpec) || (s.title ?? '').toLowerCase().includes(lowerSpec))))
           || b.doctors?.some(d => matchesSpecialization(d.specialization, specialization.id, lowerSpec))
         if (!hasSpec) return false
       }
-      
+
       return true
     })
 }
@@ -286,7 +286,7 @@ const getAllExtendedDoctors = (hospitals: HospitalType[]): ExtendedDoctorType[] 
   hospitals.forEach((h) => {
     const processDoctor = (item: DoctorType, branch?: BranchType) => {
       const baseId = item._id
-      
+
       const doctorDepartments: DepartmentType[] = []
       item.specialization?.forEach((spec: any) => {
         spec.department?.forEach((dept: DepartmentType) => {
@@ -306,7 +306,7 @@ const getAllExtendedDoctors = (hospitals: HospitalType[]): ExtendedDoctorType[] 
 
       if (extendedMap.has(baseId)) {
         const existingDoctor = extendedMap.get(baseId)!
-        
+
         const isLocationDuplicate = existingDoctor.locations.some(
           loc => loc.hospitalId === h._id && (loc.branchId === branch?._id || (!loc.branchId && !branch?._id))
         )
@@ -314,7 +314,7 @@ const getAllExtendedDoctors = (hospitals: HospitalType[]): ExtendedDoctorType[] 
         if (!isLocationDuplicate) {
           existingDoctor.locations.push(location)
         }
-        
+
         const allDepts = [...existingDoctor.departments, ...uniqueDepartments]
         existingDoctor.departments = Array.from(new Map(allDepts.map(dept => [dept._id, dept])).values())
       } else {
@@ -326,7 +326,7 @@ const getAllExtendedDoctors = (hospitals: HospitalType[]): ExtendedDoctorType[] 
         } as ExtendedDoctorType)
       }
     }
-    
+
     h.doctors.forEach((d) => processDoctor(d))
     h.branches.forEach((b) => {
       b.doctors.forEach((d) => processDoctor(d, b))
@@ -359,19 +359,19 @@ const getAllExtendedTreatments = (hospitals: HospitalType[]): ExtendedTreatmentT
         departments: Array.from(new Map(departments.map(dept => [dept._id, dept])).values()),
         cost: item.cost,
       }
-     
+
       const isLocationDuplicate = existingTreatment.branchesAvailableAt.some(
         loc => loc.hospitalId === h._id && (loc.branchId === branch?._id || (!loc.branchId && !branch?._id))
       )
-     
+
       if (!isLocationDuplicate) {
         existingTreatment.branchesAvailableAt.push(location)
-       
+
         const allDepts = [...existingTreatment.departments, ...departments]
         existingTreatment.departments = Array.from(new Map(allDepts.map(dept => [dept._id, dept])).values())
       }
     }
-    
+
     h.treatments?.forEach((item) => processTreatment(item))
     h.branches.forEach((b) => {
       const branchTreatments = [...(b.treatments || []), ...(b.specialists || []).flatMap(s => s.treatments || [])]
@@ -398,7 +398,7 @@ const useHospitalsData = () => {
   const [allHospitals, setAllHospitals] = useState<HospitalType[]>([])
   const [loading, setLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
-  
+
   const [filters, setFilters] = useState<FilterState>(() => {
     const getParam = (key: string) => searchParams.get(key)
     const initialView = (getParam("view") as "doctors" | "treatments" | "hospitals" | null) || "hospitals"
@@ -421,7 +421,7 @@ const useHospitalsData = () => {
   const updateFilter = useCallback(<K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     setFilters(prev => ({ ...prev, [key]: value }))
   }, [])
- 
+
   const updateSubFilter = useCallback(<K extends FilterKey>(key: K, subKey: "id" | "query", value: string) => {
     setFilters(prev => {
       const newFilterValue: FilterValue = { ...prev[key], [subKey]: value }
@@ -468,34 +468,34 @@ const useHospitalsData = () => {
   const allBranches = useMemo(() => allHospitals.flatMap((h) => h.branches), [allHospitals])
   const allExtendedDoctors = useMemo(() => getAllExtendedDoctors(allHospitals), [allHospitals])
   const allExtendedTreatments = useMemo(() => getAllExtendedTreatments(allHospitals), [allHospitals])
-  
+
   const { filteredBranches, filteredDoctors, filteredTreatments } = useMemo(() => {
     const currentFilters = filters
-    
+
     const genericBranchFilters: FilterState = {
       ...currentFilters,
       doctor: { id: "", query: "" },
       department: { id: "", query: "" },
       view: 'hospitals',
     }
-    
+
     let branches = getMatchingBranches(allHospitals, genericBranchFilters, allExtendedTreatments)
     const filteredBranchesIds = new Set(branches.map(b => b._id))
     const filteredHospitalIds = new Set(branches.map(b => b.hospitalId))
-    
+
     let matchingBranchIds: string[] | null = null
     if (currentFilters.branch.id || currentFilters.branch.query) {
       matchingBranchIds = branches.map(b => b._id).filter(Boolean)
     }
 
     let doctors = allExtendedDoctors
-    
+
     if (currentFilters.city.id || currentFilters.city.query) {
       const lowerCityQuery = currentFilters.city.query.toLowerCase()
-      doctors = doctors.filter(d => 
-        d.locations.some(loc => 
-          loc.cities.some(c => 
-            (currentFilters.city.id && c._id === currentFilters.city.id) || 
+      doctors = doctors.filter(d =>
+        d.locations.some(loc =>
+          loc.cities.some(c =>
+            (currentFilters.city.id && c._id === currentFilters.city.id) ||
             (lowerCityQuery && (c.cityName ?? '').toLowerCase().includes(lowerCityQuery))
           )
         )
@@ -508,7 +508,7 @@ const useHospitalsData = () => {
       const lowerQuery = currentFilters.doctor.query.toLowerCase()
       doctors = doctors.filter(d => (d.doctorName ?? '').toLowerCase().includes(lowerQuery))
     }
-   
+
     if (currentFilters.specialization.id) {
       const specId = currentFilters.specialization.id
       doctors = doctors.filter(d => matchesSpecialization(d.specialization, specId, ""))
@@ -521,11 +521,11 @@ const useHospitalsData = () => {
     let matchingSpecialtyNamesForDoctors = new Set<string>()
     if (currentFilters.treatment.id || currentFilters.treatment.query) {
       const lowerTreatQuery = currentFilters.treatment.query.toLowerCase()
-      const matchingTreatments = allExtendedTreatments.filter(t => 
-        (currentFilters.treatment.id && t._id === currentFilters.treatment.id) || 
+      const matchingTreatments = allExtendedTreatments.filter(t =>
+        (currentFilters.treatment.id && t._id === currentFilters.treatment.id) ||
         (lowerTreatQuery && (t.name ?? '').toLowerCase().includes(lowerTreatQuery))
       )
-      
+
       matchingTreatments.forEach(t => {
         t.departments.forEach(d => matchingSpecialtyNamesForDoctors.add(d.name.toLowerCase()))
       })
@@ -535,11 +535,11 @@ const useHospitalsData = () => {
       }
 
       if (matchingSpecialtyNamesForDoctors.size > 0) {
-        const deptMatch = (d: ExtendedDoctorType) => (d.specialization || []).some((spec: any) => 
+        const deptMatch = (d: ExtendedDoctorType) => (d.specialization || []).some((spec: any) =>
           (spec.department || []).some((dept: any) => matchingSpecialtyNamesForDoctors.has(dept.name.toLowerCase()))
         )
         if (matchingLocationKeysForDoctors && matchingLocationKeysForDoctors.size > 0) {
-          doctors = doctors.filter(d => 
+          doctors = doctors.filter(d =>
             d.locations.some(loc => matchingLocationKeysForDoctors!.has(`${loc.hospitalId}-${loc.branchId || 'no-branch'}`)) && deptMatch(d)
           )
         } else {
@@ -555,8 +555,8 @@ const useHospitalsData = () => {
         let match = true
         if (currentFilters.city.id || currentFilters.city.query) {
           const lower = currentFilters.city.query.toLowerCase()
-          match = match && loc.cities.some((c: CityType) => 
-            (currentFilters.city.id && c._id === currentFilters.city.id) || 
+          match = match && loc.cities.some((c: CityType) =>
+            (currentFilters.city.id && c._id === currentFilters.city.id) ||
             (lower && (c.cityName ?? '').toLowerCase().includes(lower))
           )
         }
@@ -565,20 +565,20 @@ const useHospitalsData = () => {
         }
         return match
       }
-      return { 
-        ...d, 
-        filteredLocations: d.locations.filter(locFilter) 
+      return {
+        ...d,
+        filteredLocations: d.locations.filter(locFilter)
       }
     })
 
     let treatments = allExtendedTreatments
-    
+
     if (currentFilters.city.id || currentFilters.city.query) {
       const lowerCityQuery = currentFilters.city.query.toLowerCase()
-      treatments = treatments.filter(t => 
-        t.branchesAvailableAt.some(loc => 
-          loc.cities.some(c => 
-            (currentFilters.city.id && c._id === currentFilters.city.id) || 
+      treatments = treatments.filter(t =>
+        t.branchesAvailableAt.some(loc =>
+          loc.cities.some(c =>
+            (currentFilters.city.id && c._id === currentFilters.city.id) ||
             (lowerCityQuery && (c.cityName ?? '').toLowerCase().includes(lowerCityQuery))
           )
         )
@@ -600,10 +600,10 @@ const useHospitalsData = () => {
         matchingDoctorLocationKeys = new Set(processedDoctors.flatMap((d: ExtendedDoctorType) => d.locations.map(loc => `${loc.hospitalId}-${loc.branchId || 'no-branch'}`)))
       }
     }
-    
+
     if (matchingDoctorLocationKeys && matchingDeptsFromDoctors) {
-      treatments = treatments.filter(t => 
-        t.branchesAvailableAt.some(loc => 
+      treatments = treatments.filter(t =>
+        t.branchesAvailableAt.some(loc =>
           matchingDoctorLocationKeys!.has(`${loc.hospitalId}-${loc.branchId || 'no-branch'}`) &&
           loc.departments.some((dept: DepartmentType) => matchingDeptsFromDoctors!.has(dept.name.toLowerCase()))
         )
@@ -615,7 +615,7 @@ const useHospitalsData = () => {
     }
 
     if (matchingBranchIds) {
-      treatments = treatments.filter(t => 
+      treatments = treatments.filter(t =>
         t.branchesAvailableAt.some(loc => matchingBranchIds!.includes(loc.branchId || ''))
       )
     }
@@ -625,8 +625,8 @@ const useHospitalsData = () => {
         let match = true
         if (currentFilters.city.id || currentFilters.city.query) {
           const lower = currentFilters.city.query.toLowerCase()
-          match = match && loc.cities.some((c: CityType) => 
-            (currentFilters.city.id && c._id === currentFilters.city.id) || 
+          match = match && loc.cities.some((c: CityType) =>
+            (currentFilters.city.id && c._id === currentFilters.city.id) ||
             (lower && (c.cityName ?? '').toLowerCase().includes(lower))
           )
         }
@@ -638,36 +638,36 @@ const useHospitalsData = () => {
         }
         return match
       }
-      return { 
-        ...t, 
-        filteredBranchesAvailableAt: t.branchesAvailableAt.filter(locFilter) 
+      return {
+        ...t,
+        filteredBranchesAvailableAt: t.branchesAvailableAt.filter(locFilter)
       }
     })
 
     let filteredDoctorsFinal = processedDoctors
     let filteredTreatmentsFinal = processedTreatments
-    
+
     if (currentFilters.sortBy === "popular") {
       branches = branches.filter((b) => b.popular)
       filteredDoctorsFinal = filteredDoctorsFinal.filter((d) => d.popular)
       filteredTreatmentsFinal = filteredTreatmentsFinal.filter((t) => t.popular)
     }
-    
+
     if (currentFilters.sortBy === "az" || currentFilters.sortBy === "all") {
       branches.sort((a, b) => (a.branchName ?? '').localeCompare(b.branchName ?? ''))
       filteredDoctorsFinal.sort((a, b) => (a.doctorName ?? '').localeCompare(b.doctorName ?? ''))
       filteredTreatmentsFinal.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
     }
-    
+
     if (currentFilters.sortBy === "za") {
       branches.sort((a, b) => (b.branchName ?? '').localeCompare(a.branchName ?? ''))
       filteredDoctorsFinal.sort((a, b) => (b.doctorName ?? '').localeCompare(a.doctorName ?? ''))
       filteredTreatmentsFinal.sort((a, b) => (b.name ?? '').localeCompare(a.name ?? ''))
     }
-    
+
     return { filteredBranches: branches, filteredDoctors: filteredDoctorsFinal, filteredTreatments: filteredTreatmentsFinal }
   }, [allHospitals, allExtendedDoctors, allExtendedTreatments, filters])
-  
+
   const getUniqueOptions = useCallback((
     field: "city" | "treatments" | "doctors" | "specialization" | "departments" | "branch",
     contextBranches: (BranchType & { hospitalName: string, hospitalLogo: string | null, hospitalId: string })[],
@@ -675,7 +675,7 @@ const useHospitalsData = () => {
     contextTreatments: ExtendedTreatmentType[],
   ) => {
     const map = new Map<string, string>()
-    
+
     if (field === "city") {
       if (filters.view === 'hospitals') {
         contextBranches.forEach(b => {
@@ -729,10 +729,10 @@ const useHospitalsData = () => {
         })
       })
     }
-    
+
     return Array.from(map, ([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name))
   }, [filters.view, filters.doctor])
-  
+
   const availableOptions = useMemo(() => ({
     city: getUniqueOptions("city", filteredBranches, filteredDoctors, filteredTreatments),
     treatment: getUniqueOptions("treatments", filteredBranches, filteredDoctors, filteredTreatments),
@@ -741,7 +741,7 @@ const useHospitalsData = () => {
     doctor: getUniqueOptions("doctors", filteredBranches, filteredDoctors, filteredTreatments),
     branch: getUniqueOptions("branch", filteredBranches, filteredDoctors, filteredTreatments),
   }), [getUniqueOptions, filteredBranches, filteredDoctors, filteredTreatments])
-  
+
   const currentCount = useMemo(() => {
     if (filters.view === "hospitals") return filteredBranches.length
     if (filters.view === "doctors") return filteredDoctors.length
@@ -802,7 +802,7 @@ const FilterDropdown = React.memo(({ placeholder, filterKey, filters, updateSubF
   const [showOptions, setShowOptions] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const filter = filters[filterKey] as FilterValue
-  
+
   const query = useMemo(() => {
     if (filter.id) {
       return options.find(o => o.id === filter.id)?.name || filter.query || ""
@@ -840,16 +840,13 @@ const FilterDropdown = React.memo(({ placeholder, filterKey, filters, updateSubF
     setShowOptions(false)
   }
 
-  // --- START OF MODIFICATION ---
   const handleFocus = () => {
     if (filter.id) {
-      // Auto-clear the filter ID and query when focusing on the input if a specific ID is selected
       updateSubFilter(filterKey, "id", "")
       updateSubFilter(filterKey, "query", "")
     }
     setShowOptions(true)
   }
-  // --- END OF MODIFICATION ---
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -859,12 +856,12 @@ const FilterDropdown = React.memo(({ placeholder, filterKey, filters, updateSubF
           placeholder={placeholder}
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
-          onFocus={handleFocus} // Use the new handler
+          onFocus={handleFocus}
           className={`w-full px-2 py-2 border rounded-xs text-sm font-normal text-gray-900 focus:outline-none focus:ring-2 bg-white shadow-xs pr-10
           ${(filter.id || filter.query)
-            ? "border-gray-100 focus:ring-gray-100 focus:border-gray-200"
-            : "border-gray-100 focus:ring-gray-50 focus:border-gray-200"
-          }`}
+              ? "border-gray-100 focus:ring-gray-100 focus:border-gray-200"
+              : "border-gray-100 focus:ring-gray-50 focus:border-gray-200"
+            }`}
         />
         {(filter.id || filter.query) && (
           <button
@@ -876,7 +873,7 @@ const FilterDropdown = React.memo(({ placeholder, filterKey, filters, updateSubF
         )}
       </div>
       {showOptions && filteredOptions.length > 0 && (
-        <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-xs shadow-lg mt-1 max-h-60 overflow-auto">
+        <div className="absolute z-30 w-full bg-white border border-gray-200 rounded-xs shadow-lg mt-1 max-h-60 overflow-auto">
           {filteredOptions.map((opt) => (
             <button
               key={opt.id}
@@ -938,27 +935,27 @@ const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, upd
     return 'Treatment'
   }, [filters.view])
 
-  const hasAppliedFilters = useMemo(() => 
-    filterOptions.some(opt => getFilterValueDisplay(opt.value, filters, availableOptions)) || 
+  const hasAppliedFilters = useMemo(() =>
+    filterOptions.some(opt => getFilterValueDisplay(opt.value, filters, availableOptions)) ||
     (filters.city.id || filters.city.query),
     [filters, availableOptions, filterOptions]
   )
-  
+
   const shouldRenderFilter = useCallback((key: FilterKey): boolean => {
     const isPrimaryFilter = key === 'branch' || key === 'doctor' || key === 'treatment'
     const filter = filters[key]
     const options = availableOptions[key]
-    
+
     if (filter.id || filter.query) return true
     if (!visibleFilterKeys.includes(key)) return false
     if (options.length === 0) return false
-    
+
     if (isPrimaryFilter) {
       return options.length >= 2
     }
-    
+
     if (options.length < 2) return false
-    
+
     return true
   }, [filters, availableOptions, visibleFilterKeys])
 
@@ -971,22 +968,22 @@ const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, upd
       <div className="p-4 md:p-4 h-full overflow-y-auto bg-white md:bg-gray-50">
         <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-2 sticky top-0 z-10">
           <h3 className="text-lg font-medium mt-1 text-gray-900 flex items-center gap-2">
-            <Filter className="w-5 h-5 text-gray-400" /> 
+            <Filter className="w-5 h-5 text-gray-400" />
             Search  {activeFilterKey}
           </h3>
         </div>
-       
+
         <div className="space-y-4">
           {filterOptions.map(opt => {
             const key = opt.value
             if (!shouldRenderFilter(key)) return null
-            
+
             const filterLabel = key === 'specialization' && filters.view === 'doctors' ? 'Specialist' : opt.label
 
             return (
               <div key={key}>
                 <FilterDropdown
-                  placeholder={`${filterLabel} Name`}
+                  placeholder={`Search by ${filterLabel} Name`}
                   filterKey={key}
                   filters={filters}
                   updateSubFilter={updateSubFilter}
@@ -998,42 +995,42 @@ const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, upd
           {filterOptions.length === 0 && (
             <p className="text-base text-gray-500 py-4 font-normal">Select a view to see relevant filters.</p>
           )}
-          <button 
-            onClick={clearFilters} 
+          <button
+            onClick={clearFilters}
             className="text-base text-gray-500 hover:text-gray-700 font-medium transition-colors"
           >
             Clear all
           </button>
           {showFilters && (
-            <button 
-              onClick={() => setShowFilters(false)} 
+            <button
+              onClick={() => setShowFilters(false)}
               className="md:hidden text-gray-400 hover:text-gray-600"
             >
               <X className="w-5 h-5" />
             </button>
           )}
         </div>
-       
+
         <div className="mt-2 border-t border-gray-200 pt-2">
           <label className="block text-base m font-medium text-gray-900 mb-3">Currently Applied Filters</label>
           <div className=" flex-wrap gap-2">
             {filterOptions.map((opt) => {
               const value = getFilterValueDisplay(opt.value, filters, availableOptions)
               if (!value) return null
-             
+
               return (
-                 <>
+                <>
                   <label className="font-medium  text-sm mr-1 ">{opt.label}:</label>
-                <div key={opt.value} className=" text-gray-700 mt-1 mb-4 relative bg-white text-sm px-3 py-2 rounded-xs shadow-xs border border-gray-100 font-normal">
-                
-                  <p className="  bg-white">{value}</p>
-                  <button
-                    onClick={() => updateSubFilter(opt.value as FilterKey, "id", "") || updateSubFilter(opt.value as FilterKey, "query", "")}
-                    className="ml-2 text-gray-400 right-2 top-2 absolute hover:text-gray-600"
-                  >
-                    <X className="w-4 h-4 " />
-                  </button>
-                </div>
+                  <div key={opt.value} className=" text-gray-700 mt-1 mb-4 relative bg-white text-sm px-3 py-2 rounded-xs shadow-xs border border-gray-100 font-normal">
+
+                    <p className="  bg-white">{value}</p>
+                    <button
+                      onClick={() => updateSubFilter(opt.value as FilterKey, "id", "") || updateSubFilter(opt.value as FilterKey, "query", "")}
+                      className="ml-2 text-gray-400 right-2 top-2 absolute hover:text-gray-600"
+                    >
+                      <X className="w-4 h-4 " />
+                    </button>
+                  </div>
                 </>
               )
             })}
@@ -1043,7 +1040,7 @@ const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, upd
                 <div className=" text-gray-700 mt-1 mb-4 relative bg-white text-sm px-3 py-2 rounded-xs shadow-xs border border-gray-100 font-normal">
                   <p className="  bg-white">{cityValue}</p>
                   <button
-                    onClick={() => {updateSubFilter('city', "id", ""); updateSubFilter('city', "query", "");}}
+                    onClick={() => { updateSubFilter('city', "id", ""); updateSubFilter('city', "query", ""); }}
                     className="ml-2 text-gray-400 right-2 top-2 absolute hover:text-gray-600"
                   >
                     <X className="w-4 h-4 " />
@@ -1080,11 +1077,11 @@ const HospitalCard = ({ branch }: { branch: BranchType & { hospitalName: string;
         <div className="relative h-48 overflow-hidden bg-gray-50">
           {hospitalLogoUrl && (
             <div className="absolute bottom-2 left-2 z-10">
-              <img 
-                src={hospitalLogoUrl} 
-                alt={`${branch.hospitalName} logo`} 
-                className="w-12 h-auto object-contain bg-white p-0 rounded-xs shadow-sm border border-gray-50" 
-                onError={(e) => { e.currentTarget.style.display = "none" }} 
+              <img
+                src={hospitalLogoUrl}
+                alt={`${branch.hospitalName} logo`}
+                className="w-12 h-auto object-contain bg-white p-0 rounded-xs shadow-sm border border-gray-50"
+                onError={(e) => { e.currentTarget.style.display = "none" }}
               />
             </div>
           )}
@@ -1101,10 +1098,10 @@ const HospitalCard = ({ branch }: { branch: BranchType & { hospitalName: string;
           )}
 
           {imageUrl ? (
-            <img 
-              src={imageUrl} 
-              alt={branch.branchName} 
-              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" 
+            <img
+              src={imageUrl}
+              alt={branch.branchName}
+              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
               onError={(e) => { e.currentTarget.style.display = "none" }}
             />
           ) : (
@@ -1114,32 +1111,34 @@ const HospitalCard = ({ branch }: { branch: BranchType & { hospitalName: string;
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
         </div>
-        
+
         <div className="p-3 flex-1 flex flex-col space-y-2">
           <header className="space-y-1">
             <h2 className="text-lg font-medium leading-tight line-clamp-2 text-gray-900 group-hover:text-gray-800 transition-colors">
               {branch.branchName}
             </h2>
             <div className="flex items-center text-sm text-gray-700 font-normal">
-              <span>{primaryCity}{primaryState ? `, ${primaryState}` : ""}</span>, 
+              <span>{primaryCity}{primaryState ? `, ${primaryState}` : ""}</span>,
               <span className="ml-1"> {primarySpecialty} Speciality</span>
             </div>
           </header>
-      
+
           <footer className="border-t border-gray-100 pt-2 mt-auto">
             <div className="grid grid-cols-3 gap-3">
               <div className="text-center rounded-xs bg-gray-50 p-2 border border-gray-50 space-y-0">
-                <p className="text-sm font-medium text-gray-700">{branch.noOfDoctors ?? '?'}+</p>
-                <p className="text-sm text-gray-700">Doctors</p>
+                <p className="text-sm font-medium text-gray-700">{branch.yearEstablished ?? '?'}</p>
+                <p className="text-sm text-gray-700">Estd.</p>
               </div>
               <div className="text-center rounded-xs bg-gray-50 p-2 border border-gray-50 space-y-0">
                 <p className="text-sm font-medium text-gray-700">{branch.totalBeds ?? '?'}+</p>
                 <p className="text-sm text-gray-700">Beds</p>
               </div>
               <div className="text-center rounded-xs bg-gray-50 p-2 border border-gray-50 space-y-0">
-                <p className="text-sm font-medium text-gray-700">{branch.yearEstablished ?? '?'}</p>
-                <p className="text-sm text-gray-700">Estd.</p>
+                <p className="text-sm font-medium text-gray-700">{branch.noOfDoctors ?? '?'}+</p>
+                <p className="text-sm text-gray-700">Doctors</p>
               </div>
+
+
             </div>
           </footer>
         </div>
@@ -1152,19 +1151,22 @@ const DoctorCard = ({ doctor }: { doctor: ExtendedDoctorType }) => {
   const specialization = (Array.isArray(doctor.specialization)
     ? doctor.specialization.map((s) => (typeof s === 'object' && s !== null ? (s as any).name || (s as any).title || '' : s)).filter(Boolean).join(", ")
     : [doctor.specialization].filter(Boolean).join(", "))
-  
-  const slug = generateSlug(`${doctor.doctorName}`) 
+
+  const slug = generateSlug(`${doctor.doctorName}`)
   const imageUrl = getWixImageUrl(doctor.profileImage)
-  
-  const primaryLocation = useMemo(() => {
+
+  const primaryLocationDisplay = useMemo(() => {
     const availLocs = doctor.filteredLocations || doctor.locations
     if (availLocs.length === 0) {
       return "Location Varies"
     }
     const firstLoc = availLocs[0]
     const branchName = firstLoc.branchName || firstLoc.hospitalName
-    const city = firstLoc.cities[0]?.cityName || ""
-    return `${branchName}${city ? `, ${city}` : ''}`
+    const primary = branchName
+    if (availLocs.length > 1) {
+      return `${primary} +${availLocs.length - 1} more`
+    }
+    return primary
   }, [doctor.filteredLocations, doctor.locations])
 
   return (
@@ -1177,10 +1179,10 @@ const DoctorCard = ({ doctor }: { doctor: ExtendedDoctorType }) => {
             </span>
           )}
           {imageUrl ? (
-            <img 
-              src={imageUrl} 
-              alt={doctor.doctorName} 
-              className="object-cover object-top w-full h-full group-hover:scale-105 transition-transform duration-500" 
+            <img
+              src={imageUrl}
+              alt={doctor.doctorName}
+              className="object-cover object-top w-full h-full group-hover:scale-105 transition-transform duration-500"
               onError={(e) => { e.currentTarget.style.display = "none" }}
             />
           ) : (
@@ -1190,7 +1192,7 @@ const DoctorCard = ({ doctor }: { doctor: ExtendedDoctorType }) => {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
         </div>
-        
+
         <div className="p-3 flex-1 flex flex-col space-y-2">
           <header className="space-y-2 flex-1 min-h-0">
             <h2 className="text-lg font-medium leading-tight line-clamp-2 text-gray-900 group-hover:text-gray-800 transition-colors">
@@ -1200,17 +1202,17 @@ const DoctorCard = ({ doctor }: { doctor: ExtendedDoctorType }) => {
               {specialization}
             </p>
           </header>
-          
+
           <div className="space-y-2">
             <p className="text-sm text-gray-900 font-normal flex items-center gap-2">
               {doctor.experienceYears} Years Exp.
             </p>
           </div>
-          
+
           <footer className="border-t border-gray-100 pt-2">
             <p className="text-sm text-gray-900 font-normal flex items-center gap-2 line-clamp-1">
               <MapPin className="w-4 h-4 flex-shrink-0 text-gray-400" />
-              {primaryLocation}
+              {primaryLocationDisplay}
             </p>
           </footer>
         </div>
@@ -1222,7 +1224,7 @@ const DoctorCard = ({ doctor }: { doctor: ExtendedDoctorType }) => {
 const TreatmentCard = ({ treatment }: { treatment: ExtendedTreatmentType }) => {
   const slug = generateSlug(treatment.name)
   const imageUrl = getWixImageUrl(treatment.treatmentImage)
- 
+
   const primaryLocation = useMemo(() => {
     const availLocs = treatment.filteredBranchesAvailableAt || treatment.branchesAvailableAt
 
@@ -1231,8 +1233,8 @@ const TreatmentCard = ({ treatment }: { treatment: ExtendedTreatmentType }) => {
     }
 
     const firstLoc = availLocs[0]
-    const hospitalBranch = firstLoc.branchName 
-      ? `${firstLoc.hospitalName}, ${firstLoc.branchName}` 
+    const hospitalBranch = firstLoc.branchName
+      ? `${firstLoc.hospitalName}, ${firstLoc.branchName}`
       : firstLoc.hospitalName
     const city = firstLoc.cities?.[0]?.cityName || ""
 
@@ -1252,10 +1254,10 @@ const TreatmentCard = ({ treatment }: { treatment: ExtendedTreatmentType }) => {
             </span>
           )}
           {imageUrl ? (
-            <img 
-              src={imageUrl} 
-              alt={treatment.name} 
-              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" 
+            <img
+              src={imageUrl}
+              alt={treatment.name}
+              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
               onError={(e) => { e.currentTarget.style.display = "none" }}
             />
           ) : (
@@ -1265,13 +1267,13 @@ const TreatmentCard = ({ treatment }: { treatment: ExtendedTreatmentType }) => {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
         </div>
-        
+
         <div className="p-3 flex-1 flex flex-col space-y-1">
           <header className="space-y-2 flex-1 min-h-0">
             <h2 className="text-base font-medium leading-tight line-clamp-1 py-2 text-gray-900 group-hover:text-gray-800 transition-colors">
               {treatment.name}
             </h2>
-           
+
             {treatment.category && (
               <div className="flex flex-wrap gap-1 pt-1">
                 <span className="inline-block bg-gray-50 line-clamp-1 text-gray-600 text-sm px-3 py-2 rounded-xs font-medium border border-gray-100">
@@ -1280,7 +1282,7 @@ const TreatmentCard = ({ treatment }: { treatment: ExtendedTreatmentType }) => {
               </div>
             )}
           </header>
-         
+
           <footer className="border-t border-gray-200 pt-2 flex flex-col gap-2">
             <p className="text-sm text-gray-700 font-normal flex items-center gap-1">
               <DollarSign className="w-4 h-4 flex-shrink-0 text-gray-700" />
@@ -1301,25 +1303,22 @@ const ViewToggle = ({ view, setView }: { view: "hospitals" | "doctors" | "treatm
   <div className="flex bg-white  rounded-xs shadow-xs mx-auto lg:mx-0 max-w-md ">
     <button
       onClick={() => setView("hospitals")}
-      className={`flex-1 px-4 py-2  rounded-xs text-sm font-medium transition-all duration-200 ${
-        view === "hospitals" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
-      }`}
+      className={`flex-1 px-4 py-2  rounded-xs text-sm font-medium transition-all duration-200 ${view === "hospitals" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
+        }`}
     >
       Hospitals
     </button>
     <button
       onClick={() => setView("doctors")}
-      className={`flex-1 px-4 py-2  rounded-xs text-sm font-medium transition-all duration-200 ${
-        view === "doctors" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
-      }`}
+      className={`flex-1 px-4 py-2  rounded-xs text-sm font-medium transition-all duration-200 ${view === "doctors" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
+        }`}
     >
       Doctors
     </button>
     <button
       onClick={() => setView("treatments")}
-      className={`flex-1 px-4 py-2  rounded-xs text-sm font-medium transition-all duration-200 ${
-        view === "treatments" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
-      }`}
+      className={`flex-1 px-4 py-2  rounded-xs text-sm font-medium transition-all duration-200 ${view === "treatments" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
+        }`}
     >
       Treatments
     </button>
@@ -1342,23 +1341,20 @@ const Sorting = ({ sortBy, setSortBy }: { sortBy: "all" | "popular" | "az" | "za
   </div>
 )
 
-const ResultsHeader = ({ 
-  view, 
-  currentCount, 
-  clearFilters, 
-  sortBy, 
+const ResultsHeader = ({
+  view,
+  currentCount,
+  clearFilters,
+  sortBy,
   setSortBy
-}: { 
-  view: "hospitals" | "doctors" | "treatments", 
-  currentCount: number, 
-  clearFilters: () => void, 
-  sortBy: "all" | "popular" | "az" | "za", 
-  setSortBy: (sortBy: "all" | "popular" | "az" | "za") => void 
+}: {
+  view: "hospitals" | "doctors" | "treatments",
+  currentCount: number,
+  clearFilters: () => void,
+  sortBy: "all" | "popular" | "az" | "za",
+  setSortBy: (sortBy: "all" | "popular" | "az" | "za") => void
 }) => (
   <div className="flex flex-col sm:flex-row sm:items-center  gap-4 bg-gray-50 border-b border-gray-50 p-4">
-    {/* <div className="text-sm text-gray-500 font-normal">
-      Showing <span className="font-bold text-gray-900">{currentCount}</span> {view === 'hospitals' ? 'Branches' : view} found
-    </div> */}
     <div className="flex items-center gap-4">
       <Sorting sortBy={sortBy} setSortBy={setSortBy} />
       <button
@@ -1454,30 +1450,30 @@ const TreatmentCardSkeleton = () => (
 // MAIN COMPONENT
 // =============================================================================
 
-const RenderContent = ({ 
-  view, 
-  loading, 
-  currentCount, 
-  filteredBranches, 
-  filteredDoctors, 
-  filteredTreatments, 
-  clearFilters 
-}: { 
-  view: string, 
-  loading: boolean, 
-  currentCount: number, 
-  filteredBranches: any[], 
-  filteredDoctors: any[], 
-  filteredTreatments: any[], 
-  clearFilters: () => void 
+const RenderContent = ({
+  view,
+  loading,
+  currentCount,
+  filteredBranches,
+  filteredDoctors,
+  filteredTreatments,
+  clearFilters
+}: {
+  view: string,
+  loading: boolean,
+  currentCount: number,
+  filteredBranches: any[],
+  filteredDoctors: any[],
+  filteredTreatments: any[],
+  clearFilters: () => void
 }) => {
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 9 }).map((_, i) => 
-          view === "hospitals" ? <HospitalCardSkeleton key={i} /> : 
-          view === "doctors" ? <DoctorCardSkeleton key={i} /> : 
-          <TreatmentCardSkeleton key={i} />
+        {Array.from({ length: 9 }).map((_, i) =>
+          view === "hospitals" ? <HospitalCardSkeleton key={i} /> :
+            view === "doctors" ? <DoctorCardSkeleton key={i} /> :
+              <TreatmentCardSkeleton key={i} />
         )}
       </div>
     )
@@ -1489,8 +1485,8 @@ const RenderContent = ({
         <Search className="w-12 h-12 text-gray-300 mb-4" />
         <h4 className="text-xl font-bold text-gray-900 mb-2">No {view === 'hospitals' ? 'Branches' : view} Found</h4>
         <p className="text-gray-500 mb-6 font-normal">Try adjusting your filters or search terms.</p>
-        <button 
-          onClick={clearFilters} 
+        <button
+          onClick={clearFilters}
           className="px-6 py-3 text-base font-medium bg-gray-50 text-gray-700 rounded-xs hover:bg-gray-100 transition-colors shadow-sm border border-gray-100"
         >
           Clear All Filters
@@ -1500,7 +1496,7 @@ const RenderContent = ({
   }
 
   const items = view === "hospitals" ? filteredBranches : view === "doctors" ? filteredDoctors : filteredTreatments
-  
+
   return (
     <div className="grid grid-cols-1 mt-4 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {items.map((item) => (
@@ -1545,7 +1541,7 @@ function HospitalsPageContent() {
     <div className="bg-gray-25 min-h-screen">
       <Banner title="Find Branches, Doctors, and Treatments" />
       <BreadcrumbNav />
-      
+
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="flex flex-col md:flex-row gap-4">
           <FilterSidebar
@@ -1562,13 +1558,13 @@ function HospitalsPageContent() {
             filteredTreatments={filteredTreatments}
             currentCount={currentCount}
           />
-          
+
           <main className="flex-1  min-w-0 lg:pb-0 min-h-screen">
             <div className=" flex justify-between items-center bg-gray-50">
               <div className="flex flex-col lg:flex-row lg:items-center  gap-4">
                 <ViewToggle view={filters.view} setView={setView} />
                 <FilterDropdown
-                  placeholder=" City Name"
+                  placeholder="Search by City Name"
                   filterKey="city"
                   filters={filters}
                   updateSubFilter={updateSubFilter}
@@ -1583,7 +1579,7 @@ function HospitalsPageContent() {
                 setSortBy={setSortBy}
               />
             </div>
-            
+
             <RenderContent
               view={filters.view}
               loading={loading}
@@ -1596,7 +1592,7 @@ function HospitalsPageContent() {
           </main>
         </div>
       </section>
-      
+
       {!showFilters && <MobileFilterButton setShowFilters={setShowFilters} />}
     </div>
   )

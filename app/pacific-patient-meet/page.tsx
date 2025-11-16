@@ -72,7 +72,7 @@ export default function Page() {
         <section className="h-full px-2 md:px-0 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             {/* Left - Schedule */}
-            <div  className="lg:col-span-6 space-y-4">
+            <div className="lg:col-span-6 space-y-4">
               <div className="space-y-6">
                 <div className="text-gray-700 leading-relaxed text-base">
                   <p className="mb-1">
@@ -194,6 +194,16 @@ export default function Page() {
                               </span>
                             </div>
                           )}
+                        </div>
+
+                        {/* Register Now Button */}
+                        <div className="pt-4 border-t border-gray-100">
+                          <a
+                            href="#registration-form" // ID-based registration link
+                            className="bg-[#E22026] text-center cursor-pointer md:hidden block w-auto hover:bg-[#74BF44] text-white font-medium px-5 py-3 rounded-md shadow-md transition-all"
+                          >
+                            Register Now
+                          </a>
                         </div>
                       </CardContent>
                     </Card>
