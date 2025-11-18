@@ -2,7 +2,7 @@
 "use client"
 
 import React, { useState, useEffect, useCallback, useMemo, useRef, Suspense } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import Banner from "@/components/BannerService"
 import {
@@ -50,7 +50,7 @@ interface BaseItem {
 interface SpecialtyType extends BaseItem {
   name: string;
   title?: string;
-  department?: DepartmentType[]
+  department?: DepartmentType[] | null
 }
 
 interface DepartmentType extends BaseItem {
@@ -95,7 +95,7 @@ interface ExtendedDoctorType extends DoctorType {
     hospitalId: string;
     branchName?: string;
     branchId?: string;
-    cities: CityType[]
+    cities: CityType[] | null
   }[];
   departments: DepartmentType[];
   filteredLocations?: {
@@ -395,6 +395,7 @@ const getAllExtendedTreatments = (hospitals: HospitalType[]): ExtendedTreatmentT
 const useHospitalsData = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const pathname = usePathname()
   const [allHospitals, setAllHospitals] = useState<HospitalType[]>([])
   const [loading, setLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
@@ -404,7 +405,12 @@ const useHospitalsData = () => {
     const initialView = (getParam("view") as "doctors" | "treatments" | "hospitals" | null) || "hospitals"
     const getFilterState = (key: string) => {
       const value = getParam(key)
-      return value ? { id: isUUID(value) ? value : "", query: isUUID(value) ? "" : value } : { id: "", query: "" }
+      if (!value) return { id: "", query: "" }
+      if (isUUID(value)) {
+        return { id: value, query: "" }
+      } else {
+        return { id: "", query: value }
+      }
     }
     return {
       view: initialView,
@@ -432,7 +438,7 @@ const useHospitalsData = () => {
       newFilters = enforceOnePrimaryFilter(key, newFilters, newFilterValue)
       return newFilters
     })
-  }, [setFilters])
+  }, [])
 
   const clearFilters = useCallback(() => {
     setFilters(prev => ({
@@ -731,7 +737,7 @@ const useHospitalsData = () => {
     }
 
     return Array.from(map, ([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name))
-  }, [filters.view, filters.doctor])
+  }, [filters.view])
 
   const availableOptions = useMemo(() => ({
     city: getUniqueOptions("city", filteredBranches, filteredDoctors, filteredTreatments),
@@ -748,25 +754,95 @@ const useHospitalsData = () => {
     return filteredTreatments.length
   }, [filters.view, filteredBranches, filteredDoctors, filteredTreatments])
 
+  const getFilterValueDisplay = useCallback((filterKey: FilterKey, currentFilters: FilterState, currentAvailableOptions: typeof availableOptions): string | null => {
+    const filter = currentFilters[filterKey]
+    if (filter.id) {
+      return currentAvailableOptions[filterKey].find(o => o.id === filter.id)?.name || filter.id
+    }
+    if (filter.query) {
+      return filter.query
+    }
+    return null
+  }, [])
+
   useEffect(() => {
     const params: string[] = []
     if (filters.view !== "hospitals") params.push(`view=${filters.view}`)
-    const addIfSet = (key: string, filter: FilterValue) => {
-      if (filter.id) params.push(`${key}=${encodeURIComponent(filter.id)}`)
-      else if (filter.query) params.push(`${key}=${encodeURIComponent(filter.query)}`)
-    }
     const activeKeys: FilterKey[] = getVisibleFiltersByView(filters.view);
-    ['branch', 'city', 'specialization', 'treatment', 'doctor', 'department'].forEach(key => {
-      if (activeKeys.includes(key as FilterKey) || filters[key as FilterKey].id || filters[key as FilterKey].query) {
-        addIfSet(key, filters[key as FilterKey])
+    ['branch', 'city', 'specialization', 'treatment', 'doctor', 'department'].forEach(keyStr => {
+      const key = keyStr as FilterKey
+      if (activeKeys.includes(key) || filters[key].id || filters[key].query) {
+        const display = getFilterValueDisplay(key, filters, availableOptions)
+        if (display) {
+          params.push(`${key}=${generateSlug(display)}`)
+        }
       }
     })
     const newQueryString = params.length > 0 ? "?" + params.join("&") : ""
     const targetUrlPath = `/hospitals${newQueryString}`
-    if (window.location.pathname + window.location.search !== targetUrlPath) {
-      window.history.replaceState(null, '', targetUrlPath)
+    const currentSearch = searchParams.toString()
+    const currentUrl = pathname + (currentSearch ? `?${currentSearch}` : "")
+    if (currentUrl !== targetUrlPath) {
+      router.replace(targetUrlPath, { scroll: false })
     }
-  }, [filters])
+  }, [filters, availableOptions, getFilterValueDisplay, searchParams, pathname, router])
+
+  useEffect(() => {
+    if (loading || allHospitals.length === 0) return;
+
+    const resolveToId = <T extends { _id: string; name: string }>(key: FilterKey, allItems: T[], getName: (item: T) => string) => {
+      const filter = filters[key];
+      if (filter.query && !filter.id) {
+        const exact = allItems.find(item => generateSlug(getName(item)) === filter.query);
+        if (exact) {
+          updateSubFilter(key, 'id', exact._id);
+          updateSubFilter(key, 'query', '');
+        }
+      }
+    };
+
+    // treatment
+    resolveToId('treatment', allExtendedTreatments, t => t.name);
+
+    // doctor
+    resolveToId('doctor', allExtendedDoctors, d => d.doctorName);
+
+    // branch
+    const allBranchesFlat = allHospitals.flatMap(h => h.branches.map(b => ({ ...b, _id: b._id, name: b.branchName })));
+    resolveToId('branch', allBranchesFlat, b => b.name);
+
+    // city
+    const allCitiesList = allHospitals.flatMap(h => h.branches.flatMap(b => b.city));
+    const uniqueCities = Array.from(new Map(allCitiesList.map(c => [c._id, c])).values());
+    if (filters.city.query && !filters.city.id) {
+      const exactCity = uniqueCities.find(c => generateSlug(c.cityName) === filters.city.query);
+      if (exactCity) {
+        updateSubFilter('city', 'id', exactCity._id);
+        updateSubFilter('city', 'query', '');
+      }
+    }
+
+    // specialization
+    if (filters.specialization.query && !filters.specialization.id) {
+      const allSpecs = allExtendedDoctors.flatMap(d => (d.specialization || []).filter((s: any) => s?._id && (s.name || s.title)));
+      const exactSpec = allSpecs.find((s: any) => generateSlug(s.name || s.title || '') === filters.specialization.query);
+      if (exactSpec) {
+        updateSubFilter('specialization', 'id', exactSpec._id);
+        updateSubFilter('specialization', 'query', '');
+      }
+    }
+
+    // department
+    if (filters.department.query && !filters.department.id) {
+      const allDepts = allExtendedDoctors.flatMap(d => d.departments || []);
+      const uniqueDepts = Array.from(new Map(allDepts.map((d: DepartmentType) => [d._id, d])).values());
+      const exactDept = uniqueDepts.find((d: DepartmentType) => generateSlug(d.name) === filters.department.query);
+      if (exactDept) {
+        updateSubFilter('department', 'id', exactDept._id);
+        updateSubFilter('department', 'query', '');
+      }
+    }
+  }, [loading, allHospitals, filters, updateSubFilter, allExtendedTreatments, allExtendedDoctors])
 
   return {
     loading,
@@ -781,6 +857,7 @@ const useHospitalsData = () => {
     filteredDoctors,
     filteredTreatments,
     currentCount,
+    getFilterValueDisplay,
   }
 }
 
@@ -891,20 +968,7 @@ const FilterDropdown = React.memo(({ placeholder, filterKey, filters, updateSubF
 })
 FilterDropdown.displayName = 'FilterDropdown'
 
-const getFilterValueDisplay = (filterKey: FilterKey, filters: FilterState, availableOptions: ReturnType<typeof useHospitalsData>['availableOptions']): string | null => {
-  const filter = filters[filterKey] as FilterValue
-  if (filter.id) {
-    const options = availableOptions[filterKey]
-    const optionKey = filterKey === 'treatment' ? 'treatment' : filterKey === 'department' ? 'department' : filterKey
-    return options.find(o => o.id === filter.id)?.name || filter.id
-  }
-  if (filter.query) {
-    return filter.query
-  }
-  return null
-}
-
-const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, updateSubFilter, availableOptions, filteredBranches, filteredDoctors, filteredTreatments }: ReturnType<typeof useHospitalsData>) => {
+const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, updateSubFilter, availableOptions, getFilterValueDisplay, filteredBranches, filteredDoctors, filteredTreatments }: ReturnType<typeof useHospitalsData> & { getFilterValueDisplay: ReturnType<typeof useHospitalsData>['getFilterValueDisplay'] }) => {
   const filterOptions: { value: FilterKey, label: string, isPrimary: boolean }[] = useMemo(() => {
     switch (filters.view) {
       case "hospitals":
@@ -938,7 +1002,7 @@ const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, upd
   const hasAppliedFilters = useMemo(() =>
     filterOptions.some(opt => getFilterValueDisplay(opt.value, filters, availableOptions)) ||
     (filters.city.id || filters.city.query),
-    [filters, availableOptions, filterOptions]
+    [filters, availableOptions, filterOptions, getFilterValueDisplay]
   )
 
   const shouldRenderFilter = useCallback((key: FilterKey): boolean => {
@@ -967,7 +1031,7 @@ const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, upd
     >
       <div className="p-4 md:p-4 h-full overflow-y-auto bg-white md:bg-gray-50">
         <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-2 sticky top-0 z-10">
-          <h3 className="text-lg font-medium mt-1 text-gray-900 flex items-center gap-2">
+          <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
             <Filter className="w-5 h-5 text-gray-400" />
             Search  {activeFilterKey}
           </h3>
@@ -1012,41 +1076,46 @@ const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, upd
         </div>
 
         <div className="mt-2 border-t border-gray-200 pt-2">
-          <label className="block text-base m font-medium text-gray-900 mb-3">Currently Applied Filters</label>
-          <div className=" flex-wrap gap-2">
+          <label className="block text-base font-medium text-gray-900 mb-3">Currently Applied Filters</label>
+          <div className="space-y-2">
             {filterOptions.map((opt) => {
               const value = getFilterValueDisplay(opt.value, filters, availableOptions)
               if (!value) return null
 
               return (
-                <>
-                  <label className="font-medium  text-sm mr-1 ">{opt.label}:</label>
-                  <div key={opt.value} className=" text-gray-700 mt-1 mb-4 relative bg-white text-sm px-3 py-2 rounded-xs shadow-xs border border-gray-100 font-normal">
-
-                    <p className="  bg-white">{value}</p>
+                <div key={opt.value} className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-gray-900">{opt.label}:</label>
+                  <div className="relative bg-white text-sm px-3 py-2 rounded border border-gray-200 shadow-sm min-w-0 flex-1">
+                    <span className="text-gray-900 block truncate">{value}</span>
                     <button
-                      onClick={() => updateSubFilter(opt.value as FilterKey, "id", "") || updateSubFilter(opt.value as FilterKey, "query", "")}
-                      className="ml-2 text-gray-400 right-2 top-2 absolute hover:text-gray-600"
+                      onClick={() => {
+                        updateSubFilter(opt.value as FilterKey, "id", "")
+                        updateSubFilter(opt.value as FilterKey, "query", "")
+                      }}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
                     >
-                      <X className="w-4 h-4 " />
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
-                </>
+                </div>
               )
             })}
             {cityValue && (
-              <>
-                <label className="font-medium  text-sm mr-1 ">City:</label>
-                <div className=" text-gray-700 mt-1 mb-4 relative bg-white text-sm px-3 py-2 rounded-xs shadow-xs border border-gray-100 font-normal">
-                  <p className="  bg-white">{cityValue}</p>
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-gray-900">City:</label>
+                <div className="relative bg-white text-sm px-3 py-2 rounded border border-gray-200 shadow-sm min-w-0 flex-1">
+                  <span className="text-gray-900 block truncate">{cityValue}</span>
                   <button
-                    onClick={() => { updateSubFilter('city', "id", ""); updateSubFilter('city', "query", ""); }}
-                    className="ml-2 text-gray-400 right-2 top-2 absolute hover:text-gray-600"
+                    onClick={() => {
+                      updateSubFilter('city', "id", "")
+                      updateSubFilter('city', "query", "")
+                    }}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
                   >
-                    <X className="w-4 h-4 " />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
-              </>
+              </div>
             )}
             {!hasAppliedFilters && (
               <p className="text-base text-gray-500 font-normal">No filters applied yet.</p>
@@ -1528,6 +1597,7 @@ function HospitalsPageContent() {
     filteredDoctors,
     filteredTreatments,
     currentCount,
+    getFilterValueDisplay,
   } = useHospitalsData()
 
   const setView = (v: FilterState["view"]) => {
@@ -1545,18 +1615,16 @@ function HospitalsPageContent() {
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="flex flex-col md:flex-row gap-4">
           <FilterSidebar
-            loading={loading}
             filters={filters}
-            updateFilter={updateFilter}
             updateSubFilter={updateSubFilter}
             clearFilters={clearFilters}
             showFilters={showFilters}
             setShowFilters={setShowFilters}
             availableOptions={availableOptions}
+            getFilterValueDisplay={getFilterValueDisplay}
             filteredBranches={filteredBranches}
             filteredDoctors={filteredDoctors}
             filteredTreatments={filteredTreatments}
-            currentCount={currentCount}
           />
 
           <main className="flex-1  min-w-0 lg:pb-0 min-h-screen">

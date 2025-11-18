@@ -382,7 +382,7 @@ const Breadcrumb = ({ doctorName }: { doctorName: string }) => (
           Home
         </Link>
         <span>/</span>
-        <Link href="/doctors" className="hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400/50 rounded-xs">
+        <Link href="/hospitals?view=doctors" className="hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400/50 rounded-xs">
           Doctors
         </Link>
         <span>/</span>
@@ -1357,30 +1357,30 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
           <div className="container mx-auto w-full">
 
             <div className="space-y-8">
-              <div className="flex items-bottom-0 gap-6">
+              <div className="flex items-bottom-0 gap-3">
                 <div className="relative">
-                  <div className="w-24 h-24 bg-white rounded-2xl shadow-lg border border-gray-100 p-2">
+                  <div className="w-30 h-30 bg-white rounded-xs shadow-xs border border-gray-100 p-1">
                     {doctorImage ? (
                       <img
                         src={doctorImage}
                         alt={`${doctor.doctorName} profile`}
-                        className="rounded-xl object-cover w-full h-full"
+                        className="rounded-xs object-cover w-full h-full"
                         onError={(e) => (e.currentTarget.style.display = "none")}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-xl">
+                      <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-xs">
                         <Stethoscope className="w-8 h-8 text-gray-400" />
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="space-y-3 mb-20">
+                <div className="space-y-1 mb-20">
                   <h1 className="text-4xl font-bold text-gray-900 leading-tight">
                     Dr. {doctor.doctorName}
                   </h1>
 
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-x-1">
                     {specializationDisplay.slice(0, 4).map((spec: any) => (
                       <span
                         key={spec._id}
@@ -1467,7 +1467,7 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
             </main>
 
             <aside className="lg:col-span-3 space-y-8">
-              <HospitalSearch allHospitals={allHospitals} />
+             
               <ContactForm />
             </aside>
           </div>

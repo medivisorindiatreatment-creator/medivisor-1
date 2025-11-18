@@ -26,6 +26,7 @@ export const schedule: ScheduleLocation[] = [
     label: "Papua New Guinea ",
     country: "Papua New Guinea",
     city: "Port Moresby",
+    // NOTE: This array includes the past date (2025-11-18)
     dates: ["2025-11-18", "2025-11-19"],
     times: ["2 PM to 6 PM", "9 AM to 6 PM"],
     venues: ["Hotel Holiday Inn", "Hotel Holiday Inn"],
@@ -104,7 +105,7 @@ export const schedule: ScheduleLocation[] = [
         { time: "09:00", displayTime: "9:00 AM to 10:00 AM", isAvailable: true },
         { time: "10:00", displayTime: "10:00 AM to 11:00 AM", isAvailable: true },
         { time: "11:00", displayTime: "11:00 AM to 12:00 PM", isAvailable: true },
-         { time: "12:00", displayTime: "12:00 am to 1:00 PM", isAvailable: true }
+        { time: "12:00", displayTime: "12:00 am to 1:00 PM", isAvailable: true }
       ]
     ]
   },
@@ -152,6 +153,52 @@ export const DEFAULT_TIME_SLOTS: TimeSlot[] = [
   { time: "17:00", displayTime: "5:00 PM to 6:00 PM", isAvailable: true }
 ]
 
+// --- Core Dynamic Filtering Logic (Used ONLY for the Form) ---
+
+/**
+ * Filters the location data to include only dates that are strictly in the future.
+ * This function is used to prepare data for the form's date selector.
+ * @param location The ScheduleLocation object to filter.
+ * @returns A new ScheduleLocation object with only future dates and corresponding data.
+ */
+function getFutureDatesForLocation(location: ScheduleLocation): ScheduleLocation {
+  // 1. Determine "Tomorrow" for comparison purposes (Start of the next day)
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1); 
+  tomorrow.setHours(0, 0, 0, 0); 
+
+  const futureDates: string[] = [];
+  const futureTimes: string[] = [];
+  const futureVenues: string[] = [];
+  const futureSlots: TimeSlot[][] = [];
+
+  location.dates.forEach((dateString, index) => {
+    // 2. Prepare scheduled date for comparison (Start of that day)
+    const scheduledDate = new Date(dateString + "T00:00:00");
+    scheduledDate.setHours(0, 0, 0, 0); 
+
+    // 3. Filter: Only keep dates that are tomorrow or later.
+    if (scheduledDate >= tomorrow) {
+      futureDates.push(dateString);
+      if (location.times[index]) futureTimes.push(location.times[index]);
+      if (location.venues[index]) futureVenues.push(location.venues[index]);
+      if (location.availableSlots && location.availableSlots[index]) {
+        futureSlots.push(location.availableSlots[index]);
+      }
+    }
+  });
+
+  return {
+    ...location,
+    dates: futureDates,
+    times: futureTimes,
+    venues: futureVenues,
+    availableSlots: futureSlots,
+  };
+}
+
+// --- Utility Functions ---
+
 export function formatDateFriendly(iso: string) {
   const d = new Date(iso + "T00:00:00")
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
@@ -164,14 +211,23 @@ export function formatTimeFriendly(t24: string) {
   return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })
 }
 
+/**
+ * Formats schedule details for the left-side display.
+ * This function uses the original, UNFILTERED location data 
+ * to show the full schedule content, including past dates.
+ */
 export function formatScheduleDetails(location: ScheduleLocation): string[] {
+  // IMPORTANT: We use the original 'location.dates' array here, not the filtered one.
   return location.dates.map((date, index) => {
     const formattedDate = formatDateFriendly(date)
     const time = location.times[index] || ""
     const venue = location.venues[index] || ""
-    if (time && venue) return `${formattedDate}, ${time}, ${venue}`
-    if (time) return `${formattedDate}, ${time}`
-    if (venue) return `${formattedDate}, ${venue}`
+    
+    if (time || venue) {
+        if (time && venue) return `${formattedDate}, ${time}, ${venue}`
+        if (time) return `${formattedDate}, ${time}`
+        if (venue) return `${formattedDate}, ${venue}`
+    }
     return formattedDate
   })
 }
@@ -186,14 +242,29 @@ export function getFlagEmoji(locationId: LocationId): string {
   return flags[locationId] || "🏳️"
 }
 
+/**
+ * Returns the ScheduleLocation data, filtered to only include dates that 
+ * are strictly in the future (tomorrow onwards). This is used EXCLUSIVELY 
+ * to populate the form's date dropdown.
+ */
 export function getLocationById(id: LocationId): ScheduleLocation | undefined {
-  return schedule.find((loc) => loc.id === id)
+  const location = schedule.find((loc) => loc.id === id);
+  if (location) {
+    // Apply the future date filter before returning the data for the form
+    return getFutureDatesForLocation(location);
+  }
+  return undefined;
 }
 
 export function getAllLocationIds(): LocationId[] {
   return schedule.map((loc) => loc.id)
 }
 
+/**
+ * Returns available time slots. This relies on the location object being 
+ * passed, which, if coming from the form selection, is already filtered 
+ * by getLocationById.
+ */
 export function getTimeSlotsForDate(location: ScheduleLocation, dateIndex: number): TimeSlot[] {
   if (location.availableSlots && location.availableSlots[dateIndex]) {
     return location.availableSlots[dateIndex].filter(slot => slot.isAvailable)

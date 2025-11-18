@@ -123,11 +123,11 @@ const renderRichText = (richContent: any): JSX.Element | null => {
         if (imgSrc) {
           return (
             <div key={Math.random()} className="my-4">
-              <img 
-                src={imgSrc} 
-                alt="Embedded image" 
-                className="w-full h-auto rounded-xs max-w-full" 
-                onError={(e) => { e.currentTarget.style.display = "none" }} 
+              <img
+                src={imgSrc}
+                alt="Embedded image"
+                className="w-full h-auto rounded-xs max-w-full"
+                onError={(e) => { e.currentTarget.style.display = "none" }}
               />
             </div>
           )
@@ -178,10 +178,8 @@ const Breadcrumb = ({ hospitalName, branchName, hospitalSlug }: { hospitalName: 
         <Link href="/hospitals" className="hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400/50 rounded-xs">
           Hospitals
         </Link>
-        <span>/</span>
-        <Link href={`/hospitals/${hospitalSlug}`} className="hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400/50 rounded-xs">
-          {hospitalName}
-        </Link>
+   
+       
         <span>/</span>
         <span className="text-gray-900 font-medium">{branchName}</span>
       </div>
@@ -234,11 +232,11 @@ const BranchCard = ({ data }: { data: any }) => {
       {/* Hospital Image Section */}
       <div className="relative w-full h-48 bg-gray-50">
         {hospitalImg ? (
-          <img 
-            src={hospitalImg} 
-            alt={`${hospitalName} ${branchName} facility`} 
-            className="object-cover w-full h-full" 
-            onError={(e) => { e.currentTarget.style.display = "none" }} 
+          <img
+            src={hospitalImg}
+            alt={`${hospitalName} ${branchName} facility`}
+            className="object-cover w-full h-full"
+            onError={(e) => { e.currentTarget.style.display = "none" }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -248,35 +246,35 @@ const BranchCard = ({ data }: { data: any }) => {
         {/* Accreditation Badge Top Right */}
         {accImage && (
           <div className="absolute top-4 right-4 z-10">
-            <img 
-              src={accImage} 
-              alt="Accreditation badge" 
-              className="w-10 h-10 object-contain rounded-full shadow-lg" 
-              onError={(e) => { e.currentTarget.style.display = "none" }} 
+            <img
+              src={accImage}
+              alt="Accreditation badge"
+              className="w-10 h-10 object-contain rounded-full shadow-lg"
+              onError={(e) => { e.currentTarget.style.display = "none" }}
             />
           </div>
         )}
-         {hospitalLogo && (
+        {hospitalLogo && (
           <div className="absolute bottom-2 left-2 z-10">
-            <img 
-              src={hospitalLogo} 
-              alt={`${hospitalName} logo`} 
-              className="w-12 h-auto object-contain" 
-              onError={(e) => { e.currentTarget.style.display = "none" }} 
+            <img
+              src={hospitalLogo}
+              alt={`${hospitalName} logo`}
+              className="w-12 h-auto object-contain"
+              onError={(e) => { e.currentTarget.style.display = "none" }}
             />
           </div>
         )}
       </div>
-      
+
       {/* Content */}
       <div className={`p-3 flex-1 flex flex-col justify-between ${inter.variable} font-light relative`}>
         {/* Small Hospital Logo Bottom Left */}
-       
+
         {/* Title: Only Branch Name (UPDATED: Removed group/hospital name) */}
         <div className="mb-1">
           <h3 className="text-base font-medium text-gray-900 leading-tight">{branchName}</h3>
         </div>
-        
+
         {/* Subtitle: City, Specialty */}
         <div className="mb-2">
           <p className="text-sm text-gray-600">{`${firstCity}, ${firstSpecialty} Speciality`}</p>
@@ -285,16 +283,16 @@ const BranchCard = ({ data }: { data: any }) => {
         {/* Stats Row: Doctors, Beds, Est. - Blue themed boxes */}
         <div className="grid grid-cols-3 gap-2">
           <div className="text-center p-2 bg-gray-50 rounded-xs border border-gray-100">
-            <p className="text-sm font-medium text-gray-700">{doctorsCount}+</p>
-            <p className="text-sm text-gray-700">Doctors</p>
+            <p className="text-sm font-medium text-gray-700">{estdYear}</p>
+            <p className="text-sm text-gray-700">Estd.</p>
           </div>
           <div className="text-center p-2 bg-gray-50 rounded-xs border border-gray-100">
             <p className="text-sm font-medium text-gray-700">{bedsCount}+</p>
             <p className="text-sm text-gray-700">Beds</p>
           </div>
           <div className="text-center p-2 bg-gray-50 rounded-xs border border-gray-100">
-            <p className="text-sm font-medium text-gray-700">{estdYear}</p>
-            <p className="text-sm text-gray-700">Est.</p>
+            <p className="text-sm font-medium text-gray-700">{doctorsCount}+</p>
+            <p className="text-sm text-gray-700">Doctors</p>
           </div>
         </div>
       </div>
@@ -320,12 +318,12 @@ const DoctorCard = ({ doctor }: { doctor: any }) => {
     <Link href={`/doctors/${doctorSlug}`} className="group flex flex-col h-full bg-white border border-gray-100 rounded-xs shadow-sm hover:shadow-md overflow-hidden transition-all focus:outline-none focus:ring-2 focus:ring-gray-400/50">
       <div className="relative h-60 overflow-hidden bg-gray-50 rounded-t-lg">
         {doctorImage ? (
-          <img 
-            src={doctorImage} 
-            alt={`${doctor.doctorName}, ${specializationDisplay}`} 
-            className="object-cover group-hover:scale-105 transition-transform duration-300 w-full h-full" 
-            style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}} 
-            onError={(e) => { e.currentTarget.style.display = "none" }} 
+          <img
+            src={doctorImage}
+            alt={`${doctor.doctorName}, ${specializationDisplay}`}
+            className="object-cover group-hover:scale-105 transition-transform duration-300 w-full h-full"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            onError={(e) => { e.currentTarget.style.display = "none" }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -335,16 +333,16 @@ const DoctorCard = ({ doctor }: { doctor: any }) => {
       </div>
       <div className={`p-3 flex-1 flex flex-col ${inter.variable} font-light`}>
         <h3 className="text-xl md:text-base font-medium text-gray-900 leading-tight mb-1 line-clamp-1">{doctor.doctorName}</h3>
-      <div className=" gap-1">
+        <div className=" gap-1">
           <p className="text-gray-700 text-sm flex items-center ">{specializationDisplay}</p>
-        {doctor.experienceYears && (
-          
-          <p className="text-gray-700 text-sm  flex items-center ">
-        
-            {doctor.experienceYears} years of exp
-          </p>
-        )}
-      </div>
+          {doctor.experienceYears && (
+
+            <p className="text-gray-700 text-sm  flex items-center ">
+
+              {doctor.experienceYears} years of exp
+            </p>
+          )}
+        </div>
         {/* <p className="text-gray-600 text-xs line-clamp-2 flex-1">{getShortDescription(doctor.aboutDoctorHtml)}</p> */}
       </div>
     </Link>
@@ -359,12 +357,12 @@ const TreatmentCard = ({ item }: { item: any }) => {
     <Link href={`/treatment/${itemSlug}`} className="group flex flex-col h-full bg-white border border-gray-100 rounded-xs shadow-sm hover:shadow-md overflow-hidden transition-all focus:outline-none focus:ring-2 focus:ring-gray-400/50">
       <div className="relative h-48 overflow-hidden bg-gray-50 rounded-t-lg">
         {treatmentImage ? (
-          <img 
-            src={treatmentImage} 
-            alt={`${item.name} treatment`} 
-            className="object-cover group-hover:scale-105 transition-transform duration-300 w-full h-full" 
-            style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}} 
-            onError={(e) => { e.currentTarget.style.display = "none" }} 
+          <img
+            src={treatmentImage}
+            alt={`${item.name} treatment`}
+            className="object-cover group-hover:scale-105 transition-transform duration-300 w-full h-full"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            onError={(e) => { e.currentTarget.style.display = "none" }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -381,20 +379,20 @@ const TreatmentCard = ({ item }: { item: any }) => {
 
 // ADDED: DoctorCarouselSlide component to wrap DoctorCard for use in EmblaCarousel
 const DoctorCarouselSlide = ({ doctor }: { doctor: any }) => {
-    // Apply widths for responsiveness: full on mobile, half on small screens, third on large screens (3 items on lg)
-    const slideClass = classNames(EMBLA_CLASSES.slide, EMBLA_SLIDE_SIZES.xs, EMBLA_SLIDE_SIZES.sm, EMBLA_SLIDE_SIZES.lg)
-    return (
-        <div key={doctor._id} className={slideClass}>
-            <DoctorCard doctor={doctor} />
-        </div>
-    )
+  // Apply widths for responsiveness: full on mobile, half on small screens, third on large screens (3 items on lg)
+  const slideClass = classNames(EMBLA_CLASSES.slide, EMBLA_SLIDE_SIZES.xs, EMBLA_SLIDE_SIZES.sm, EMBLA_SLIDE_SIZES.lg)
+  return (
+    <div key={doctor._id} className={slideClass}>
+      <DoctorCard doctor={doctor} />
+    </div>
+  )
 }
 
 // DoctorsList (UPDATED to use EmblaCarousel and remove 'Show All' logic)
 const DoctorsList = ({ doctors }: { doctors: any[] }) => {
   const router = useRouter()
   const [inputValue, setInputValue] = useState("")
-  
+
   // Embla Carousel Options
   const options: EmblaOptionsType = {
     loop: false, // Set to false since the list of doctors is not a typical infinite loop
@@ -457,7 +455,7 @@ const DoctorsList = ({ doctors }: { doctors: any[] }) => {
       <div className="px-4 pt-4">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-3">
           <h2 className="text-2xl md:text-xl font-medium text-gray-900 tracking-tight flex items-center mt-2">
-            Our Specialist Doctors 
+            Our Specialist Doctors
           </h2>
           <div className="relative w-full md:w-80">
             <SearchDropdown
@@ -473,45 +471,45 @@ const DoctorsList = ({ doctors }: { doctors: any[] }) => {
           </div>
         </div>
       </div>
-      
+
       {/* UPDATED: Embla Carousel Implementation */}
       <div className="relative px-8 pb-8">
-          <div className={EMBLA_CLASSES.viewport} ref={emblaRef}>
-              <div className={EMBLA_CLASSES.container}>
-                  {doctors.filter(doctor => doctor?._id).map((doctor) => (
-                      <DoctorCarouselSlide key={doctor._id} doctor={doctor} />
-                  ))}
-              </div>
+        <div className={EMBLA_CLASSES.viewport} ref={emblaRef}>
+          <div className={EMBLA_CLASSES.container}>
+            {doctors.filter(doctor => doctor?._id).map((doctor) => (
+              <DoctorCarouselSlide key={doctor._id} doctor={doctor} />
+            ))}
           </div>
-          {/* Navigation Buttons for Carousel */}
-          {doctors.length > 3 && ( // Only show arrows if there are more than 3 doctors on large screens
-              <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 flex justify-between pointer-events-none px-2 md:px-0">
-                  <button 
-                      onClick={scrollPrev} 
-                      disabled={prevBtnDisabled} 
-                      className={classNames(
-                          "p-3 rounded-full bg-white shadow-lg transition-opacity duration-200 pointer-events-auto",
-                          "disabled:opacity-40 disabled:cursor-not-allowed",
-                          "ml-[-1rem]" // Align with the negative margin of the container
-                      )}
-                      aria-label="Previous Doctor"
-                  >
-                      <ChevronLeft className="w-5 h-5 text-gray-700" />
-                  </button>
-                  <button 
-                      onClick={scrollNext} 
-                      disabled={nextBtnDisabled} 
-                      className={classNames(
-                          "p-3 rounded-full bg-white shadow-lg transition-opacity duration-200 pointer-events-auto",
-                          "disabled:opacity-40 disabled:cursor-not-allowed",
-                          "mr-[-1rem]" 
-                      )}
-                      aria-label="Next Doctor"
-                  >
-                      <ChevronRight className="w-5 h-5 text-gray-700" />
-                  </button>
-              </div>
-          )}
+        </div>
+        {/* Navigation Buttons for Carousel */}
+        {doctors.length > 3 && ( // Only show arrows if there are more than 3 doctors on large screens
+          <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 flex justify-between pointer-events-none px-2 md:px-0">
+            <button
+              onClick={scrollPrev}
+              disabled={prevBtnDisabled}
+              className={classNames(
+                "p-3 rounded-full bg-white shadow-lg transition-opacity duration-200 pointer-events-auto",
+                "disabled:opacity-40 disabled:cursor-not-allowed",
+                "ml-[-1rem]" // Align with the negative margin of the container
+              )}
+              aria-label="Previous Doctor"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-700" />
+            </button>
+            <button
+              onClick={scrollNext}
+              disabled={nextBtnDisabled}
+              className={classNames(
+                "p-3 rounded-full bg-white shadow-lg transition-opacity duration-200 pointer-events-auto",
+                "disabled:opacity-40 disabled:cursor-not-allowed",
+                "mr-[-1rem]"
+              )}
+              aria-label="Next Doctor"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-700" />
+            </button>
+          </div>
+        )}
       </div>
       {/* REMOVED: The 'Show All' button logic */}
     </section>
@@ -538,12 +536,12 @@ const DoctorSearchCard = ({ doctor, onClick }: { doctor: any; onClick: () => voi
     >
       <div className="relative w-16 h-16 flex-shrink-0">
         {doctorImage ? (
-          <img 
-            src={doctorImage} 
-            alt={doctor.doctorName} 
-            className="object-cover rounded-full w-full h-full" 
-            style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}} 
-            onError={(e) => { e.currentTarget.style.display = "none" }} 
+          <img
+            src={doctorImage}
+            alt={doctor.doctorName}
+            className="object-cover rounded-full w-full h-full"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            onError={(e) => { e.currentTarget.style.display = "none" }}
           />
         ) : (
           <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
@@ -608,9 +606,9 @@ const TreatmentsList = ({ treatments }: { treatments: any[] }) => {
         </div>
         {treatments.length > 3 && (
           <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 flex justify-between pointer-events-none px-2 md:px-0">
-            <button 
-              onClick={scrollPrev} 
-              disabled={prevBtnDisabled} 
+            <button
+              onClick={scrollPrev}
+              disabled={prevBtnDisabled}
               className={classNames(
                 "p-3 rounded-full bg-white shadow-lg transition-opacity duration-200 pointer-events-auto",
                 "disabled:opacity-40 disabled:cursor-not-allowed",
@@ -620,13 +618,13 @@ const TreatmentsList = ({ treatments }: { treatments: any[] }) => {
             >
               <ChevronLeft className="w-5 h-5 text-gray-700" />
             </button>
-            <button 
-              onClick={scrollNext} 
-              disabled={nextBtnDisabled} 
+            <button
+              onClick={scrollNext}
+              disabled={nextBtnDisabled}
               className={classNames(
                 "p-3 rounded-full bg-white shadow-lg transition-opacity duration-200 pointer-events-auto",
                 "disabled:opacity-40 disabled:cursor-not-allowed",
-                "mr-[-1rem]" 
+                "mr-[-1rem]"
               )}
               aria-label="Next Treatment"
             >
@@ -673,9 +671,9 @@ const EmblaCarousel = ({ slides, options }: { slides: any[]; options: EmblaOptio
       </div>
       {slides.length > 3 && (
         <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 flex justify-between pointer-events-none px-2 md:px-0">
-          <button 
-            onClick={scrollPrev} 
-            disabled={prevBtnDisabled} 
+          <button
+            onClick={scrollPrev}
+            disabled={prevBtnDisabled}
             className={classNames(
               "p-3 rounded-full bg-white shadow-lg transition-opacity duration-200 pointer-events-auto",
               "disabled:opacity-40 disabled:cursor-not-allowed",
@@ -685,13 +683,13 @@ const EmblaCarousel = ({ slides, options }: { slides: any[]; options: EmblaOptio
           >
             <ChevronLeft className="w-5 h-5 text-gray-700" />
           </button>
-          <button 
-            onClick={scrollNext} 
-            disabled={nextBtnDisabled} 
+          <button
+            onClick={scrollNext}
+            disabled={nextBtnDisabled}
             className={classNames(
               "p-3 rounded-full bg-white shadow-lg transition-opacity duration-200 pointer-events-auto",
               "disabled:opacity-40 disabled:cursor-not-allowed",
-              "mr-[-1rem]" 
+              "mr-[-1rem]"
             )}
             aria-label="Next"
           >
@@ -704,10 +702,10 @@ const EmblaCarousel = ({ slides, options }: { slides: any[]; options: EmblaOptio
 }
 
 // SimilarBranchesList (UPDATED: Search dropdown now uses allBranchesForSearch to include ALL branches
-const SimilarBranchesList = ({ branches, allBranchesForSearch, currentCityDisplay }: { 
-  branches: any[], 
-  allBranchesForSearch: any[], 
-  currentCityDisplay: string 
+const SimilarBranchesList = ({ branches, allBranchesForSearch, currentCityDisplay }: {
+  branches: any[],
+  allBranchesForSearch: any[],
+  currentCityDisplay: string
 }) => {
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
@@ -740,7 +738,7 @@ const SimilarBranchesList = ({ branches, allBranchesForSearch, currentCityDispla
   // UPDATED: handleBranchSelect to correctly redirect using hospital name and branch name for the slug
   const handleBranchSelect = useCallback((id: string) => {
     // Find the branch from the comprehensive list
-    const branchItem = allBranchesForSearch.find(b => b._id === id) 
+    const branchItem = allBranchesForSearch.find(b => b._id === id)
     if (branchItem && branchItem.hospitalName) {
       setSearchTerm("")
       const fullSlug = `${generateSlug(branchItem.hospitalName)}-${generateSlug(branchItem.branchName)}`
@@ -762,9 +760,9 @@ const SimilarBranchesList = ({ branches, allBranchesForSearch, currentCityDispla
       <div className="px-4 py-4">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-0">
           <h2 className="text-2xl md:text-xl font-medium mt-2 text-gray-900 tracking-tight flex items-center">
-           
+
             Near Similar  by Hospitals in {currentCityDisplay} {/* This title uses the city filter for context */}
-             {/* ({branches.length}) */}
+            {/* ({branches.length}) */}
           </h2>
           <div className="relative w-full md:w-80">
             {/* SearchDropdown uses the comprehensive list, fulfilling the requirement */}
@@ -776,7 +774,7 @@ const SimilarBranchesList = ({ branches, allBranchesForSearch, currentCityDispla
               selectedOption={null}
               onOptionSelect={handleBranchSelect}
               onClear={() => setSearchTerm("")}
-              type="branch" 
+              type="branch"
             />
           </div>
         </div>
@@ -797,16 +795,16 @@ const SimilarBranchesList = ({ branches, allBranchesForSearch, currentCityDispla
 
 // StatCard
 const StatCard = ({ icon: Icon, value, label, showPlus = true }: { icon: any; value: string | number; label: string; showPlus?: boolean }) => (
- <div
-  className={`text-center p-4 bg-white rounded-xs border border-gray-100 shadow-xs hover:shadow-sm transition-all duration-300 ${inter.variable} font-light flex flex-col items-center justify-center`}
->
-  <Icon className="w-8 h-8 text-gray-800 mb-3 flex-shrink-0" />
-  <p className="text-lg font-medium text-gray-800 mb-1 leading-tight">
-    {value}
-    {showPlus && '+'}
-  </p>
-  <p className="text-lg font-medium text-gray-800 leading-snug">{label}</p>
-</div>
+  <div
+    className={`text-center p-4 bg-white rounded-xs border border-gray-100 shadow-xs hover:shadow-sm transition-all duration-300 ${inter.variable} font-light flex flex-col items-center justify-center`}
+  >
+    <Icon className="w-8 h-8 text-gray-800 mb-3 flex-shrink-0" />
+    <p className="text-lg font-medium text-gray-800 mb-1 leading-tight">
+      {value}
+      {showPlus && '+'}
+    </p>
+    <p className="text-lg font-medium text-gray-800 leading-snug">{label}</p>
+  </div>
 
 )
 
@@ -865,7 +863,7 @@ const SearchDropdown = ({ value, onChange, placeholder, options, selectedOption,
   return (
     <div ref={dropdownRef} className="relative space-y-2">
       <div className="relative">
-       
+
         <input
           type="text"
           value={isOpen ? value : selectedOptionName}
@@ -890,9 +888,8 @@ const SearchDropdown = ({ value, onChange, placeholder, options, selectedOption,
                   onOptionSelect(option.id)
                   setIsOpen(false)
                 }}
-                className={`w-full text-left px-4 border-b border-gray-200 py-2 text-sm transition-colors ${
-                  option.id === selectedOption ? 'bg-gray-700 text-white' : 'text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`w-full text-left px-4 border-b border-gray-200 py-2 text-sm transition-colors ${option.id === selectedOption ? 'bg-gray-700 text-white' : 'text-gray-700 hover:bg-gray-50'
+                  }`}
               >
                 {option.name}
               </button>
@@ -1056,7 +1053,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
                 <CarouselSkeleton type="treatments" />
                 <FacilitiesSkeleton />
                 {/* The similar branches list uses the same skeleton */}
-                <CarouselSkeleton type="hospitals" /> 
+                <CarouselSkeleton type="hospitals" />
               </main>
               <div className="md:col-span-3">
                 <SidebarSkeleton />
@@ -1091,7 +1088,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
   const hospitalSlug = generateSlug(hospital.hospitalName)
 
   const currentCities = branch.city?.map((c: any) => c?.cityName).filter(Boolean) || []
-  
+
   // 1. FILTERED LIST FOR SLIDER/CARDS (Only similar/nearby branches) - UPDATED: Include hospitalImage, logo, accreditation
   const similarBranches = allHospitals
     .filter((h: any) => h.branches) // Filter out hospitals without branches list
@@ -1099,13 +1096,13 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
       h.branches
         // Only show other hospitals/branches in the current city/cities, 
         // AND exclude the *current* branch from the list (using the _id is generally safer)
-        .filter((b: any) => 
+        .filter((b: any) =>
           b.city?.some((c: any) => currentCities.includes(c?.cityName)) &&
           b._id !== branch._id &&
           b.branchName // Ensure branch has a name
         )
-        .map((b: any) => ({ 
-          ...b, 
+        .map((b: any) => ({
+          ...b,
           hospitalName: h.hospitalName,
           yearEstablished: h.yearEstablished,
           hospitalImage: h.hospitalImage, // UPDATED
@@ -1113,15 +1110,15 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
           accreditation: b.accreditation || h.accreditation // UPDATED
         }))
     )
-    
+
   // 2. COMPREHENSIVE LIST FOR SEARCH DROPDOWN (All branches everywhere) - UPDATED: Full branches with enhanced mapping
   const allHospitalBranches = allHospitals
     .filter((h: any) => h.branches)
     .flatMap((h: any) =>
       h.branches
         .filter((b: any) => b?.branchName) // Ensure branches have a name
-        .map((b: any) => ({ 
-          ...b, 
+        .map((b: any) => ({
+          ...b,
           hospitalName: h.hospitalName,
           yearEstablished: h.yearEstablished,
           hospitalImage: h.hospitalImage, // UPDATED
@@ -1129,7 +1126,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
           accreditation: b.accreditation || h.accreditation // UPDATED
         }))
     )
-    
+
   const currentCityDisplay = currentCities.length > 0 ? currentCities.join(', ') : 'Nearby Locations'
   const firstSpecialtyName = branch.specialization?.[0]?.name || 'N/A'
 
@@ -1141,7 +1138,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
             src={heroImage}
             alt={`${branch.branchName} - ${hospital.hospitalName}`}
             className="object-cover w-full h-full"
-            style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
             onError={(e) => { e.currentTarget.style.display = "none" }}
           />
         )}
@@ -1152,14 +1149,14 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
               {branch.accreditation.slice(0, 1).map((acc: any) => {
                 const accreditationImage = getWixImageUrl(acc.image)
                 return accreditationImage ? (
-                  <img 
-                    key={acc._id} 
-                    src={accreditationImage} 
-                    alt={`${acc.title} accreditation badge`} 
-                    width={40} 
-                    height={40} 
-                    className="object-contain rounded-full" 
-                    onError={(e) => { e.currentTarget.style.display = "none" }} 
+                  <img
+                    key={acc._id}
+                    src={accreditationImage}
+                    alt={`${acc.title} accreditation badge`}
+                    width={40}
+                    height={40}
+                    className="object-contain rounded-full"
+                    onError={(e) => { e.currentTarget.style.display = "none" }}
                   />
                 ) : null
               })}
@@ -1171,11 +1168,11 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
             <div className="flex gap-x-4 items-center">
               {hospitalLogo && (
                 <div className="relative w-16 h-16 bg-white rounded-full p-2 shadow-lg flex-shrink-0">
-                  <img 
-                    src={hospitalLogo} 
-                    alt={`${hospital.hospitalName} logo`} 
-                    className="object-contain rounded-full w-full h-full" 
-                    onError={(e) => { e.currentTarget.style.display = "none" }} 
+                  <img
+                    src={hospitalLogo}
+                    alt={`${hospital.hospitalName} logo`}
+                    className="object-contain rounded-full w-full h-full"
+                    onError={(e) => { e.currentTarget.style.display = "none" }}
                   />
                 </div>
               )}
@@ -1214,10 +1211,12 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
               <div className={`bg-gray-50 p-4 rounded-xs shadow-xs border border-gray-100 ${inter.variable} font-light`}>
                 <h2 className="text-2xl md:text-xl font-medium text-gray-900 tracking-tight flex items-center  mb-3">Quick Overview</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <StatCard icon={Calendar} value={hospital.yearEstablished || 'N/A'} label="Established" showPlus={false} />
+                  <StatCard icon={Heart} value={firstSpecialtyName} label="Specialty" showPlus={false} />
                   <StatCard icon={Bed} value={branch.totalBeds || 'N/A'} label="Beds" showPlus={true} />
                   <StatCard icon={Users} value={branch.noOfDoctors || 'N/A'} label=" Doctors" showPlus={true} />
-                  <StatCard icon={Heart} value={firstSpecialtyName} label="Specialty" showPlus={false} />
-                  <StatCard icon={Calendar} value={hospital.yearEstablished || 'N/A'} label="Established" showPlus={false} />
+
+
                 </div>
               </div>
 
@@ -1247,10 +1246,10 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
 
               {branch.doctors?.length > 0 && <DoctorsList doctors={branch.doctors} />}
               {branch.treatments?.length > 0 && <TreatmentsList treatments={branch.treatments} />}
-              <SimilarBranchesList 
+              <SimilarBranchesList
                 branches={similarBranches} // Filtered for slider display
                 allBranchesForSearch={allHospitalBranches} // Full list for search dropdown
-                currentCityDisplay={currentCityDisplay} 
+                currentCityDisplay={currentCityDisplay}
               />
             </main>
 
