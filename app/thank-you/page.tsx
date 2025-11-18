@@ -99,7 +99,7 @@ export default function ThankYou() {
 
           <div className="space-y-4">
             <h1
-              className="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight"
+              className="text-4xl md:text-3xl font-extrabold text-gray-800 leading-tight"
             >
              Your appointment is confirmed!
             </h1>
