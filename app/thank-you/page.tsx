@@ -101,7 +101,7 @@ export default function ThankYou() {
             <h1
               className="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight"
             >
-              Your Inquiry is Sent!
+             Your appointment is confirmed!
             </h1>
             <p
               className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed"
