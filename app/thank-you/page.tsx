@@ -106,7 +106,7 @@ export default function ThankYou() {
             <p
               className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed"
             >
-              Thank you for reaching out to our medical consultation team. Our specialists have received your inquiry and are already preparing to assist you.
+              Thank you for registering with us. You may kindly walk in as scheduled. Patients will be attended to on a first-come, first-served basis.
             </p>
           </div>
         </div>

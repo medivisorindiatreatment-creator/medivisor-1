@@ -1254,8 +1254,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
             </main>
 
             <aside className="lg:col-span-3 space-y-8">
-              {/* UPDATED: Use imported HospitalSearch component */}
-              <HospitalSearch allHospitals={allHospitals} />
+  
               <ContactForm />
             </aside>
           </div>

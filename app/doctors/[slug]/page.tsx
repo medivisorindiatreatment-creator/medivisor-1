@@ -1357,7 +1357,7 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
           <div className="container mx-auto w-full">
 
             <div className="space-y-8">
-              <div className="flex items-bottom-0 gap-3">
+              <div className="flex items-center mb-10 gap-3">
                 <div className="relative">
                   <div className="w-30 h-30 bg-white rounded-xs shadow-xs border border-gray-100 p-1">
                     {doctorImage ? (
@@ -1375,7 +1375,7 @@ export default function DoctorDetail({ params }: { params: Promise<{ slug: strin
                   </div>
                 </div>
 
-                <div className="space-y-1 mb-20">
+                <div className="space-y-1 mb-0">
                   <h1 className="text-4xl font-bold text-gray-900 leading-tight">
                     Dr. {doctor.doctorName}
                   </h1>

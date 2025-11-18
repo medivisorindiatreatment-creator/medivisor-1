@@ -28,6 +28,8 @@
 // LATEST: Ensured all cards (Branch/Hospital and Doctor) use proper Next.js Link components for redirects. Branch cards link to hospital/branch paths. Doctor cards link to doctor paths. Designs match specified layouts: Branch cards include hospital-branch naming, city, specializations (up to 2), matching doctors (up to 3 + more), beds. Doctor cards include profile image/placeholder, name, departments (up to 3 badges), experience with dot, branch/hospital name.
 // FIXED: SearchDropdown input value logic corrected to properly display the selected city name and handle the search query for the redirection.
 // FIXED: Confirmed URL formatting uses hyphens (-) for query parameters (e.g., city=new-delhi) via generateSlug utility, ensuring a modern URL format.
+// UPDATED: Based on API response, remove "Group" from hospital names for display. For branch titles, use branchName directly (includes hospital + location). For doctor locations, prefer branchName if available, else hospitalName without "Group".
+// UPDATED: Ensured proper branch name display in DoctorCard footer by prioritizing the first location with branchName available.
 
 "use client"
 
@@ -97,6 +99,7 @@ interface Doctor {
   designation: string | null
   aboutDoctor: string | null
   profileImage: string | null
+  popular?: boolean
   locations: { hospitalName: string; hospitalId: string; branchName?: string; branchId?: string; cities: City[] }[]
   departments: Department[]
 }
@@ -160,6 +163,11 @@ const getContentImage = (content: any): string | null => {
     return `https://static.wixstatic.com/media/${imageNode.imageData.image.src.id}`
   }
   return null
+}
+
+// Helper to clean hospital name by removing "Group"
+const cleanHospitalName = (name: string | null | undefined): string => {
+  return (name || '').replace(' Group', '').trim() || 'N/A'
 }
 
 const renderRichText = (richContent: any): JSX.Element | null => {
@@ -346,8 +354,11 @@ const getAllExtendedDoctors = (hospitals: Hospital[]): Doctor[] => {
 const DoctorCard = ({ doctor }: DoctorCardProps) => {
   const profileImage = doctor.profileImage ? getWixImageUrl(doctor.profileImage) : null
   const doctorSlug = generateSlug(doctor.doctorName)
-  const primaryLocation = doctor.locations[0]
-  const branchName = primaryLocation?.branchName || 'N/A'
+  
+  // Prioritize the first location that has a branchName for proper branch display; fallback to first location
+  const primaryLocation = doctor.locations.find(loc => loc.branchName) || doctor.locations[0]
+  // Use branchName if available, else cleaned hospitalName
+  const displayLocation = primaryLocation?.branchName || cleanHospitalName(primaryLocation?.hospitalName) || 'N/A'
 
   // Get up to 3 department names for badges
   const departmentNames = doctor.departments.slice(0, 3).map(d => d.name)
@@ -361,9 +372,9 @@ const DoctorCard = ({ doctor }: DoctorCardProps) => {
               <Star className="w-3 h-3 mr-1 fill-gray-300 text-gray-400" />Popular
             </span>
           )}
-          {imageUrl ? (
+          {profileImage ? (
             <img
-              src={imageUrl}
+              src={profileImage}
               alt={doctor.doctorName}
               className="object-cover object-top w-full h-full group-hover:scale-105 transition-transform duration-500"
               onError={(e) => { e.currentTarget.style.display = "none" }}
@@ -381,27 +392,38 @@ const DoctorCard = ({ doctor }: DoctorCardProps) => {
             <h2 className="text-lg font-medium leading-tight line-clamp-2 text-gray-900 group-hover:text-gray-800 transition-colors">
               {doctor.doctorName}
             </h2>
-            {/* <p className="text-sm text-gray-900 font-normal flex items-center gap-2 line-clamp-1">
-              {specialization}
-            </p> */}
           </header>
 
           <div className="space-y-2">
-            <p className="text-sm text-gray-900 font-normal flex items-center gap-2">
-              {doctor.experienceYears} Years Exp.
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-gray-900 font-normal">
+                {doctor.experienceYears} Years Exp.
+              </p>
+            </div>
+
+            {/* Department Badges (up to 3) */}
+            {departmentNames.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {departmentNames.map((deptName, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
+                  >
+                    {deptName}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
-          <footer className="border-t border-gray-100 pt-2">
-            <p className="text-sm text-gray-900 font-normal flex items-center gap-2 line-clamp-1">
-              <MapPin className="w-4 h-4 flex-shrink-0 text-gray-400" />
-              {primaryLocationDisplay}
+          <footer className="border-t border-gray-100 pt-2 mt-auto">
+            <p className="text-sm text-gray-900/70 font-normal line-clamp-1">
+              {displayLocation}
             </p>
           </footer>
         </div>
       </article>
     </Link>
-
   )
 }
 
@@ -573,19 +595,21 @@ const SearchDropdown = ({ value, onChange, placeholder, options, selectedOption,
 }
 
 // CityFilter Component
+interface CityFilterProps {
+  cities: City[],
+  onSearchChange: (value: string) => void,
+  onSelectCity: (id: string) => void,
+  selectedCityId: string,
+  searchValue: string
+}
+
 const CityFilter = ({
   cities,
   onSearchChange,
   onSelectCity,
   selectedCityId,
   searchValue
-}: {
-  cities: City[],
-  onSearchChange: (value: string) => void,
-  onSelectCity: (id: string) => void,
-  selectedCityId: string,
-  searchValue: string
-}) => {
+}: CityFilterProps) => {
   const options = useMemo(() => {
     return Array.from(new Map(cities.map(c => [c._id, c])).values()).map(c => ({
       id: c._id,
@@ -609,7 +633,11 @@ const CityFilter = ({
 }
 
 // Breadcrumb Component
-const Breadcrumb = ({ treatmentName }: { treatmentName: string }) => (
+interface BreadcrumbProps {
+  treatmentName: string
+}
+
+const Breadcrumb = ({ treatmentName }: BreadcrumbProps) => (
   <nav className={`bg-white border-b border-gray-100 px-4 py-3 ${inter.variable} font-extralight`} aria-label="Breadcrumb">
     <div className="container mx-auto flex items-center space-x-2 text-sm text-[#241d1f]/70">
       <Link href="/" className="flex items-center hover:text-[#74BF44] transition-colors" aria-label="Home">
@@ -634,7 +662,14 @@ const useCarouselNavigation = (emblaApi?: any) => {
 }
 
 // BranchesOfferingTreatmentCarousel Component (3 cards, wired nav, integrated treatment-specific doctors)
-const BranchesOfferingTreatmentCarousel = ({ branches, treatmentName, emblaRef, emblaApi }: { branches: ExtendedBranch[], treatmentName: string, emblaRef: any, emblaApi?: any }) => {
+interface BranchesOfferingTreatmentCarouselProps {
+  branches: ExtendedBranch[],
+  treatmentName: string,
+  emblaRef: any,
+  emblaApi?: any
+}
+
+const BranchesOfferingTreatmentCarousel = ({ branches, treatmentName, emblaRef, emblaApi }: BranchesOfferingTreatmentCarouselProps) => {
   const { scrollPrev, scrollNext } = useCarouselNavigation(emblaApi)
 
   if (branches.length === 0) return null
@@ -644,39 +679,27 @@ const BranchesOfferingTreatmentCarousel = ({ branches, treatmentName, emblaRef, 
       <div className="embla__viewport overflow-hidden h-auto" ref={emblaRef}>
         <div className="embla__container flex -ml-4">
           {branches.map((branch) => {
-            const hospitalName = branch.hospitalName
-            const branchName = branch.branchName
             const hospitalImg = branch.branchImage ? getContentImage(branch.branchImage) : null
             const hospitalLogoUrl = branch.hospitalLogo ? getWixImageUrl(branch.hospitalLogo) : null
+            // Use branchName directly as displayTitle (includes hospital + location)
+            const displayTitle = branch.branchName
             // For now, using the first element in the array properties for display
             const firstCity = branch.city?.[0]?.cityName || 'City'
-            const firstSpecialty = branch.specialization?.[0]?.name || branch.treatments?.[0]?.name || 'General'
-            const accImage = branch.accreditation?.[0]?.image ? getContentImage(branch.accreditation?.[0]?.image) : null
+            const firstSpecialty = branch.specialization?.[0]?.name || 'Specialty'
             const estdYear = branch.yearEstablished || 'N/A'
-            const bedsCount = branch.totalBeds || 'N/A'
-            const doctorsCount = branch.noOfDoctors || 'N/A'
-            const matchingDoctors = branch.matchingDoctors
-
-            // Updated redirect logic: Like city filter, redirect to /hospitals list with filters for treatment, city, and hospital
-            const treatmentSlug = generateSlug(treatmentName)
-            const citySlug = generateSlug(firstCity)
-            const hospitalSlug = generateSlug(hospitalName)
-            const redirectHref = `/hospitals?view=hospitals&city=${citySlug}&treatment=${treatmentSlug}&hospital=${hospitalSlug}`
-
-            // Properly format hospital - branch title
-            const hospitalPrefix = hospitalName.replace(' Group', '');
-            const branchLocation = branchName.replace(hospitalPrefix, '').trim();
-            const displayTitle = `${hospitalName} - ${branchLocation}`;
+            const bedsCount = branch.totalBeds || '0'
+            const doctorsCount = branch.noOfDoctors || '0'
+            const accImage = branch.accreditation?.[0]?.image ? getWixImageUrl(branch.accreditation[0].image) : null
 
             return (
-              <div key={branch._id} className="embla__slide min-w-0 w-full md:w-[calc(33.333%-1rem)] flex-shrink-0 ml-4">
-                <Link href={redirectHref} className="block h-full focus:outline-none focus:ring-2 focus:ring-[#74BF44]/50 border border-gray-100 rounded-sm shadow-xs bg-white hover:shadow-sm transition-shadow relative flex flex-col overflow-hidden">
+              <div key={branch._id} className="flex-[0_0_100%] md:flex-[0_0_calc(33.333%-1rem)] pl-4 pr-2">
+                <Link href={`/hospitals/${generateSlug(displayTitle)}`} className="block w-full h-[calc(100%-2rem)] md:h-auto max-w-sm mx-auto md:mx-0/50 border border-gray-100 rounded-sm shadow-xs bg-white hover:shadow-sm transition-shadow relative flex flex-col overflow-hidden">
                   {/* Hospital Image Section */}
                   <div className="relative w-full h-48 bg-gray-100">
                     {hospitalImg ? (
                       <Image
                         src={hospitalImg}
-                        alt={`${hospitalName} ${branchName} facility`}
+                        alt={`${displayTitle} facility`}
                         fill
                         className="object-cover"
                       />
@@ -688,7 +711,6 @@ const BranchesOfferingTreatmentCarousel = ({ branches, treatmentName, emblaRef, 
                     {/* Accreditation Badge Top Right */}
                     {accImage && (
                       <div className="absolute top-4 right-4 z-10">
-                        {/* Assuming this is a proper <img> tag from a utility function or direct URL */}
                         <img
                           src={accImage}
                           alt="Accreditation badge"
@@ -698,10 +720,9 @@ const BranchesOfferingTreatmentCarousel = ({ branches, treatmentName, emblaRef, 
                     )}
                     {hospitalLogoUrl && (
                       <div className="absolute bottom-2 left-2 z-10">
-                        {/* Assuming this is a proper <img> tag from a utility function or direct URL */}
                         <img
                           src={hospitalLogoUrl}
-                          alt={`${hospitalName} logo`}
+                          alt={`${displayTitle} logo`}
                           className="w-12 h-auto object-contain"
                         />
                       </div>
@@ -709,8 +730,8 @@ const BranchesOfferingTreatmentCarousel = ({ branches, treatmentName, emblaRef, 
                   </div>
 
                   {/* Content */}
-                  <div className={`p-3  flex flex-col space-y-0 justify-between ${inter.variable} font-extralight relative`}>
-                    {/* Title: Hospital - Branch */}
+                  <div className={`p-3 flex flex-col space-y-0 justify-between ${inter.variable} font-extralight relative`}>
+                    {/* Title: Branch Name */}
                     <div className="mb-1">
                       <h3 className="text-base font-medium text-[#241d1f] leading-tight line-clamp-2">{displayTitle}</h3>
                     </div>
@@ -721,7 +742,11 @@ const BranchesOfferingTreatmentCarousel = ({ branches, treatmentName, emblaRef, 
                     </div>
 
                     {/* Matching Doctors for Treatment */}
-
+                    {branch.matchingDoctors.length > 0 && (
+                      <div className="mb-2">
+                        <p className="text-sm text-[#241d1f]/70 font-medium">Matching Doctors: {branch.matchingDoctors.length}</p>
+                      </div>
+                    )}
 
                     {/* Stats Row: Estd, Beds, Doctors - Adapted with green accents */}
                     <div className="grid grid-cols-3 gap-2">
@@ -775,7 +800,11 @@ const DoctorsSkeleton = () => <div className={`bg-white rounded-sm border border
 
 
 // --- Main Component ---
-export default function TreatmentPage({ params }: { params: Promise<{ slug: string }> }) {
+interface TreatmentPageProps {
+  params: Promise<{ slug: string }>
+}
+
+export default function TreatmentPage({ params }: TreatmentPageProps) {
   const router = useRouter()
   const [treatment, setTreatment] = useState<Treatment | null>(null)
   const [allBranches, setAllBranches] = useState<ExtendedBranch[]>([])
