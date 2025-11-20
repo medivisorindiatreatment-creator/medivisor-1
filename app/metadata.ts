@@ -40,7 +40,7 @@ export const defaultMetadata: Metadata = {
   publisher: SITE_NAME,
 
   metadataBase: new URL(SITE_URL),
-  
+
   // Canonical should point to the root path for the home page
   alternates: {
     canonical: '/',
@@ -85,7 +85,7 @@ export const defaultMetadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  
+
   // --- Verification (Replace with your actual codes) ---
   verification: {
     google: '746594929470-busv549t5tat92misjbn6jcercqd5886.apps.googleusercontent.com',
@@ -108,16 +108,16 @@ export const aboutMetadata: Metadata = {
   title: 'About Medivisor India Treatment| Trusted International Medical Partner',
   description: 'Medivisor India is your trusted gateway to world-class healthcare. We help international patients access advanced medical treatments including surgeries, IVF, kidney transplants, cancer care, and heart treatments with compassionate, expert-led care.',
   keywords: [
-    'Medivisor India', 
-    'About Medivisor', 
-    'international medical travel', 
-    'medical tourism India', 
-    'expert doctors India', 
-    'surgeries', 
-    'IVF treatment India', 
-    'kidney transplant', 
-    'cancer care', 
-    'heart treatment', 
+    'Medivisor India',
+    'About Medivisor',
+    'international medical travel',
+    'medical tourism India',
+    'expert doctors India',
+    'surgeries',
+    'IVF treatment India',
+    'kidney transplant',
+    'cancer care',
+    'heart treatment',
     'trusted healthcare partner'
   ],
   robots: 'index, follow',
@@ -140,30 +140,12 @@ export const aboutMetadata: Metadata = {
     card: 'summary_large_image',
     title: 'About Medivisor India Treatment| Trusted International Medical Partner',
     description: 'Discover how Medivisor India helps international patients access world-class medical treatments in India with expert care and safety-first approach.',
-    
+
     site: '@MedivisorIndiatreatment',
   },
 };
 
-// Example 2: Services Page (e.g., for different specialties)
-export const servicesMetadata: Metadata = {
-    title: 'Comprehensive Medical Services & Specialties | Medivisor',
-    description: 'Explore the wide range of world-class medical services offered by Medivisor India Treatment, including Cardiology, Orthopaedics, Cancer Care, IVF, and Organ Transplants for global patients.',
-    keywords: [
-        'cardiology treatment India',
-        'orthopaedic surgery India',
-        'cancer treatment India',
-        'IVF in India',
-        'organ transplants',
-        'medical specialties'
-    ],
-};
 
-// Example 3: Contact Us Page
-export const contactMetadata: Metadata = {
-  title: 'Contact Medivisor Team | Get a Free Treatment Quote and Consultation',
-  description: 'Contact Medivisor India Treatment today for a free consultation, personalized treatment plan, and full travel assistance. Our patient coordinators are available 24/7 to help you.',
-};
 
 // Example 4: Blog Page (New addition)
 export const blogMetadata: Metadata = {
@@ -194,291 +176,364 @@ export const blogMetadata: Metadata = {
   },
 };
 
+export const servicesMetadata: Metadata = {
+  title: "Our Medical Services",
+  description:
+    "Explore Medivisor India’s world-class medical services for international patients. We offer advanced surgeries, IVF, kidney transplant, cancer care, and heart treatments with compassionate, expert-led care.",
+  keywords:
+    "Medivisor India services, medical tourism India, surgeries India, IVF treatment India, kidney transplant, cancer care, heart treatment, international patient care, world-class hospitals India",
+  robots: "index, follow",
+  alternates: {
+    canonical: "https://medivisorindiatreatment.com/services/", // ✅ Canonical Added
+  },
+  openGraph: {
+    title: "Our Medical Services",
+    description:
+      "Discover Medivisor India’s advanced medical services including surgeries, IVF, kidney transplant, cancer care, and heart treatments for international patients.",
+    url: "https://medivisorindiatreatment.com/services/",
+    siteName: "Medivisor India Treatment",
+    images: [
+      {
+        url: "https://medivisorindiatreatment.com/logo_medivisor.png",
+        width: 800,
+        height: 250,
+        alt: "Medivisor India Medical Services",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Our Medical Services",
+    description:
+      "Get advanced medical care in India with Medivisor. Surgeries, IVF, kidney transplant, cancer care, and heart treatments with expert-led guidance.",
+    site: "@MedivisorIndiatreatment",
+  },
+};
+export const teamMetadata: Metadata = {
+  title: 'Meet Our Expert Team',
+  description: 'Meet the Medivisor India team of expert doctors, surgeons, and healthcare professionals committed to providing world-class medical care to international patients.',
+  keywords: 'Medivisor India team, expert doctors India, medical team India, international patient care, surgeons, healthcare professionals, medical tourism India',
 
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Meet Our Expert Team',
+    description: 'Discover our dedicated team of doctors, surgeons, and healthcare professionals delivering advanced medical care for international patients.',
+    url: 'https://medivisorindiatreatment.com/team',
+    siteName: 'Medivisor India Treatment',
+    images: [
+      {
+        url: 'https://medivisorindiatreatment.com/logo_medivisor.png',
+        width: 800,
+        height: 250,
+        alt: 'Medivisor India Expert Team',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Meet Our Expert Team',
+    description: 'Meet our team of highly skilled doctors, surgeons, and healthcare professionals committed to world-class medical care.',
 
-// ====================================================================
-// Interfaces
-// ====================================================================
+    site: '@MedivisorIndiatreatment',
+  },
+};
+export const safetyMeasuresMetadata: Metadata = {
+  title: 'Safety Measures & Protocols ',
+  description: 'Our commitment to your safety: Review Medivisor India\'s strict safety protocols, accredited hospital partnerships, and comprehensive measures ensuring a secure and worry-free healthcare journey for international patients.',
+  keywords: 'Medivisor India safety measures, patient safety protocols, accredited hospitals India, secure medical journey, healthcare security, international patient safety',
 
-interface PostData {
-    title?: string;
-    excerpt?: string;
-    richContent?: any;
-    contentText?: string;
-    content?: any;
-    firstPublishedDate?: string;
-    lastPublishedDate?: string;
-    tags?: string[];
-    slug?: string;
-    coverMedia?: {
-        image?: string;
-    };
-    media?: {
-        wixMedia?: {
-            image?: string;
-        };
-    };
-}
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Ensuring Care with Trust | Safety Measures at Medivisor India',
+    description: 'Learn about the strict safety and hygiene protocols Medivisor India follows to ensure the highest standard of care and security throughout your treatment in India.',
+    url: 'https://medivisorindiatreatment.com/safety-measures', // Update the URL to your safety measures page
+    siteName: 'Medivisor India Treatment',
+    images: [
+      {
+        url: 'https://medivisorindiatreatment.com/safety_measures_banner.png', // Update the image URL to a relevant safety/trust image
+        width: 1200, // Recommend a larger width for Open Graph images
+        height: 630, // Recommend a standard ratio (e.g., 1.91:1)
+        alt: 'Medivisor India Safety and Trust',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Your Safety is Our Priority',
+    description: 'We follow stringent safety protocols and partner only with accredited facilities. Explore our commitment to a secure medical journey.',
 
-// ====================================================================
-// Image Helper Functions
-// ====================================================================
+    site: '@MedivisorIndiatreatment',
+  },
+};
 
-/**
- * Function to get properly formatted Wix Image URL
- * @param wixUrl The Wix image URL string (e.g., wix:image://v1/...)
- * @returns An optimized, direct URL or null
- */
-function getWixImageUrl(wixUrl: string | undefined): string | null {
-    if (!wixUrl) return null;
+export const treatmentCostMetadata: Metadata = {
+  title: 'Treatment Cost',
+  description: 'Get an overview of treatment costs in India with Medivisor India. Transparent pricing for surgeries, IVF, kidney transplant, cancer care, and heart treatments for international patients.',
+  keywords: 'Medivisor India treatment cost, medical treatment prices India, surgery cost India, IVF cost India, kidney transplant price, cancer treatment cost, heart treatment cost, international patients',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Treatment Cost',
+    description: 'Transparent treatment cost overview for international patients. Learn about prices for surgeries, IVF, kidney transplant, cancer care, and heart treatments in India.',
+    url: 'https://medivisorindiatreatment.com/treatment-cost',
+    siteName: 'Medivisor India Treatment',
+    images: [
+      {
+        url: 'https://medivisorindiatreatment.com/logo_medivisor.png',
+        width: 800,
+        height: 250,
+        alt: 'Medivisor India Treatment Cost',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Treatment Cost',
+    description: 'Get clear information on treatment costs for surgeries, IVF, kidney transplant, cancer care, and heart treatments in India with Medivisor.',
 
-    try {
-        // Handle both wix:image:// and direct URLs
-        if (wixUrl.startsWith('wix:image://')) {
-            const { url } = media.getImageUrl(wixUrl);
-            return formatImageUrlForSocial(url);
-        } else if (wixUrl.startsWith('http')) {
-            return formatImageUrlForSocial(wixUrl);
-        }
-        return null;
-    } catch (error) {
-        console.error('Error getting Wix image URL:', error);
-        return null;
-    }
-}
+    site: '@MedivisorIndiatreatment',
+  },
+};
 
-/**
- * Function to format image URL for social media platforms (optimized for 1200x630)
- * @param imageUrl The resolved image URL
- * @returns The optimized social media image URL
- */
-function formatImageUrlForSocial(imageUrl: string): string | null {
-    if (!imageUrl) return null;
+export const treatmentProcessMetadata: Metadata = {
+  title: "Treatment Process",
+  description:
+    "Learn about the Medivisor India treatment process for international patients. From initial consultation to post-treatment care, we ensure a smooth and safe medical journey.",
+  keywords:
+    "Medivisor India treatment process, medical process India, international patient care, hospital procedures India, treatment steps India, patient journey, medical tourism India",
+  robots: "index, follow",
+  alternates: {
+    canonical: "https://medivisorindiatreatment.com/treatment-process/", // ✅ Canonical Added
+  },
+  openGraph: {
+    title: "Treatment Process",
+    description:
+      "Step-by-step guide to Medivisor India’s treatment process for international patients, ensuring safe and effective medical care.",
+    url: "https://medivisorindiatreatment.com/treatment-process/",
+    siteName: "Medivisor India Treatment",
+    images: [
+      {
+        url: "https://medivisorindiatreatment.com/logo_medivisor.png",
+        width: 800,
+        height: 250,
+        alt: "Medivisor India Treatment Process",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Treatment Process",
+    description:
+      "Explore Medivisor India’s treatment process for international patients, from consultation to post-treatment follow-up.",
+    site: "@MedivisorIndiatreatment",
+  },
+};
 
-    try {
-        const url = new URL(imageUrl);
+export const visaProcessMetadata: Metadata = {
+  title: 'Visa Process for Medical Travel',
+  description: 'Learn about the step-by-step visa process for international patients seeking medical treatment in India with Medivisor India.',
+  keywords: 'Medivisor India visa process, medical visa India, international patient visa, India medical travel, healthcare visa India, medical tourism India',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Visa Process for Medical Travel',
+    description: 'Step-by-step guide for international patients to obtain a medical visa and travel to India for world-class treatment with Medivisor India.',
+    url: 'https://medivisorindiatreatment.com/visa-process',
+    siteName: 'Medivisor India Treatment',
+    images: [
+      {
+        url: 'https://medivisorindiatreatment.com/logo_medivisor.png',
+        width: 800,
+        height: 250,
+        alt: 'Medivisor India Visa Process',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Visa Process for Medical Travel',
+    description: 'Medivisor India helps international patients with the medical visa application process and travel guidance to India.',
+    site: '@MedivisorIndiatreatment',
+  },
+};
 
-        if (url.hostname === 'static.wixstatic.com') {
-            // Extract the media part from the URL
-            const pathParts = url.pathname.split('/');
-            const mediaPart = pathParts.length > 0 ? pathParts[pathParts.length - 1] : '';
+export const travelGuideMetadata: Metadata = {
+  title: 'Travel Guide for International Patients',
+  description: 'Medivisor India provides a comprehensive travel guide for international patients seeking medical treatment in India. Learn about travel tips, accommodation, local transport, and essential guidelines.',
+  keywords: 'Medivisor India travel guide, medical travel India, international patient guide, India travel tips, medical tourism India, accommodation for patients, local transport India',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Travel Guide for International Patients',
+    description: 'Plan your medical trip to India with Medivisor India’s travel guide for international patients, including tips on travel, accommodation, and local transport.',
+    url: 'https://medivisorindiatreatment.com/travel-guide',
+    siteName: 'Medivisor India Treatment',
+    images: [
+      {
+        url: 'https://medivisorindiatreatment.com/og-travel-guide.jpg',
+        width: 800,
+        height: 250,
+        alt: 'Medivisor India Travel Guide',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Travel Guide for International Patients',
+    description: 'Get essential travel tips, accommodation guidance, and local transport information for international patients traveling to India for medical treatment.',
+    site: '@MedivisorIndiatreatment',
+  },
+};
 
-            if (mediaPart) {
-                // Create a clean, optimized URL for social media (1200x630 is standard)
-                const optimizedUrl = `https://static.wixstatic.com/media/${mediaPart}/v1/fill/w_1200,h_630,al_c,q_85,usm_0.66_1.00_0.01/${mediaPart}`;
-                return optimizedUrl;
-            }
-        }
+export const faqsMetadata: Metadata = {
+  title: 'FAQs',
+  description: 'Find answers to frequently asked questions by international patients seeking medical treatment in India. Get clarity on treatments, costs, travel, and more.',
+  keywords: 'Medivisor India FAQs, medical treatment questions, international patients, treatment queries, travel and visa FAQs, cost and hospital information',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'FAQs',
+    description: 'Explore frequently asked questions for international patients planning medical treatment in India with Medivisor India.',
+    url: 'https://medivisorindiatreatment.com/faqs',
+    siteName: 'Medivisor India Treatment',
+    images: [
+      {
+        url: 'https://medivisorindiatreatment.com/logo_medivisor.png',
+        width: 800,
+        height: 250,
+        alt: 'Medivisor India FAQs',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FAQs | Medivisor India',
+    description: 'Get answers to commonly asked questions for international patients traveling to India for medical treatment.',
+    site: '@MedivisorIndiatreatment',
+  },
+};
 
-        // For other URLs or failed optimization, return as is
-        return imageUrl;
-    } catch (error) {
-        console.error('Error formatting image URL:', error);
-        return null;
-    }
-}
+export const whyMedivisorMetadata: Metadata = {
+  title: 'Why Choose Medivisor India? | Leading Medical Tourism',
+  description: 'Discover why Medivisor India is the best choice for international patients, offering world-class doctors, accredited hospitals, seamless patient experience, and compassionate care.',
+  keywords: 'Why Medivisor India, choose Medivisor, best medical tourism India, world-class healthcare, accredited hospitals, seamless patient journey, medical care India',
 
-/**
- * Function to get optimized image URL for social sharing with reliable fallbacks
- * @param wixUrl The Wix image URL from the blog post data
- * @returns The final, shareable image URL
- */
-function getOptimizedShareImage(wixUrl: string | undefined): string {
-    // 1. Fallback to a reliable default image if no URL is provided
-    const DEFAULT_FALLBACK_URL = "https://medivisorindiatreatment.com/logo_medivisor.png"; // Using your site's logo as a better default
+  robots: 'index, follow',
+  openGraph: {
+    title: 'The Medivisor Advantage: Trust, Quality, and Compassionate Care',
+    description: 'Learn about the unique advantages of choosing Medivisor India for your medical treatment, including high standards of safety, transparency, and personalized support.',
+    url: 'https://medivisorindiatreatment.com/why-medivisor', // Update the URL
+    siteName: 'Medivisor India Treatment',
+    images: [
+      {
+        url: 'https://medivisorindiatreatment.com/why_medivisor_og_banner.png', // Replace with an image showcasing trust or quality
+        width: 1200,
+        height: 630,
+        alt: 'The Medivisor India Advantage',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Your Best Choice for Medical Travel: Why Medivisor?',
+    description: 'World-class doctors, accredited facilities, and comprehensive support—see why Medivisor India is the trusted partner for your medical journey.',
 
-    if (!wixUrl) {
-        return DEFAULT_FALLBACK_URL;
-    }
+    site: '@MedivisorIndiatreatment',
+  },
+};
 
-    // 2. Try to get the properly formatted image URL
-    const imageUrl = getWixImageUrl(wixUrl);
+export const patientTestimonialsMetadata: Metadata = {
+  title: 'Patient Testimonials',
+  description: 'Read real experiences and success stories from international patients who received treatment in India through Medivisor India. Learn why patients trust us for world-class healthcare.',
+  keywords: 'Medivisor India testimonials, patient reviews India, medical treatment feedback, international patient experiences, surgery success stories, medical tourism India',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Patient Testimonials',
+    description: 'Discover real experiences of international patients who trusted Medivisor India for their medical treatment in India.',
+    url: 'https://medivisorindiatreatment.com/patient-testimonials',
+    siteName: 'Medivisor India Treatment',
+    images: [
+      {
+        url: 'https://medivisorindiatreatment.com/logo_medivisor.png',
+        width: 800,
+        height: 250,
+        alt: 'Medivisor India Patient Testimonials',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Patient Testimonials',
+    description: 'Read patient reviews and success stories of international patients treated in India through Medivisor India.',
+    site: '@MedivisorIndiatreatment',
+  },
+};
 
-    if (imageUrl) {
-        return imageUrl;
-    }
+export const mediaCoverageMetadata: Metadata = {
+  title: 'Media Coverage & News',
+  description: 'Explore the latest media coverage, press releases, and news articles about Medivisor India’s contributions to international patient care and medical tourism in India.',
+  keywords: 'Medivisor India news, media coverage India, press releases, healthcare news, international patient news, medical tourism media, India healthcare news',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Media Coverage & News',
+    description: 'Stay updated with press releases, news articles, and media mentions of Medivisor India.',
+    url: 'https://medivisorindiatreatment.com/media-coverage',
+    siteName: 'Medivisor India Treatment',
+    images: [
+      {
+        url: 'https://medivisorindiatreatment.com/logo_medivisor.png',
+        width: 800,
+        height: 250,
+        alt: 'Medivisor India Media Coverage',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Media Coverage & News',
+    description: 'Discover recent news articles, press releases, and media coverage featuring Medivisor India and international patient care.',
+    site: '@MedivisorIndiatreatment',
+  },
+};
 
-    // 3. Fallback if processing fails
-    return DEFAULT_FALLBACK_URL;
-}
-
-// ====================================================================
-// Content Helper Functions
-// ====================================================================
-
-/**
- * Function to extract text from content for meta description
- */
-function extractTextForMeta(content: any): string {
-    if (!content) return '';
-
-    // Handle Wix's old contentText field (plain string)
-    if (typeof content === 'string') {
-        return content.replace(/<[^>]*>/g, '').trim();
-    }
-    
-    // Handle Wix's Rich Content Structure (simplified extraction)
-    // A more robust solution might involve parsing the JSON structure, but this is a reasonable default
-    if (content.blocks && Array.isArray(content.blocks)) {
-      const text = content.blocks.map((block: any) => block.text || '').join(' ');
-      return text.replace(/<[^>]*>/g, '').trim();
-    }
-
-    return 'Informative medical blog post from Medivisor India.';
-}
-
-/**
- * Function to generate meta description from content, prioritizing excerpt
- */
-function generateMetaDescription(content: any, excerpt?: string): string {
-    if (excerpt && excerpt.trim().length > 0) {
-        // Truncate excerpt if too long
-        const cleanExcerpt = excerpt.trim();
-        return cleanExcerpt.length > 160 ? cleanExcerpt.substring(0, 157) + '...' : cleanExcerpt;
-    }
-
-    const text = extractTextForMeta(content);
-
-    if (text.length > 160) {
-        return text.substring(0, 157) + '...';
-    }
-
-    return text || 'Read this informative blog post about medical treatment, patient journeys, and healthcare tips in India.';
-}
-
-// ====================================================================
-// Data Fetcher
-// ====================================================================
-
-/**
- * Helper function to fetch blog by slug from Wix
- */
-export async function fetchBlogBySlug(slug: string): Promise<PostData | null> {
-    try {
-        if (!wixClient.posts) return null;
-
-        let blog: PostData | null = null;
-
-        // Use queryPosts for flexibility and to ensure proper fieldsets are retrieved
-        if (typeof wixClient.posts.queryPosts === "function") {
-            const response = await wixClient.posts.queryPosts()
-                .eq('slug', slug)
-                .limit(1)
-                .find({
-                    fieldsets: [
-                        "CONTENT_TEXT",
-                        "URL",
-                        "RICH_CONTENT",
-                        "SEO",
-                        "MEDIA",
-                        "TAGS",
-                        "PUBLISHED_DATE",
-                        "LAST_PUBLISHED_DATE"
-                    ],
-                });
-
-            if (response.items && response.items.length > 0) {
-                blog = response.items[0];
-            }
-        }
-
-        return blog;
-    } catch (err) {
-        console.error("Error fetching blog:", err);
-        return null;
-    }
-}
-
-// ====================================================================
-// Dynamic Metadata Generator
-// ====================================================================
-
-interface GenerateMetadataParams {
-    params: { slug: string };
-}
-
-/**
- * Dynamic Metadata for Blog Post
- */
-export async function generateBlogPostMetadata({ params }: GenerateMetadataParams): Promise<Metadata> {
-    const blog = await fetchBlogBySlug(params.slug);
-
-    if (!blog) {
-        return {
-            title: "Blog Post Not Found | Medivisor India",
-            description: "The requested blog post doesn't exist.",
-            robots: "noindex, nofollow",
-        };
-    }
-
-    const title = blog.title || "Medivisor India Blog";
-    const description = generateMetaDescription(blog.richContent || blog.contentText || blog.content, blog.excerpt);
-
-    // Prioritize coverMedia.image, then media.wixMedia.image
-    const imageSource = blog.coverMedia?.image || blog.media?.wixMedia?.image;
-    const shareImageUrl = getOptimizedShareImage(imageSource);
-
-    const url = `https://medivisorindiatreatment.com/blog/${params.slug}`;
-    const twitterHandle = "@MedivisorIndia"; // Define a constant if used globally
-
-    // Article specific meta tags
-    const articleMeta: any = {};
-    if (blog.firstPublishedDate) {
-        articleMeta.publishedTime = blog.firstPublishedDate;
-    }
-    if (blog.lastPublishedDate) {
-        articleMeta.modifiedTime = blog.lastPublishedDate;
-    }
-    
-    // Convert blog tags to OpenGraph and general keywords format
-    const keywords = blog.tags?.join(', ') || "medical treatment, healthcare, India, patient journey";
-
-    return {
-        title: `${title} | Medivisor India`,
-        description,
-        keywords: keywords,
-        alternates: {
-            canonical: url,
-        },
-        openGraph: {
-            title,
-            description,
-            url,
-            siteName: "Medivisor India Treatment",
-            images: [
-                {
-                    url: shareImageUrl,
-                    width: 1200, // Optimized width
-                    height: 630, // Optimized height
-                    alt: title,
-                },
-            ],
-            locale: "en_US",
-            type: "article",
-            ...articleMeta,
-            authors: ["Medivisor India"],
-        },
-        twitter: {
-            card: "summary_large_image",
-            title,
-            description,
-            images: [shareImageUrl],
-            site: twitterHandle,
-            creator: twitterHandle,
-        },
-        robots: {
-            index: true,
-            follow: true,
-            googleBot: {
-                index: true,
-                follow: true,
-                'max-image-preview': 'large',
-                'max-snippet': -1,
-            },
-        },
-        authors: [{ name: "Medivisor India" }],
-        publisher: "Medivisor India",
-        category: "healthcare",
-        ...articleMeta,
-    };
-}
+export const contactMetadata: Metadata = {
+  title: "Contact Medivisor India Treatment - Get Medical Tourism Support",
+  description:
+    "Contact Medivisor India Treatment for medical tourism assistance. Global offices in India, Mauritius, Fiji, Vanuatu, Solomon Islands, and PNG. 24/7 support available.",
+  keywords:
+    "contact medivisor, medical tourism contact, healthcare support India, international patient assistance",
+  openGraph: {
+    title: "Contact Medivisor India Treatment - Get Medical Tourism Support",
+    description:
+      "Reach Medivisor India for expert medical tourism assistance across multiple countries. Our global offices provide 24/7 support to international patients.",
+    url: "https://medivisorindiatreatment.com/contact",
+    siteName: "Medivisor India",
+    type: "website",
+    images: [
+      {
+        url: 'https://medivisorindiatreatment.com/logo_medivisor.png',
+        width: 800,
+        height: 250,
+        alt: "Contact Medivisor India",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Medivisor India Treatment",
+    description:
+      "Connect with Medivisor India for seamless medical tourism assistance and global support for patients.",
+    site: "@MedivisorIndiatreatment",
+    images: ["/Medivisor-logo.svg"],
+  },
+  robots: "index, follow",
+  authors: [{ name: "Medivisor India" }],
+  metadataBase: new URL("https://medivisorindiatreatment.com"),
+};

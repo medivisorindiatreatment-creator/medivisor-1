@@ -3,41 +3,11 @@ import Contact from "@/components/Contact";
 import { MapPin, Phone, Mail, Clock, Globe, ArrowRight } from "lucide-react";
 import Banner from "@/components/BannerService";
 
-export const metadata: Metadata = {
-  title: "Contact Medivisor India Treatment - Get Medical Tourism Support",
-  description:
-    "Contact Medivisor India Treatment for medical tourism assistance. Global offices in India, Mauritius, Fiji, Vanuatu, Solomon Islands, and PNG. 24/7 support available.",
-  keywords:
-    "contact medivisor, medical tourism contact, healthcare support India, international patient assistance",
-  openGraph: {
-    title: "Contact Medivisor India Treatment - Get Medical Tourism Support",
-    description:
-      "Reach Medivisor India for expert medical tourism assistance across multiple countries. Our global offices provide 24/7 support to international patients.",
-    url: "https://medivisorindiatreatment.com/contact",
-    siteName: "Medivisor India",
-    type: "website",
-    images: [
-      {
-        url: 'https://medivisorindiatreatment.com/logo_medivisor.png',
-        width: 800,
-        height: 250,
-        alt: "Contact Medivisor India",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Contact Medivisor India Treatment",
-    description:
-      "Connect with Medivisor India for seamless medical tourism assistance and global support for patients.",
-    site: "@MedivisorIndiatreatment",
-    images: ["/Medivisor-logo.svg"],
-  },
-  robots: "index, follow",
-  authors: [{ name: "Medivisor India" }],
-  metadataBase: new URL("https://medivisorindiatreatment.com"),
-};
+import { contactMetadata } from "@/app/metadata"; // Import the specific metadata
 
+// 1. ✨ EXPORT THE PAGE-SPECIFIC METADATA HERE
+// This is allowed because this file is a Server Component (no "use client").
+export const metadata: Metadata = contactMetadata;
 
 export default function ContactPage() {
   const globalOffices = [

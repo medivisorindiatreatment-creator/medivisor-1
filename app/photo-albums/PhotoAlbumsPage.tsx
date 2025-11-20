@@ -157,10 +157,10 @@ export default function GalleryPage() {
             )}
           </div>
           <CardHeader className="px-4 pt-3 pb-3">
-            <CardTitle className="title-text">
+            <CardTitle className="hover:text-primary line-clamp-2 text-[#241d1f] transition-colors duration-200 text-lg font-medium">
               {stripHtmlTags(moment.title_fld) || "Untitled"}
             </CardTitle>
-            <div className="flex items-center gap-2 description-1">
+            <div className="flex items-center gap-x-2 description-1">
               {moment.firstPublishedDate && (
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />

@@ -6,6 +6,12 @@ import TreatmentCost from "@/components/TreatmentCost"
 import OurInitiativesSection from "@/components/OurInitiativesSection";
 import Activities from "@/components/Activities";
 import SafetyMeasures from "@/components/SafetyMeasures";
+import type { Metadata } from 'next';
+import {safetyMeasuresMetadata} from '@/app/metadata'; // Import the specific metadata
+
+// 1. ✨ EXPORT THE PAGE-SPECIFIC METADATA HERE
+// This is allowed because this file is a Server Component (no "use client").
+export const metadata: Metadata = safetyMeasuresMetadata;
 import CtaSection from "@/components/CtaSection";
 export default function Treatment() {
 
