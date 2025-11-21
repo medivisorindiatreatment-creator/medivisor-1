@@ -1,3 +1,5 @@
+// Header.tsx - UPDATED
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -60,6 +62,18 @@ export default function Header() {
         { href: '/travel-guide', label: 'Travel Guide' },
         { href: '/faqs', label: 'FAQs' },
         { href: '/why-medivisor', label: 'Why Medivisor' },
+      ],
+    },
+    // NEW DROPDOWN SECTION FOR HOSPITAL, TREATMENT, AND DOCTOR
+    {
+      label: 'Our Experts',
+      subItems: [
+        // Assuming a dedicated page for hospitals
+        { href: '/hospitals', label: 'Hospitals' }, 
+        // Assuming a dedicated page for treatments
+        { href: '/treatments', label: 'Treatments' },
+        // Assuming a dedicated page for doctors
+        { href: '/doctors', label: 'Doctors' },
       ],
     },
     {
