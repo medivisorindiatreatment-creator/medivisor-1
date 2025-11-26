@@ -122,7 +122,6 @@ body {
 
 .bg-banner {
   background-image: url('/bannner.jpg');
-  /* Place inside public/ folder */
   background-size: cover;
   background-position: center;
 }

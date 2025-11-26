@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef, Suspense } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import Banner from "@/components/BannerService"
+import Banner from "@/components/HospitalBanner"
 import {
   Filter,
   Loader2,
@@ -20,7 +20,8 @@ import {
   Users,
   Star
 } from "lucide-react"
-
+import { FaPhoneAlt } from 'react-icons/fa';
+import { FaArrowRight } from 'react-icons/fa';
 // =============================================================================
 // TYPES & UTILITIES
 // =============================================================================
@@ -1219,13 +1220,13 @@ const HospitalCard = ({ branch }: { branch: BranchType & { hospitalName: string;
 const DoctorCard = ({ doctor }: { doctor: ExtendedDoctorType }) => {
   const specialization = Array.isArray(doctor.specialization)
     ? doctor.specialization
-        .map((s) =>
-          typeof s === "object" && s !== null
-            ? (s as any).name || (s as any).title || ""
-            : s
-        )
-        .filter(Boolean)
-        .join(", ")
+      .map((s) =>
+        typeof s === "object" && s !== null
+          ? (s as any).name || (s as any).title || ""
+          : s
+      )
+      .filter(Boolean)
+      .join(", ")
     : [doctor.specialization].filter(Boolean).join(", ");
 
   const slug = generateSlug(`${doctor.doctorName}`);
@@ -1628,7 +1629,37 @@ function HospitalsPageContent() {
 
   return (
     <div className="bg-gray-25 min-h-screen">
-      <Banner title="Find Branches, Doctors, and Treatments" />
+      <Banner
+
+        // Layout & Content
+        bannerBgImage="/banner/search-banner.png"
+        topSpanText="Premium Healthcare Services"
+        title="Access Specialist Care Right From Your Home."
+        description={`
+        <p>Our virtual clinic offers **24/7 access** to board-certified physicians.</p>
+        <p>Book a consultation in minutes and get the care you need.</p>
+      `}
+
+        // Call-to-Actions (CTAs)
+        ctas={[
+          {
+            text: 'Book an Appointment',
+            link: '/booking',
+         
+            isPrimary: true, // This will be the main, bold red button
+          },
+          {
+            text: 'Call Us',
+            link: 'tel:1234567890',
+          
+            isPrimary: false, // This will be the secondary, border button
+          },
+        ]}
+
+        // Image
+        mainImageSrc="/images/doctor-telehealth.png" // Update this path
+        mainImageAlt="Doctor on a telehealth video call"
+      />
       <BreadcrumbNav />
 
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">

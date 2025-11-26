@@ -2,20 +2,27 @@
 import './globals.css';
 import '@/public/style.css';
 import 'keen-slider/keen-slider.min.css';
+
+// 1. Next.js handles CSS imports. To improve Core Web Vitals (avoid render blocking),
+// you can set a 'precedence' for external libraries like slick-carousel.
+// This helps ensure your main app CSS loads first.
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+
 import Script from 'next/script';
 import { WixAuthProvider } from '@/components/wix-auth-provider';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Metadata } from 'next';
 import { defaultMetadata } from '@/app/metadata';
+
 export const metadata: Metadata = defaultMetadata;
 
+// 2. Updated Viewport: Removed maximumScale: 1 (accessibility issue)
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  // Removed maximumScale: 1 to improve accessibility (user-scalable)
 };
 
 interface RootLayoutProps {
@@ -24,13 +31,21 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
+    // 3. Removed the manual <head> tag. Next.js handles it from the exports above.
     <html lang="en">
-      <head>
-        {/* You can add additional head elements here if needed */}
-      </head>
       <body >
+        {/* NoScript GTM: Must be at the start of the <body> */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-MNZKG23S"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+
         <WixAuthProvider>
-          {/* Global Scripts */}
+          {/* Global Scripts: Using strategy="afterInteractive" is good for TBT/performance */}
           <Script id="gtm-script" strategy="afterInteractive">
             {`
               (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -49,16 +64,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
               })(window, document, "clarity", "script", "t5hkqz15nw");
             `}
           </Script>
-
-          {/* NoScript GTM */}
-          <noscript>
-            <iframe
-              src="https://www.googletagmanager.com/ns.html?id=GTM-MNZKG23S"
-              height="0"
-              width="0"
-              style={{ display: 'none', visibility: 'hidden' }}
-            />
-          </noscript>
 
           <Header />
           {children}

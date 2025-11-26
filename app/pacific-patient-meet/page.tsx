@@ -223,33 +223,7 @@ export default function Page() {
                     </div>
                   </div>
                 </div>
-                {/* Additional Info Card */}
-                <div className="mt-6 bg-gray-50 border border-gray-200 rounded-xs p-6 transition-all duration-300 hover:shadow-xs">
-                  <h4 className="font-semibold text-[#241d1f] mb-3 flex items-center gap-2">
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Why Register Early?
-                  </h4>
-                  <ul className="text-sm text-[#241d1f] ml-2 space-y-2">
-                    <li className="flex items-start gap-2">
-                      <span className="text-gray-600 mb-2">•</span>
-                      Limited slots available per day
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-gray-600 mb-2">•</span>
-                      Priority scheduling for early registrations
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-gray-600 mb-2">•</span>
-                      Personalized consultation time
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-gray-600 mb-2">•</span>
-                      Complete medical guidance
-                    </li>
-                  </ul>
-                </div>
+               
               </div>
             </div>
           </div>

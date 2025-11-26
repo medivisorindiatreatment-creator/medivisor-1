@@ -679,6 +679,7 @@ const BranchesOfferingTreatmentCarousel = ({ branches, treatmentName, emblaRef, 
       <div className="embla__viewport overflow-hidden h-auto" ref={emblaRef}>
         <div className="embla__container flex -ml-4">
           {branches.map((branch) => {
+             const slug = generateSlug(`${branch.hospitalName} ${branch.branchName}`)
             const hospitalImg = branch.branchImage ? getContentImage(branch.branchImage) : null
             const hospitalLogoUrl = branch.hospitalLogo ? getWixImageUrl(branch.hospitalLogo) : null
             // Use branchName directly as displayTitle (includes hospital + location)
@@ -693,7 +694,7 @@ const BranchesOfferingTreatmentCarousel = ({ branches, treatmentName, emblaRef, 
 
             return (
               <div key={branch._id} className="flex-[0_0_100%] md:flex-[0_0_calc(33.333%-1rem)] pl-4 pr-2">
-                <Link href={`/hospitals/${generateSlug(displayTitle)}`} className="block w-full h-[calc(100%-2rem)] md:h-auto max-w-sm mx-auto md:mx-0/50 border border-gray-100 rounded-sm shadow-xs bg-white hover:shadow-sm transition-shadow relative flex flex-col overflow-hidden">
+                <Link href={`/hospitals/branches/${slug}`} className="block w-full h-[calc(100%-2rem)] md:h-auto max-w-sm mx-auto md:mx-0/50 border border-gray-100 rounded-sm shadow-xs bg-white hover:shadow-sm transition-shadow relative flex flex-col overflow-hidden">
                   {/* Hospital Image Section */}
                   <div className="relative w-full h-48 bg-gray-100">
                     {hospitalImg ? (
