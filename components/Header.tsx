@@ -150,7 +150,7 @@ const socialLinks = [
     className: "bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600"
   },
   {
-    href: "https://wa.me/919876543210",
+    href: "https://wa.me/918340780250",
     icon: FaWhatsapp,
     title: "Chat on WhatsApp",
     className: "bg-green-500"
