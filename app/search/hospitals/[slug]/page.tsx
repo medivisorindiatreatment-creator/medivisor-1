@@ -1274,12 +1274,12 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
 
   return (
     <div className={`min-h-screen bg-white ${inter.variable} font-light`}>
-      <section className="relative w-full h-[70vh] bg-gray-50">
+      <section className="relative w-full h-[80vh] bg-gray-50">
         {heroImage && (
           <img
             src={heroImage}
             alt={`${branch.branchName} - ${hospital.hospitalName}`}
-            className="object-cover w-full h-full"
+            className="object-cover object-center w-full h-full"
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
             onError={(e) => { e.currentTarget.style.display = "none" }}
           />
@@ -1353,7 +1353,8 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
               <div className={`bg-gray-50 p-4 rounded-xs shadow-xs border border-gray-100 ${inter.variable} font-light`}>
                 <h2 className="text-2xl md:text-xl font-medium text-gray-900 tracking-tight flex items-center  mb-3">Quick Overview</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <StatCard icon={Calendar} value={hospital.yearEstablished || 'N/A'} label="Established" showPlus={false} />
+                  {/* Confirmed: This uses the hospital group's established year */}
+                  <StatCard icon={Calendar} value={branch.yearEstablished || 'N/A'} label="Established" showPlus={false} />
                   <StatCard icon={Heart} value={firstSpecialtyName} label="Specialty" showPlus={false} />
                   <StatCard icon={Bed} value={branch.totalBeds || 'N/A'} label="Beds" showPlus={true} />
                   <StatCard icon={Users} value={branch.noOfDoctors || 'N/A'} label=" Doctors" showPlus={true} />
@@ -1364,7 +1365,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
 
               {branch.description && (
                 <section className={`bg-gray-50 p-4 rounded-xs shadow-xs border border-gray-100 ${inter.variable} font-light`}>
-                  <h2 className="text-2xl md:text-xl font-medium text-gray-900 tracking-tight flex items-center mb-2">About {branch.branchName}</h2>
+                  <h2 className="text-2xl md:text-3xl font-medium text-gray-900 tracking-tight flex items-center mb-2">About {branch.branchName}</h2>
                   {renderRichText(branch.description)}
                   {/* UPDATED: Added dynamic Link with hospitalSlug */}
                   <div className="mt-1">

@@ -936,7 +936,7 @@ const FilterDropdown = React.memo(({ placeholder, filterKey, filters, updateSubF
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           onFocus={handleFocus}
-          className={`w-full px-2 py-2 border rounded-xs text-sm font-normal text-gray-900 focus:outline-none focus:ring-2 bg-white shadow-xs pr-10
+          className={`w-full px-2 py-2 border rounded-xs text-base md:text-sm font-normal text-gray-900 focus:outline-none focus:ring-2 bg-white shadow-xs pr-10
           ${(filter.id || filter.query)
               ? "border-gray-100 focus:ring-gray-100 focus:border-gray-200"
               : "border-gray-100 focus:ring-gray-50 focus:border-gray-200"
@@ -970,7 +970,22 @@ const FilterDropdown = React.memo(({ placeholder, filterKey, filters, updateSubF
 })
 FilterDropdown.displayName = 'FilterDropdown'
 
-const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, updateSubFilter, availableOptions, getFilterValueDisplay, filteredBranches, filteredDoctors, filteredTreatments }: ReturnType<typeof useHospitalsData> & { getFilterValueDisplay: ReturnType<typeof useHospitalsData>['getFilterValueDisplay'] }) => {
+
+
+const FilterSidebar = ({ 
+  filters, 
+  showFilters, 
+  setShowFilters, 
+  clearFilters, 
+  updateSubFilter, 
+  availableOptions, 
+  getFilterValueDisplay, 
+  filteredBranches, 
+  filteredDoctors, 
+  filteredTreatments 
+}: ReturnType<typeof useHospitalsData> & { 
+  getFilterValueDisplay: ReturnType<typeof useHospitalsData>['getFilterValueDisplay'] 
+}) => {
   const filterOptions: { value: FilterKey, label: string, isPrimary: boolean }[] = useMemo(() => {
     switch (filters.view) {
       case "hospitals":
@@ -997,8 +1012,8 @@ const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, upd
   const visibleFilterKeys = useMemo(() => getVisibleFiltersByView(filters.view).filter(key => key !== 'city'), [filters.view])
   const activeFilterKey = useMemo(() => {
     if (filters.view === 'hospitals') return 'Hospitals'
-    if (filters.view === 'doctors') return 'Doctor'
-    return 'Treatment'
+    if (filters.view === 'doctors') return 'Doctors'
+    return 'Treatments'
   }, [filters.view])
 
   const hasAppliedFilters = useMemo(() =>
@@ -1027,108 +1042,414 @@ const FilterSidebar = ({ filters, showFilters, setShowFilters, clearFilters, upd
 
   const cityValue = getFilterValueDisplay('city', filters, availableOptions)
 
+  // Refs for auto-scroll
+  const filterContentRef = useRef<HTMLDivElement>(null)
+  const activeFilterRef = useRef<HTMLDivElement>(null)
+  const [keyboardVisible, setKeyboardVisible] = useState(false)
+  const scrollTimeoutRef = useRef<NodeJS.Timeout>()
+
+  // Track keyboard visibility on mobile
+  useEffect(() => {
+    if (!showFilters) return
+
+    const handleResize = () => {
+      const visualViewport = window.visualViewport
+      if (visualViewport) {
+        const isKeyboardVisible = visualViewport.height < window.innerHeight * 0.7
+        setKeyboardVisible(isKeyboardVisible)
+        
+        // Auto-scroll active input into view when keyboard opens
+        if (isKeyboardVisible && activeFilterRef.current) {
+          scrollToActiveFilter()
+        }
+      }
+    }
+
+    // Listen to visual viewport changes (keyboard open/close)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize)
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize)
+      }
+    }
+  }, [showFilters])
+
+  // Scroll to active filter when it gains focus
+  const scrollToActiveFilter = () => {
+    if (!activeFilterRef.current || !filterContentRef.current) return
+
+    clearTimeout(scrollTimeoutRef.current)
+    
+    scrollTimeoutRef.current = setTimeout(() => {
+      const filterElement = activeFilterRef.current
+      const container = filterContentRef.current
+      
+      if (filterElement && container) {
+        const elementRect = filterElement.getBoundingClientRect()
+        const containerRect = container.getBoundingClientRect()
+        
+        // Calculate scroll position
+        const scrollTop = container.scrollTop
+        const elementTop = elementRect.top - containerRect.top + scrollTop
+        const elementBottom = elementRect.bottom - containerRect.top + scrollTop
+        
+        // Scroll to position element at top (with some padding)
+        const targetScroll = elementTop - 80 // 80px padding from top
+        
+        container.scrollTo({
+          top: targetScroll,
+          behavior: 'smooth'
+        })
+      }
+    }, 100) // Small delay to ensure keyboard is fully opened
+  }
+
+  // Handle filter focus for auto-scroll
+  const handleFilterFocus = (key: FilterKey, element: HTMLInputElement) => {
+    // Store ref to active filter element
+    activeFilterRef.current = element.closest('.filter-section') as HTMLDivElement
+    scrollToActiveFilter()
+  }
+
+  // Close drawer on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showFilters) {
+        if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+          ;(document.activeElement as HTMLInputElement).blur()
+        } else {
+          setShowFilters(false)
+        }
+      }
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [showFilters, setShowFilters])
+
   return (
-    <div
-      className={`fixed inset-0 z-40 md:sticky md:top-16 md:h-screen md:w-64 lg:w-72 md:flex-shrink-0 md:pt-0 transform ${showFilters ? "translate-x-0 bg-white backdrop-blur-sm" : "-translate-x-full"} md:translate-x-0 transition-transform duration-300 ease-in-out border-r border-gray-100 overflow-y-auto`}
-    >
-      <div className="p-4 md:p-4 h-full overflow-y-auto bg-white md:bg-gray-50">
-        <div className="flex justify-between items-center mb-4 border-b border-gray-200 pb-2 sticky top-0 z-10">
-          <h3 className="text-lg font-medium text-gray-700 flex items-center gap-2">
-            <Filter className="w-5 h-5 text-gray-600" />
-            Search  {activeFilterKey}
-          </h3>
-        </div>
-
-        <div className="space-y-4">
-          {filterOptions.map(opt => {
-            const key = opt.value
-            if (!shouldRenderFilter(key)) return null
-
-            const filterLabel = key === 'specialization' && filters.view === 'doctors' ? 'Specialist' : opt.label
-
-            return (
-              <div key={key}>
-                <FilterDropdown
-                  placeholder={`Search by ${filterLabel} Name`}
-                  filterKey={key}
-                  filters={filters}
-                  updateSubFilter={updateSubFilter}
-                  options={availableOptions[key]}
-                />
+    <>
+      {/* Desktop Sidebar */}
+      <div className={`hidden md:block sticky top-16 h-screen w-64 lg:w-72 flex-shrink-0 border-r border-gray-100 overflow-y-auto bg-white`}>
+        <div className="p-4 h-full overflow-y-auto">
+          <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100 sticky top-0 z-10 bg-white">
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-blue-50">
+                <Filter className="w-5 h-5 text-blue-600" />
               </div>
-            )
-          })}
-          {filterOptions.length === 0 && (
-            <p className="text-base text-gray-500 py-4 font-normal">Select a view to see relevant filters.</p>
-          )}
-          <button
-            onClick={clearFilters}
-            className="text-base text-gray-500 hover:text-gray-700 font-medium transition-colors"
-          >
-            Clear all
-          </button>
-          {showFilters && (
-            <button
-              onClick={() => setShowFilters(false)}
-              className="md:hidden text-gray-400 hover:text-gray-600"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
-        </div>
+              <h3 className="text-base font-semibold text-gray-900">
+                Filters
+              </h3>
+            </div>
+            {hasAppliedFilters && (
+              <button
+                onClick={clearFilters}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors px-2 py-1 hover:bg-blue-50 rounded"
+              >
+                Clear
+              </button>
+            )}
+          </div>
 
-        <div className="mt-2 border-t border-gray-200 pt-2">
-          <label className="block text-base font-medium text-gray-900 mb-3">Currently Applied Filters</label>
-          <div className="space-y-2">
-            {filterOptions.map((opt) => {
-              const value = getFilterValueDisplay(opt.value, filters, availableOptions)
-              if (!value) return null
+          <div className="space-y-6">
+            {filterOptions.map(opt => {
+              const key = opt.value
+              if (!shouldRenderFilter(key)) return null
+
+              const filterLabel = key === 'specialization' && filters.view === 'doctors' ? 'Specialist' : opt.label
 
               return (
-                <div key={opt.value} className="flex items-center gap-2">
-                  <label className="text-sm font-medium text-gray-900">{opt.label}:</label>
-                  <div className="relative bg-white text-sm px-3 py-2 rounded border border-gray-200 shadow-sm min-w-0 flex-1">
-                    <span className="text-gray-900 block truncate">{value}</span>
-                    <button
-                      onClick={() => {
-                        updateSubFilter(opt.value as FilterKey, "id", "")
-                        updateSubFilter(opt.value as FilterKey, "query", "")
-                      }}
-                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
+                <div key={key} className="space-y-1 filter-section">
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {filterLabel}
+                  </label>
+                  <FilterDropdown
+                    placeholder={`Search ${filterLabel.toLowerCase()}`}
+                    filterKey={key}
+                    filters={filters}
+                    updateSubFilter={updateSubFilter}
+                    options={availableOptions[key]}
+                    className="w-full"
+                    onFocus={handleFilterFocus}
+                  />
                 </div>
               )
             })}
-            {cityValue && (
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-900">City:</label>
-                <div className="relative bg-white text-sm px-3 py-2 rounded border border-gray-200 shadow-sm min-w-0 flex-1">
-                  <span className="text-gray-900 block truncate">{cityValue}</span>
-                  <button
-                    onClick={() => {
-                      updateSubFilter('city', "id", "")
-                      updateSubFilter('city', "query", "")
-                    }}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
+            
+            {filterOptions.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-sm text-gray-400">Select a view to see filters</p>
               </div>
             )}
-            {!hasAppliedFilters && (
-              <p className="text-base text-gray-500 font-normal">No filters applied yet.</p>
-            )}
           </div>
+
+          {hasAppliedFilters && (
+            <div className="mt-8 pt-6 border-t border-gray-100">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-medium text-gray-900">Applied</h4>
+                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                  {filterOptions.filter(opt => getFilterValueDisplay(opt.value, filters, availableOptions)).length + (cityValue ? 1 : 0)}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {filterOptions.map((opt) => {
+                  const value = getFilterValueDisplay(opt.value, filters, availableOptions)
+                  if (!value) return null
+
+                  return (
+                    <div key={opt.value} className="flex items-center justify-between group">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <span className="text-xs text-gray-500 truncate">{opt.label}</span>
+                        <span className="text-sm text-gray-900 font-medium truncate">{value}</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          updateSubFilter(opt.value as FilterKey, "id", "")
+                          updateSubFilter(opt.value as FilterKey, "query", "")
+                        }}
+                        className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-gray-600 transition-opacity"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )
+                })}
+                {cityValue && (
+                  <div className="flex items-center justify-between group">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <span className="text-xs text-gray-500">City</span>
+                      <span className="text-sm text-gray-900 font-medium truncate">{cityValue}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        updateSubFilter('city', "id", "")
+                        updateSubFilter('city', "query", "")
+                      }}
+                      className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-gray-600 transition-opacity"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+
+      {/* Mobile Bottom Action Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-lg safe-area-bottom">
+        <div className="px-4 py-3 flex items-center justify-between gap-3">
+          <button
+            onClick={() => setShowFilters(true)}
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 active:scale-[0.98] transition-all shadow-sm"
+          >
+            <Filter className="w-5 h-5" />
+            <span>Filters</span>
+            {hasAppliedFilters && (
+              <span className="ml-1 w-2 h-2 bg-blue-500 rounded-full"></span>
+            )}
+          </button>
+          
+          <a
+            href="https://wa.me/your-number"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-green-500 text-white font-medium hover:bg-green-600 active:scale-[0.98] transition-all shadow-sm"
+          >
+            <span>Chat</span>
+          </a>
+        </div>
+      </div>
+
+      {/* Mobile Filter Sheet - Modern Design */}
+      <div
+        className={`md:hidden fixed inset-0 z-50 transition-all duration-300 ease-out ${
+          showFilters ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+        }`}
+      >
+        {/* Backdrop with touch close */}
+        <div
+          className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${
+            showFilters ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => setShowFilters(false)}
+        />
+
+        {/* Bottom Sheet - Adjust height when keyboard is visible */}
+        <div
+          className={`absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl transition-all duration-300 ease-out ${
+            showFilters ? 'translate-y-0' : 'translate-y-full'
+          }`}
+          style={{
+            maxHeight: keyboardVisible ? '70vh' : '92vh',
+            height: keyboardVisible ? '70vh' : 'auto',
+            touchAction: 'pan-y',
+          }}
+        >
+          {/* Grab Handle */}
+          <div className="sticky top-0 pt-3 pb-2 flex justify-center bg-white rounded-t-2xl z-30">
+            <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
+          </div>
+
+          {/* Header - Sticky */}
+          <div className="px-4 pb-4 border-b border-gray-100 sticky top-0 bg-white z-20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-50">
+                  <Filter className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Filters
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {activeFilterKey} • {hasAppliedFilters ? 'Filtered' : 'All results'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowFilters(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 active:scale-95 transition-all"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Filter Content - Scrollable with keyboard-aware scrolling */}
+          <div 
+            ref={filterContentRef}
+            className="px-4 py-4 overflow-y-auto overscroll-contain"
+            style={{ 
+              maxHeight: keyboardVisible ? 'calc(70vh - 140px)' : 'calc(92vh - 180px)',
+              WebkitOverflowScrolling: 'touch',
+              scrollBehavior: 'smooth',
+              paddingBottom: keyboardVisible ? '20px' : '0'
+            }}
+          >
+            <div className="space-y-6 pb-4">
+              {/* Active Filters Chips - Auto-hide when keyboard is open */}
+              {hasAppliedFilters && !keyboardVisible && (
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium text-gray-900">Active Filters</h4>
+                    <button
+                      onClick={clearFilters}
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {filterOptions.map((opt) => {
+                      const value = getFilterValueDisplay(opt.value, filters, availableOptions)
+                      if (!value) return null
+
+                      return (
+                        <div
+                          key={opt.value}
+                          className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-2 rounded-full text-sm"
+                        >
+                          <span className="font-medium">{value}</span>
+                          <button
+                            onClick={() => {
+                              updateSubFilter(opt.value as FilterKey, "id", "")
+                              updateSubFilter(opt.value as FilterKey, "query", "")
+                            }}
+                            className="text-blue-500 hover:text-blue-700"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )
+                    })}
+                    {cityValue && (
+                      <div className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-2 rounded-full text-sm">
+                        <span className="font-medium">{cityValue}</span>
+                        <button
+                          onClick={() => {
+                            updateSubFilter('city', "id", "")
+                            updateSubFilter('city', "query", "")
+                          }}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Filter Inputs */}
+              <div className="space-y-5">
+                {filterOptions.map(opt => {
+                  const key = opt.value
+                  if (!shouldRenderFilter(key)) return null
+
+                  const filterLabel = key === 'specialization' && filters.view === 'doctors' ? 'Specialist' : opt.label
+
+                  return (
+                    <div key={key} className="space-y-2 filter-section">
+                      <label className="text-sm font-medium text-gray-900">
+                        {filterLabel}
+                      </label>
+                      <div className="relative">
+                        <FilterDropdown
+                          placeholder={`Type to search ${filterLabel.toLowerCase()}...`}
+                          filterKey={key}
+                          filters={filters}
+                          updateSubFilter={updateSubFilter}
+                          options={availableOptions[key]}
+                          mobile
+                          autoFocus={filterOptions.length === 1}
+                          onFocus={(element) => handleFilterFocus(key, element)}
+                        />
+                      </div>
+                    </div>
+                  )
+                })}
+                
+                {filterOptions.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-sm text-gray-400">No filters available</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer - Hide when keyboard is open to save space */}
+          {!keyboardVisible && (
+            <div className="sticky bottom-0 bg-white border-t border-gray-100 px-4 py-4 safe-area-bottom z-10">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    clearFilters()
+                    setShowFilters(false)
+                  }}
+                  className="flex-1 py-3 px-4 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 active:scale-[0.98] transition-all"
+                >
+                  Clear All
+                </button>
+                <button
+                  onClick={() => setShowFilters(false)}
+                  className="flex-1 py-3 px-4 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 active:scale-[0.98] transition-all shadow-sm"
+                >
+                  View Results
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   )
 }
-
 // =============================================================================
 // CARD COMPONENTS
 // =============================================================================
@@ -1415,24 +1736,24 @@ const TreatmentCard = ({ treatment }: { treatment: ExtendedTreatmentType }) => {
 // =============================================================================
 
 const ViewToggle = ({ view, setView }: { view: "search-healthcare" | "doctors" | "treatments", setView: (view: "hospitals" | "doctors" | "treatments") => void }) => (
-  <div className="flex bg-white  rounded-xs shadow-xs mx-auto lg:mx-0 max-w-md ">
+  <div className="flex md:mt-0 mt-4 w-full md:w-auto bg-white  rounded-xs shadow-xs mx-auto lg:mx-0 max-w-md ">
     <button
       onClick={() => setView("hospitals")}
-      className={`flex-1 px-4 py-2  rounded-xs text-sm font-medium transition-all duration-200 ${view === "hospitals" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
+      className={`flex-1 px-4 py-2  rounded-xs text-lg md:text-sm font-medium transition-all duration-200 ${view === "hospitals" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
         }`}
     >
       Hospitals
     </button>
     <button
       onClick={() => setView("doctors")}
-      className={`flex-1 px-4 py-2  rounded-xs text-sm font-medium transition-all duration-200 ${view === "doctors" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
+      className={`flex-1 px-4 py-2  rounded-xs text-lg md:text-sm font-medium transition-all duration-200 ${view === "doctors" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
         }`}
     >
       Doctors
     </button>
     <button
       onClick={() => setView("treatments")}
-      className={`flex-1 px-4 py-2  rounded-xs text-sm font-medium transition-all duration-200 ${view === "treatments" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
+      className={`flex-1 px-4 py-2  rounded-xs text-lg md:text-sm font-medium transition-all duration-200 ${view === "treatments" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-25"
         }`}
     >
       Treatments
@@ -1444,20 +1765,19 @@ const Sorting = ({ sortBy, setSortBy }: { sortBy: "all" | "popular" | "az" | "za
   // Assuming you use Heroicons or a similar library
 
   // ... inside your component
-  <div className="flex items-center gap-3">
+  <div className="flex items-center gap-3 w-full md:w-auto">
     <label className="text-sm text-gray-700 hidden sm:block font-normal">Sort by:</label>
 
     {/* 👇 Start of the custom wrapper for the select and icon */}
-    <div className="relative">
+    <div className="relative  md:w-auto w-full">
       <select
         value={sortBy}
         onChange={(e) => setSortBy(e.target.value as "all" | "popular" | "az" | "za")}
         className="
         border border-gray-200 rounded-xs px-4 py-2 text-sm focus:ring-1 
         focus:ring-gray-100 focus:border-gray-300 bg-white shadow-xs 
-        pr-8 cursor-pointer text-gray-700
-        appearance-none  /* 👈 This hides the default OS arrow */
-      "
+        pr-8 cursor-pointer text-gray-700 md:w-auto w-full
+        appearance-none "
       >
         <option value="all">All (A to Z)</option>
         <option value="popular">Popular</option>
@@ -1489,7 +1809,7 @@ const ResultsHeader = ({
   sortBy: "all" | "popular" | "az" | "za",
   setSortBy: (sortBy: "all" | "popular" | "az" | "za") => void
 }) => (
-  <div className="flex flex-col sm:flex-row sm:items-center  gap-4 bg-gray-50 border-b border-gray-50 p-4">
+  <div className="flex flex-col sm:flex-row sm:items-center  gap-4 bg-gray-50 border-b border-gray-50 py-4 md:p-4">
     <div className="flex items-center gap-4">
       <Sorting sortBy={sortBy} setSortBy={setSortBy} />
       <button
@@ -1681,6 +2001,7 @@ function HospitalsPageContent() {
 
         // Layout & Content
         bannerBgImage="/banner/search-banner.png"
+        bannerBgImageMobile="/banner/search-banner-mobile.png"
         topSpanText="Premium Healthcare Services"
         title="Access Specialist Care Right From Your Home."
         description={`
@@ -1726,7 +2047,7 @@ function HospitalsPageContent() {
           />
 
           <main className="flex-1  min-w-0 lg:pb-0 min-h-screen">
-            <div className=" flex justify-between items-center bg-gray-50">
+            <div className=" md:flex justify-between items-center bg-gray-50">
               <div className="flex flex-col lg:flex-row lg:items-center  gap-4">
                 <ViewToggle view={filters.view} setView={setView} />
                 <FilterDropdown

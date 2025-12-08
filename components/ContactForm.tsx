@@ -57,9 +57,10 @@ type Status =
   | { state: "error"; message: string };
 
 type CountryRow = { name: string; iso: string; dial: string };
-type ConnectionTab = "medivisor" | "hospital" | "doctor";
+// 1. UPDATED: Added 'group_hospital' to the ConnectionTab type
+type ConnectionTab = "medivisor" | "hospital" | "doctor" | "group_hospital";
 
-// --- Icons ---
+// --- Icons (Added UsersIcon for Group Hospital) ---
 const BuildingIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
@@ -67,6 +68,16 @@ const BuildingIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="M12 10V6"/>
     <path d="M15 10V6"/>
     <path d="M9 10V6"/>
+  </svg>
+);
+
+// 2. NEW: Icon for Group Hospital
+const UsersIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
   </svg>
 );
 
@@ -96,8 +107,7 @@ const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = ({
 );
 
 const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ className, children, ...props }) => (
-  // Note: ACCENT_CLASS is applied to the focus ring via BUTTON_BG_CLASS's focus ring setting
-  <button className={cn("inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-semibold ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-70 h-10 px-4 py-2", className)} {...props}>
+  <button className={cn("inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-semibold ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-70 h-10 px-4 py-2", BUTTON_BG_CLASS, className)} {...props}>
     {children}
   </button>
 );
@@ -122,16 +132,23 @@ export default function ContactForm() {
     const pathname = window.location.pathname.toLowerCase();
 
     let detectedTab: ConnectionTab = "medivisor";
-    let label = "Contact  Medivisor";
+    let label = "Contact Medivisor";
     let Icon = UserPlusIcon;
 
-    if (pathname.includes("/hospital") || pathname.includes("/branches")) {
+    // 3. UPDATED: New logic to detect Group Hospital URLs (e.g., /search/max-hospital-group/ or /group-hospital)
+    if (pathname.includes("/search") || pathname.includes("/search") || pathname.includes("/search")) { 
+      detectedTab = "group_hospital";
+      label = "Contact Hospital";
+      Icon = UsersIcon;
+    } 
+    // Existing logic for single Hospital and Doctor pages
+    else if (pathname.includes("/hospital") || pathname.includes("/branches")) {
       detectedTab = "hospital";
-      label = "Contact  Hospital";
+      label = "Contact Hospital";
       Icon = BuildingIcon;
     } else if (pathname.includes("/doctor") || pathname.includes("/doctors")) {
       detectedTab = "doctor";
-      label = "Contact  Doctor";
+      label = "Contact Doctor";
       Icon = StethoscopeIcon;
     }
     // For pages like /treatment/[slug] or home, it remains "medivisor"
@@ -142,7 +159,7 @@ export default function ContactForm() {
 
   // Define which tabs to render based on the primary tab
   const tabsToRender = useMemo(() => {
-    // If we're on a specific entity page (Hospital/Doctor), show that tab and the Medivisor tab.
+    // If we're on a specific entity page (Hospital/Doctor/Group Hospital), show that tab and the Medivisor tab.
     if (primaryTab.id !== 'medivisor') {
         return [
             primaryTab,
@@ -153,7 +170,7 @@ export default function ContactForm() {
     return [primaryTab];
   }, [primaryTab]);
 
-  // Countries setup
+  // Countries setup (Rest of country logic is unchanged)
   const countries = useMemo<CountryRow[]>(() => {
     return MOCK_COUNTRY_DATA.map(c => ({
       name: c.name,
@@ -182,7 +199,7 @@ export default function ContactForm() {
     message: "",
   });
 
-  // Auto-detect user country via IP
+  // Auto-detect user country via IP (unchanged)
   useEffect(() => {
     const fetchUserCountry = async () => {
       try {
@@ -244,10 +261,15 @@ export default function ContactForm() {
 
     setStatus({ state: "submitting" });
     try {
+      // 4. UPDATED: Logic for connectionType to include 'group_hospital'
+      const connectionType = 
+        activeTab === "medivisor" ? "Connect to Medivisor" :
+        activeTab === "hospital" ? "Connect to Hospital" :
+        activeTab === "group_hospital" ? "Connect to Group Hospital" :
+        "Connect to Doctor"; // activeTab === "doctor"
+
       const payload: SubmissionPayload = {
-        connectionType: activeTab === "medivisor" ? "Connect to Medivisor" :
-                        activeTab === "hospital" ? "Connect to Hospital" :
-                        "Connect to Doctor",
+        connectionType,
         name: form.name.trim(),
         email: form.email.trim(),
         countryName: form.countryName,
@@ -259,6 +281,7 @@ export default function ContactForm() {
       const res = await submitContact(payload);
       if (res.ok) {
         setStatus({ state: "success", message: "Request sent successfully! We'll contact you soon." });
+        // Clear non-essential fields
         setForm(prev => ({ ...prev, name: "", email: "", whatsapp: "", message: "" }));
       } else {
         setStatus({ state: "error", message: res.error || "Submission failed." });
@@ -268,7 +291,7 @@ export default function ContactForm() {
     }
   };
 
-  // Tab Component
+  // Tab Component (Unchanged, ready for icons if you uncomment them)
   const TabButton = ({ 
     type, 
     icon: Icon, 
@@ -286,19 +309,49 @@ export default function ContactForm() {
           setActiveTab(type);
           setStatus({ state: "idle" });
         }}
-        // UPDATED: Added icon display and refined classes
         className={cn(
           "flex-1 flex items-center justify-center p-3 text-sm font-light transition-colors border-b-2 -mb-[1px] hover:bg-gray-100",
           isActive ? `${TAB_ACTIVE_CLASS} border-b-2 font-medium` : "border-transparent text-gray-500 hover:text-[#241d1f] hover:border-gray-200"
         )}
       >
         <div className="flex items-center space-x-2">
-            {/* <Icon className="w-4 h-4" /> */}
+            {/* You can uncomment this to show icons if needed: <Icon className="w-4 h-4" /> */}
             <span>{label}</span>
         </div>
       </button>
     );
   };
+
+  // Logic to determine the button text and message placeholder based on activeTab
+  const submitButtonText = useMemo(() => {
+    if (status.state === "submitting") return "Sending...";
+    switch (activeTab) {
+      case "hospital":
+        return "Submit Hospital Request";
+      case "doctor":
+        return "Submit Doctor Request";
+      case "group_hospital": // 5. NEW TEXT
+        return "Submit Group Hospital Request";
+      case "medivisor":
+      default:
+        return "Submit Consultation Request";
+    }
+  }, [activeTab, status.state]);
+
+  const messagePlaceholder = useMemo(() => {
+    switch (activeTab) {
+      case "hospital":
+        return "E.g., We are a 500-bed hospital in Mumbai looking to partner...";
+      case "group_hospital": // 6. NEW PLACEHOLDER
+        return "E.g., Our hospital group has multiple branches and is looking for international patient services...";
+      case "doctor":
+        return "E.g., I am a cardiologist interested in AI-assisted diagnosis...";
+      case "medivisor":
+      default:
+        return "E.g., I need help understanding my recent blood test results...";
+    }
+  }, [activeTab]);
+
 
   return (
     <div className="w-full h-fit rounded-xs shadow-xs sticky top-4 lg:top-16">
@@ -356,11 +409,7 @@ export default function ContactForm() {
                 name="message"
                 value={form.message}
                 onChange={onChange}
-                placeholder={
-                  activeTab === "hospital" ? "E.g., We are a 500-bed hospital in Mumbai looking to partner..." :
-                  activeTab === "doctor" ? "E.g., I am a cardiologist interested in AI-assisted diagnosis..." :
-                  "E.g., I need help understanding my recent blood test results..."
-                }
+                placeholder={messagePlaceholder} // Used the useMemo value
                 rows={4}
                 required
                 className="min-h-[120px]"
@@ -371,12 +420,9 @@ export default function ContactForm() {
               <Button
                 type="submit"
                 disabled={status.state === "submitting"}
-                className={cn("w-full text-white py-2 shadow-md md:font-medium", BUTTON_BG_CLASS)}
+                className="w-full text-white py-2 shadow-md md:font-medium"
               >
-                {status.state === "submitting" ? "Sending..." : 
-                  activeTab === "hospital" ? "Submit Hospital Request" :
-                  activeTab === "doctor" ? "Submit Doctor Request" :
-                  "Submit Consultation Request"}
+                {submitButtonText} {/* Used the useMemo value */}
               </Button>
 
               <p className={cn("text-sm text-center", 
