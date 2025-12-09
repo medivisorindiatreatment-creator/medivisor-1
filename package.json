@@ -51,7 +51,7 @@
     "@wix/media": "^1.0.177",
     "@wix/members": "^1.0.306",
     "@wix/pro-gallery": "^1.0.89",
-    "@wix/ricos": "^10.138.1",
+    "@wix/ricos": "^1.0.4",
     "@wix/sdk": "^1.15.24",
     "autoprefixer": "10.4.21",
     "axios": "^1.11.0",
