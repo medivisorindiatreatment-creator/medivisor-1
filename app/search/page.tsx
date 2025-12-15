@@ -877,7 +877,7 @@ interface FilterDropdownProps {
   updateSubFilter: (key: FilterKey, subKey: "id" | "query", value: string) => void
   options: OptionType[]
   // Added a placeholder 'mobile' prop to suppress linter error on mobile
-  mobile?: boolean 
+  mobile?: boolean
 }
 
 const FilterDropdown = React.memo(({ placeholder, filterKey, filters, updateSubFilter, options }: FilterDropdownProps) => {
@@ -931,7 +931,7 @@ const FilterDropdown = React.memo(({ placeholder, filterKey, filters, updateSubF
   }
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative mt-1" ref={dropdownRef}>
       <div className="relative">
         <input
           type="text"
@@ -973,19 +973,19 @@ const FilterDropdown = React.memo(({ placeholder, filterKey, filters, updateSubF
 })
 FilterDropdown.displayName = 'FilterDropdown'
 
-const FilterSidebar = ({ 
-  filters, 
-  showFilters, 
-  setShowFilters, 
-  clearFilters, 
-  updateSubFilter, 
-  availableOptions, 
-  getFilterValueDisplay, 
-  filteredBranches, 
-  filteredDoctors, 
-  filteredTreatments 
-}: ReturnType<typeof useHospitalsData> & { 
-  getFilterValueDisplay: ReturnType<typeof useHospitalsData>['getFilterValueDisplay'] 
+const FilterSidebar = ({
+  filters,
+  showFilters,
+  setShowFilters,
+  clearFilters,
+  updateSubFilter,
+  availableOptions,
+  getFilterValueDisplay,
+  filteredBranches,
+  filteredDoctors,
+  filteredTreatments
+}: ReturnType<typeof useHospitalsData> & {
+  getFilterValueDisplay: ReturnType<typeof useHospitalsData>['getFilterValueDisplay']
 }) => {
   const filterOptions: { value: FilterKey, label: string, isPrimary: boolean }[] = useMemo(() => {
     switch (filters.view) {
@@ -1058,7 +1058,7 @@ const FilterSidebar = ({
       if (visualViewport) {
         const isKeyboardVisible = visualViewport.height < window.innerHeight * 0.7
         setKeyboardVisible(isKeyboardVisible)
-        
+
         // Auto-scroll active input into view when keyboard opens
         if (isKeyboardVisible && activeFilterRef.current) {
           scrollToActiveFilter()
@@ -1083,23 +1083,23 @@ const FilterSidebar = ({
     if (!activeFilterRef.current || !filterContentRef.current) return
 
     clearTimeout(scrollTimeoutRef.current)
-    
+
     scrollTimeoutRef.current = setTimeout(() => {
       const filterElement = activeFilterRef.current
       const container = filterContentRef.current
-      
+
       if (filterElement && container) {
         const elementRect = filterElement.getBoundingClientRect()
         const containerRect = container.getBoundingClientRect()
-        
+
         // Calculate scroll position
         const scrollTop = container.scrollTop
         const elementTop = elementRect.top - containerRect.top + scrollTop
         const elementBottom = elementRect.bottom - containerRect.top + scrollTop
-        
+
         // Scroll to position element at top (with some padding)
         const targetScroll = elementTop - 80 // 80px padding from top
-        
+
         container.scrollTo({
           top: targetScroll,
           behavior: 'smooth'
@@ -1120,7 +1120,7 @@ const FilterSidebar = ({
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && showFilters) {
         if (document.activeElement && document.activeElement.tagName === 'INPUT') {
-          ;(document.activeElement as HTMLInputElement).blur()
+          ; (document.activeElement as HTMLInputElement).blur()
         } else {
           setShowFilters(false)
         }
@@ -1134,13 +1134,13 @@ const FilterSidebar = ({
     <>
       {/* Desktop Sidebar */}
       <div className={`hidden md:block sticky top-16 h-screen w-64 lg:w-72 flex-shrink-0 border-r border-gray-100 overflow-y-auto bg-gray-50`}>
-        <div className="p-4 h-full overflow-y-auto">
-          <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100 sticky top-0 z-10">
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-gray-50">
-                <Filter className="w-5 h-5 text-gray-600" />
+        <div className=" h-full overflow-y-auto">
+          <div className="flex justify-between items-center pt-6 px-4 bg-white mb-0 py-2 border-b border-gray-100 sticky top-0 z-10">
+            <div className="flex items-center gap-1">
+              <div className="p-1 rounded-lg bg-gray-50">
+                <Filter className="w-4 h-4 text-gray-600" />
               </div>
-              <h3 className="text-base font-semibold text-gray-900">
+              <h3 className="text-base font-medium text-gray-900">
                 Filters
               </h3>
             </div>
@@ -1154,7 +1154,7 @@ const FilterSidebar = ({
             )}
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-2 p-4">
             {filterOptions.map(opt => {
               const key = opt.value
               if (!shouldRenderFilter(key)) return null
@@ -1163,7 +1163,7 @@ const FilterSidebar = ({
 
               return (
                 <div key={key} className="space-y-1 filter-section">
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <label className="text-sm font-medium text-gray-800 mb-2">
                     {filterLabel}
                   </label>
                   <FilterDropdown
@@ -1173,12 +1173,12 @@ const FilterSidebar = ({
                     updateSubFilter={updateSubFilter}
                     options={availableOptions[key]}
                     className="w-full"
-                    // onFocus={handleFilterFocus} // Removed desktop onFocus
+                  // onFocus={handleFilterFocus} // Removed desktop onFocus
                   />
                 </div>
               )
             })}
-            
+
             {filterOptions.length === 0 && (
               <div className="text-center py-8">
                 <p className="text-sm text-gray-400">Select a view to see filters</p>
@@ -1253,7 +1253,7 @@ const FilterSidebar = ({
               <span className="ml-1 w-2 h-2 bg-gray-500 rounded-full"></span>
             )}
           </button>
-          
+
           <a
             href="https://wa.me/your-number"
             target="_blank"
@@ -1267,23 +1267,20 @@ const FilterSidebar = ({
 
       {/* Mobile Filter Sheet - Modern Design */}
       <div
-        className={`md:hidden fixed inset-0 z-50 transition-all duration-300 ease-out ${
-          showFilters ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
-        }`}
+        className={`md:hidden fixed inset-0 z-50 transition-all duration-300 ease-out ${showFilters ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+          }`}
       >
         {/* Backdrop with touch close */}
         <div
-          className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${
-            showFilters ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${showFilters ? 'opacity-100' : 'opacity-0'
+            }`}
           onClick={() => setShowFilters(false)}
         />
 
         {/* Bottom Sheet - Adjust height when keyboard is visible */}
         <div
-          className={`absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl transition-all duration-300 ease-out ${
-            showFilters ? 'translate-y-0' : 'translate-y-full'
-          }`}
+          className={`absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl transition-all duration-300 ease-out ${showFilters ? 'translate-y-0' : 'translate-y-full'
+            }`}
           style={{
             maxHeight: keyboardVisible ? '70vh' : '92vh',
             height: keyboardVisible ? '70vh' : 'auto',
@@ -1322,10 +1319,10 @@ const FilterSidebar = ({
           </div>
 
           {/* Filter Content - Scrollable with keyboard-aware scrolling */}
-          <div 
+          <div
             ref={filterContentRef}
             className="px-4 py-4 overflow-y-auto overscroll-contain"
-            style={{ 
+            style={{
               maxHeight: keyboardVisible ? 'calc(70vh - 140px)' : 'calc(92vh - 180px)',
               WebkitOverflowScrolling: 'touch',
               scrollBehavior: 'smooth',
@@ -1407,14 +1404,14 @@ const FilterSidebar = ({
                           updateSubFilter={updateSubFilter}
                           options={availableOptions[key]}
                           mobile
-                          // autoFocus={filterOptions.length === 1} // Removing autoFocus for accessibility
-                          // onFocus={(element) => handleFilterFocus(key, element)} // Only required if custom focus logic is needed
+                        // autoFocus={filterOptions.length === 1} // Removing autoFocus for accessibility
+                        // onFocus={(element) => handleFilterFocus(key, element)} // Only required if custom focus logic is needed
                         />
                       </div>
                     </div>
                   )
                 })}
-                
+
                 {filterOptions.length === 0 && (
                   <div className="text-center py-8">
                     <p className="text-sm text-gray-400">No filters available</p>
@@ -1469,11 +1466,11 @@ const ScrollableTitle = ({ text, className, isHovered }: { text: string; classNa
         if (containerRef.current && textRef.current) {
           const containerWidth = containerRef.current.clientWidth;
           const textWidth = textRef.current.scrollWidth;
-          
+
           if (textWidth > containerWidth) {
             setIsOverflowing(true);
             // Calculate duration: Longer text = longer duration (slower scroll speed)
-            const duration = textWidth / 50; 
+            const duration = textWidth / 50;
             setAnimationDuration(`${Math.max(duration, 5)}s`);
           } else {
             setIsOverflowing(false);
@@ -1486,7 +1483,7 @@ const ScrollableTitle = ({ text, className, isHovered }: { text: string; classNa
 
     checkOverflow();
     window.addEventListener('resize', checkOverflow);
-    
+
     return () => window.removeEventListener('resize', checkOverflow);
   }, [text]);
 
@@ -1498,10 +1495,10 @@ const ScrollableTitle = ({ text, className, isHovered }: { text: string; classNa
     <div
       ref={containerRef}
       className={`relative w-full overflow-hidden ${className}`}
-      // Removed onMouseEnter/onMouseLeave
+    // Removed onMouseEnter/onMouseLeave
     >
       {/* 2. Content Wrapper */}
-      <div 
+      <div
         className={`whitespace-nowrap inline-block ${!isMarqueeActive ? 'truncate w-full' : ''}`}
         style={{
           // Apply animation only when active
@@ -1514,7 +1511,7 @@ const ScrollableTitle = ({ text, className, isHovered }: { text: string; classNa
         <span ref={textRef} className="inline-block pr-8">
           {text}
         </span>
-        
+
         {/* Duplicate text for seamless looping marquee effect, only rendered when marquee is active */}
         {isMarqueeActive && (
           <span className="inline-block pr-8">
@@ -1536,13 +1533,14 @@ const HospitalCard = ({ branch }: { branch: BranchType & { hospitalName: string;
   const imageUrl = getWixImageUrl(branch.branchImage)
   const primaryCity = branch.city?.[0]?.cityName || ""
   const primaryState = branch.city?.[0]?.state || ""
+  const primaryCountry = branch.city?.[0]?.country || ""
   const hospitalLogoUrl = getWixImageUrl(branch.hospitalLogo)
   const primarySpecialty = branch.specialization?.[0]?.name || branch.specialization?.[0]?.title || "General Care"
   const accreditationLogoUrl = getWixImageUrl(branch.accreditation?.[0]?.image)
 
   return (
     <Link href={`/search/hospitals/${slug}`} className="block">
-      <article 
+      <article
         className="group bg-white rounded-xs shadow-lg md:mb-0 mb-5 md:shadow-xs transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col hover:shadow-sm border border-gray-300 md:border-gray-100"
         onMouseEnter={() => setIsHovered(true)} // ADDED handler
         onMouseLeave={() => setIsHovered(false)} // ADDED handler
@@ -1586,23 +1584,33 @@ const HospitalCard = ({ branch }: { branch: BranchType & { hospitalName: string;
         </div>
 
         <div className="p-3 flex-1 flex flex-col space-y-2">
-          <header className="space-y-1 md:h-16">
-            <h2 className="md:text-lg text-2xl font-medium leading-tight text-gray-900 transition-colors w-full">
-              <ScrollableTitle text={branch.branchName} isHovered={isHovered} /> {/* PASSED prop */}
+          <header className="space-y-1">
+            {/* Branch Name */}
+            <h2 className="w-full h-6 text-lg md:text-lg font-medium leading-snug text-gray-800 transition-colors">
+              <ScrollableTitle
+                text={branch.branchName}
+                isHovered={isHovered}
+              />
             </h2>
-            <div className="flex flex-col text-lg md:text-sm text-gray-700 font-normal gap-0.5">
-              <div className="flex items-center gap-1.5 text-gray-900 font-medium">
-                <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-gray-500" />
-                <span>
-                  {/* Updated: Ensure city and state display correctly */}
-                  {primaryCity}{primaryState ? `, ${primaryState}` : ""}
-                </span>
-              </div>
-              <div className="text-gray-500 text-xs pl-5">
-                 {primarySpecialty} Speciality
-              </div>
+
+            {/* Specialty */}
+            <div className="flex items-center gap-x-1.5 text-sm font-medium text-gray-600">
+              {primarySpecialty} Speciality
+            </div>
+
+            {/* Location */}
+            <div className="flex items-center gap-x-1.5 text-sm font-medium text-gray-600">
+
+              <span className="truncate">
+                {primaryCity}
+                {primaryState ? `, ${primaryState}` : ""}
+                {primaryCountry ? `, ${primaryCountry}` : ""}
+              </span>
+              <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-[#E22026] mb-1" />
+
             </div>
           </header>
+
 
           <footer className="border-t border-gray-100 pt-2 mt-auto">
             <div className="grid grid-cols-3 gap-3">
@@ -1683,11 +1691,8 @@ const DoctorCard = ({ doctor }: { doctor: ExtendedDoctorType }) => {
 
     if (cityData?.cityName) {
       locationString += `, ${cityData.cityName}`;
-      if (cityData.state) {
-        locationString += `, ${cityData.state}`; // Add the state name
-      }
     }
-    
+
     const remainingCount = locations.length - 1;
 
     if (remainingCount > 0) {
@@ -1700,7 +1705,7 @@ const DoctorCard = ({ doctor }: { doctor: ExtendedDoctorType }) => {
 
   return (
     <Link href={`/doctors/${slug}`} className="block">
-      <article 
+      <article
         className="group bg-white xs md:mb-0 mb-5 rounded-xs shadow-lg md:shadow-xs transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col hover:shadow-sm border border-gray-100"
         onMouseEnter={() => setIsHovered(true)} // ADDED handler
         onMouseLeave={() => setIsHovered(false)} // ADDED handler
@@ -1731,11 +1736,11 @@ const DoctorCard = ({ doctor }: { doctor: ExtendedDoctorType }) => {
             <h2 className="md:text-lg text-2xl font-medium leading-tight text-gray-900 transition-colors">
               <ScrollableTitle text={doctor.doctorName} isHovered={isHovered} /> {/* PASSED prop */}
             </h2>
-           
+
           </header>
 
           <div className="flex gap-x-2">
-             <p className=" text-base md:text-sm text-gray-900 font-normal flex items-center gap-2 line-clamp-1">
+            <p className=" text-base md:text-sm text-gray-900 font-normal flex items-center gap-2 line-clamp-1">
               {specializationDisplay}
             </p>
             <p className=" text-base md:text-sm text-gray-900 font-normal flex items-center gap-2">
@@ -1769,18 +1774,18 @@ const TreatmentCard = ({ treatment }: { treatment: ExtendedTreatmentType }) => {
     }
 
     const firstLoc = availLocs[0]
-    
+
     let locationString = firstLoc.branchName
       ? `${firstLoc.hospitalName}, ${firstLoc.branchName}`
       : firstLoc.hospitalName
 
     const cityData = firstLoc.cities?.[0]
-    
+
     if (cityData?.cityName) {
-        locationString += `, ${cityData.cityName}`;
-        if (cityData.state) {
-            locationString += `, ${cityData.state}`; // Add the state name
-        }
+      locationString += `, ${cityData.cityName}`;
+      if (cityData.state) {
+        locationString += `, ${cityData.state}`; // Add the state name
+      }
     }
 
     const remainingCount = availLocs.length - 1;
@@ -1797,7 +1802,7 @@ const TreatmentCard = ({ treatment }: { treatment: ExtendedTreatmentType }) => {
 
   return (
     <Link href={`/treatment/${slug}`} className="block">
-      <article 
+      <article
         className="group bg-white rounded-xs md:mb-0 mb-5 shadow-lg md:shadow-xs transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col hover:shadow-sm border border-gray-100"
         onMouseEnter={() => setIsHovered(true)} // ADDED handler
         onMouseLeave={() => setIsHovered(false)} // ADDED handler
@@ -1960,7 +1965,7 @@ const BreadcrumbNav = () => (
           Home
         </Link>
       </li>
-     
+
       <li>
         <span className="mx-1">/</span>
       </li>
@@ -2117,7 +2122,7 @@ const RenderContent = ({
           </div>
         ))}
       </div>
-      
+
       {/* Sentinel element for infinite scroll */}
       {visibleCount < items.length && (
         <div ref={loadMoreRef} className="flex justify-center p-4">

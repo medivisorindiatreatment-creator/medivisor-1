@@ -11,6 +11,9 @@ const COLLECTIONS = {
   SPECIALTIES: "SpecialistsMaster",
   DEPARTMENTS: "Department",
   TREATMENTS: "TreatmentMaster",
+  // ADDED COLLECTIONS for multi-reference resolution
+  STATES: "StateMaster",
+  COUNTRIES: "CountryMaster",
 }
 
 // ==============================
@@ -198,15 +201,58 @@ const DataMappers = {
       popular: getValue(item, "popular") === "true",
     }
   },
+  
+  // CRITICAL MAPPER: FIX: Mapper to correctly resolve City, State, and Country names after fetching all references
+  cityWithFullRefs: (item: any, stateMap: Record<string, any>, countryMap: Record<string, any>) => {
+    // City item has a reference field to State (often named 'state' or 'State')
+    const stateRefs = ReferenceMapper.multiReference(item.state, "state", "State Name", "name")
+    
+    let stateName = "Unknown State"
+    let countryName = "Unknown Country"
+    let stateId: string | null = null
+    let countryId: string | null = null
+    
+    // Assuming only one state reference is used for location/mapping the City
+    if (stateRefs.length > 0) {
+        const stateRef = stateRefs[0]
+        stateId = stateRef._id
+        const fullState = stateId ? stateMap[stateId] : null
+        
+        if (fullState) {
+            stateName = fullState.name
+            
+            // Resolve country from the state map object (it was fetched as a reference on the state item)
+            // fullState.country is an array of fully resolved country objects (with name/ID)
+            if (fullState.country && fullState.country.length > 0) {
+                const countryRef = fullState.country[0]
+                countryId = countryRef._id
+                
+                // CRITICAL FIX: Get the name from the fully fetched country map
+                // Priority: Full map name > embedded name in state ref > Fallback
+                let nameCandidate = (countryId ? countryMap[countryId]?.name : null) || countryRef.name || countryName
+                
+                // NEW FIX for "ID Reference" issue: If the name resolution fails and falls back to the 
+                // generic string, replace it with a more helpful "Unresolved Country" string.
+                countryName = (nameCandidate === "ID Reference") ? "Unresolved Country" : nameCandidate
+            }
+        } else {
+            // Fallback: If the state itself wasn't fully fetched, we can't reliably get the country name
+            stateName = stateRef.name || "Unresolved State"
+            countryId = null
+            countryName = "Unresolved Country"
+        }
+    }
 
-  // **FIX APPLIED HERE:** Ensure 'state' and 'country' always resolve to a string
-  // to prevent null/empty values in the final API response.
-  city: (item: any) => ({
-    _id: item._id,
-    cityName: getValue(item, "cityName", "city name", "name") || "Unknown City",
-    state: getValue(item, "state", "State") || "Unknown State", // Changed to use "Unknown State" default
-    country: getValue(item, "country", "Country") || "Unknown Country", // Changed to use "Unknown Country" default
-  }),
+    return {
+      _id: item._id,
+      cityName: getValue(item, "cityName", "city name", "name") || "Unknown City",
+      stateId: stateId,
+      state: stateName,
+      countryId: countryId,
+      // FIX: Return the fully resolved country name or "Unresolved Country"
+      country: countryName, 
+    }
+  },
 
   accreditation: (item: any) => ({
     _id: item._id,
@@ -217,6 +263,21 @@ const DataMappers = {
   specialty: (item: any) => ({
     _id: item._id,
     specialty: getValue(item, "specialty", "Specialty Name", "title", "name") || "Unknown Specialty",
+  }),
+  
+  // New mappers for intermediate references
+  country: (item: any) => ({
+    _id: item._id,
+    // CRITICAL FIX: Ensure all possible field names for country name are checked for robustness.
+    name: getValue(item, "countryName", "Country Name", "Country", "name", "title") || "Unknown Country", 
+  }),
+
+  state: (item: any) => ({
+    _id: item._id,
+    // Assuming 'state' or 'name' holds the state name in StateMaster
+    name: getValue(item, "state", "State Name", "title", "name") || "Unknown State", 
+    // The country reference field ID in StateMaster is 'CountryMaster_state' or 'country'
+    country: ReferenceMapper.multiReference(item.country || item.CountryMaster_state, "country", "Country Name", "name"),
   }),
 
   department: (item: any) => ({
@@ -252,10 +313,11 @@ const DataMappers = {
 
 // REFERENCE MAPPER
 const ReferenceMapper = {
-  // FIX: Refined logic for multiReference to ensure robust handling of single references, nulls, and IDs.
+  // Refined logic for multiReference to ensure robust handling of single references, nulls, and IDs.
   multiReference: (field: any, ...nameKeys: string[]): any[] => {
     let items = []
     if (field) {
+        // IMPROVEMENT: Ensure single objects are wrapped in an array if they are not the Wix array-of-refs type
         items = Array.isArray(field) ? field : [field]
     }
     
@@ -265,14 +327,21 @@ const ReferenceMapper = {
         // Ensure the reference is an object or a string ID
         if (typeof ref !== "object" && typeof ref !== "string") return null
         
-        // Handle direct string ID reference
+        // Handle direct string ID reference (Wix will often return just the ID string for single refs)
         if (typeof ref === "string") return { _id: ref, name: "ID Reference" } 
         
         // Handle object reference
-        const name = getValue(ref, ...nameKeys) || "Unknown"
-        const id = ref._id || ref.ID || ref.data?._id
-        
-        return name && id ? { _id: id, name } : null
+        if (typeof ref === "object") {
+            // Priority: Name from object data > Name from keys > Generic
+            const name = getValue(ref, ...nameKeys) || ref.name || ref.title || "Unknown"
+            const id = ref._id || ref.ID || ref.data?._id || ref.wixId
+            
+            // Include full data if available, useful for nested resolution
+            // We use 'ID Reference' if the ID is present but the name is not found in the ref object
+            const finalName = name === "Unknown" ? (id ? "ID Reference" : "Unknown") : name
+            return finalName && id ? { _id: id, name: finalName, ...ref } : null
+        }
+        return null;
       })
       .filter(Boolean)
   },
@@ -319,7 +388,7 @@ const DataFetcher = {
     return Array.from(ids)
   },
 
-  // FIX: New function to handle slug lookup for detail pages (q parameter)
+  // Function to handle slug lookup for detail pages (q parameter)
   async searchHospitalBySlug(slug: string): Promise<string[]> {
     if (!slug) return []
 
@@ -352,6 +421,80 @@ const DataFetcher = {
     return res.items.reduce(
       (acc, item) => {
         acc[item._id!] = mapper(item)
+        return acc
+      },
+      {} as Record<string, any>,
+    )
+  },
+
+  // New function to fetch Countries
+  async fetchCountries(ids: string[]) {
+    if (!ids.length) return {}
+    const res = await wixClient.items.query(COLLECTIONS.COUNTRIES).hasSome("_id", ids).find()
+    return res.items.reduce((acc, item) => {
+      acc[item._id!] = DataMappers.country(item)
+      return acc
+    }, {} as Record<string, any>)
+  },
+  
+  // New function to fetch States and include the Country reference
+  async fetchStatesWithCountry(ids: string[]) {
+    if (!ids.length) return {}
+    // KEY: Include country reference on state item (using the field ID from the user's image)
+    const res = await wixClient.items.query(COLLECTIONS.STATES).hasSome("_id", ids).include("country", "CountryMaster_state").find() 
+
+    // Extract country IDs for later fetching 
+    const countryIds = new Set<string>()
+    res.items.forEach((s) => {
+      // Use both possible country reference fields
+      const countryRefs = ReferenceMapper.multiReference(s.country || s.CountryMaster_state, "country")
+      ReferenceMapper.extractIds(countryRefs).forEach((id) => countryIds.add(id))
+    })
+
+    const countries = await DataFetcher.fetchCountries(Array.from(countryIds))
+
+    return res.items.reduce((acc, item) => {
+      const state = DataMappers.state(item)
+      // Resolve country name on the state object using the map
+      // This is crucial: the resolved country objects are put into the state object.
+      state.country = state.country.map((c: any) => countries[c._id] || c)
+      acc[item._id!] = state
+      return acc
+    }, {} as Record<string, any>)
+  },
+
+  // CRITICAL FETCHER: FIX: Specialized function for City -> State -> Country resolution
+  async fetchCitiesWithStateAndCountry(ids: string[]) {
+    if (!ids.length) return {}
+
+    // 1. Fetch cities and include state reference
+    const cityRes = await wixClient.items.query(COLLECTIONS.CITIES).hasSome("_id", ids).include("state").find()
+    
+    // 2. Extract State IDs
+    const stateIds = new Set<string>()
+    cityRes.items.forEach((c) => {
+        ReferenceMapper.extractIds(ReferenceMapper.multiReference(c.state, "state")).forEach((id) => stateIds.add(id))
+    })
+
+    // 3. Fetch states (which includes country references and resolves their names)
+    // The country IDs are extracted and fetched within this function call
+    const statesMap = await DataFetcher.fetchStatesWithCountry(Array.from(stateIds))
+    
+    // 4. Extract Country IDs from the fetched States (for the final country name map) 
+    const countryIds = new Set<string>()
+    Object.values(statesMap).forEach((s: any) => {
+        // s.country is the array of resolved country objects from fetchStatesWithCountry
+        s.country.forEach((c: any) => c._id && countryIds.add(c._id))
+    })
+    
+    // 5. Fetch countries to get the name map
+    const countriesMap = await DataFetcher.fetchCountries(Array.from(countryIds))
+
+    // 6. Map Cities using the fully resolved State/Country maps
+    return cityRes.items.reduce(
+      (acc, item) => {
+        // FIX: This call uses the fully resolved statesMap and countriesMap to set the final names
+        acc[item._id!] = DataMappers.cityWithFullRefs(item, statesMap, countriesMap)
         return acc
       },
       {} as Record<string, any>,
@@ -494,7 +637,7 @@ const QueryBuilder = {
         "specialist",
       )
 
-    if (branchIds?.length) query.hasSome("_id", branchIds)
+    if (branchIds?.length) query.hasSome("_id", branchIds) // FIX: filter by branchIds on _id
     if (cityIds?.length) query.hasSome("city", cityIds)
     if (doctorIds?.length) query.hasSome("doctor", doctorIds)
     if (specialtyIds?.length) query.hasSome("specialty", specialtyIds)
@@ -548,7 +691,6 @@ async function enrichHospitals(
   const accreditationIds = new Set<string>()
   const treatmentIds = new Set<string>()
   const specialistIds = new Set<string>()
-  const departmentIds = new Set<string>()
 
   branchesRes.items.forEach((b: any) => {
     const hIds = ReferenceMapper.extractHospitalIds(b)
@@ -577,8 +719,8 @@ async function enrichHospitals(
 
   const [doctors, cities, accreditations, treatments, enrichedSpecialists] = await Promise.all([
     DataFetcher.fetchDoctors(Array.from(doctorIds)),
-    // DataMappers.city is now updated to provide robust defaults for state/country
-    DataFetcher.fetchByIds(COLLECTIONS.CITIES, Array.from(cityIds), DataMappers.city),
+    // CRITICAL FETCH: Use the new specialized fetcher for cities that handles State -> Country lookup
+    DataFetcher.fetchCitiesWithStateAndCountry(Array.from(cityIds)),
     DataFetcher.fetchByIds(COLLECTIONS.ACCREDITATIONS, Array.from(accreditationIds), DataMappers.accreditation),
     DataFetcher.fetchTreatmentsWithFullData(Array.from(treatmentIds)),
     DataFetcher.fetchSpecialistsWithDeptAndTreatments(Array.from(new Set([...specialtyIds, ...specialistIds]))),
@@ -617,8 +759,8 @@ async function enrichHospitals(
     const enrichedBranches = filteredBranches.map((b) => ({
       ...b,
       doctors: b.doctors.map((d: any) => doctors[d._id] || d),
-      // This line correctly replaces the ID reference with the full city object, 
-      // which now has robust state and country values due to the fix in DataMappers.city.
+      // CRITICAL MAPPING: This line correctly replaces the ID reference with the full city object, 
+      // which has state and country names resolved via the multi-step fetch.
       city: b.city.map((c: any) => cities[c._id] || c),
       accreditation: b.accreditation.map((a: any) => accreditations[a._id] || a),
       specialists: b.specialists.map((s: any) => enrichedSpecialists[s._id] || s),
@@ -754,7 +896,7 @@ export async function GET(req: Request) {
       query = query.hasSome("_id", finalHospitalIds)
     }
 
-    // FIX: Updated logic to handle slug lookup for 'q' parameter
+    // Updated logic to handle slug lookup for 'q' parameter
     if (params.q || hospitalIdsFromText.length > 0) {
       let qIds: string[] = []
 

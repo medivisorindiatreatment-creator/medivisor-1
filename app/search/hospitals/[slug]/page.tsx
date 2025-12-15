@@ -13,6 +13,7 @@ import {
   MapPin,
   Users,
   Heart,
+  HeartPulse,
   ChevronLeft,
   Loader2,
   Stethoscope,
@@ -244,7 +245,7 @@ const SpecialtiesList = ({ specialties }: { specialties: any[] }) => {
   }
   return (
     <div className={`text-center p-8 bg-gray-50/50 rounded-xs border border-gray-100 transition-shadow ${inter.variable} font-light`}>
-      <Heart className="w-8 h-8 text-gray-900 mx-auto mb-1" />
+      <HeartPulse className="w-8 h-8 text-gray-900 mx-auto mb-1" />
       <div className="space-y-1 max-h-20 overflow-y-auto">
         {specialties.slice(0, 4).map((spec: any) => (
           <p key={spec._id || Math.random()} className="text-3xl text-gray-900 line-clamp-1 px-2 py-1 bg-white/60 rounded-xs mx-auto w-full max-w-[120px]">
@@ -253,16 +254,16 @@ const SpecialtiesList = ({ specialties }: { specialties: any[] }) => {
         ))}
         {specialties.length > 4 && <p className="text-xs text-gray-900 mt-0">+{specialties.length - 4} more</p>}
       </div>
-      <p className="text-gray-700 mt-0 text-sm">Specialty</p>
+      <p className="text-gray-700 mt-0 text-sm">Speciality</p>
     </div>
   )
 }
 
-// BranchCard (UPDATED: Redesigned to match the provided image: hospital image top, accreditation badge top right, small logo bottom left, title as hospital + branch, subtitle city + specialty, blue stats boxes)
+// BranchCard (UPDATED: Redesigned to match the provided image: hospital image top, accreditation badge top right, small logo bottom left, title as hospital + branch, subtitle city + Speciality, blue stats boxes)
 const BranchCard = ({ data }: { data: any }) => {
   const { branchName, city, specialization, noOfDoctors, totalBeds, hospitalName, yearEstablished, branchImage, accreditation, logo } = data;
   const firstCity = city?.[0]?.cityName || 'N/A'
-  const firstSpecialty = specialization?.[0]?.name || 'Multi Speciality'
+  const firstSpeciality = specialization?.[0]?.name || 'Multi Speciality'
   // UPDATED: Use only branchName slug for the URL
   const fullSlug = generateSlug(branchName)
   const doctorsCount = noOfDoctors || 0
@@ -320,9 +321,9 @@ const BranchCard = ({ data }: { data: any }) => {
           <h3 className="text-2xl md:text-lg font-medium text-gray-900 leading-tight">{branchName}</h3>
         </div>
 
-        {/* Subtitle: City, Specialty */}
+        {/* Subtitle: City, Speciality */}
         <div className="mb-2">
-          <p className="text-lg md:text-sm text-gray-600">{`${firstCity}, ${firstSpecialty} Speciality`}</p>
+          <p className="text-lg md:text-sm text-gray-600">{`${firstCity}, ${firstSpeciality} Speciality`}</p>
         </div>
 
         {/* Stats Row: Doctors, Beds, Est. - Blue themed boxes */}
@@ -550,7 +551,7 @@ const DoctorsList = ({ doctors }: { doctors: any[] }) => {
             <SearchDropdown
               value={inputValue}
               onChange={setInputValue}
-              placeholder="Search doctors by name or specialty..."
+              placeholder="Search doctors by name or Speciality..."
               options={doctorOptions}
               selectedOption={null}
               onOptionSelect={handleDoctorSelect}
@@ -936,7 +937,7 @@ const SearchDropdown = ({ value, onChange, placeholder, options, selectedOption,
   selectedOption: string | null
   onOptionSelect: (id: string) => void
   onClear: () => void
-  type: "branch" | "city" | "treatment" | "doctor" | "specialty"
+  type: "branch" | "city" | "treatment" | "doctor" | "Speciality"
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -974,7 +975,7 @@ const SearchDropdown = ({ value, onChange, placeholder, options, selectedOption,
       city: "cities",
       treatment: "treatments",
       doctor: "doctors",
-      specialty: "specializations"
+      Speciality: "specializations"
     }
     return texts[type] || "options"
   }
@@ -1336,7 +1337,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
   const hospitalSlug = generateSlug(hospital.hospitalName)
 
 
-  const firstSpecialtyName = branch.specialization?.[0]?.name || 'N/A'
+  const firstSpecialityName = branch.specialization?.[0]?.name || 'N/A'
 
   return (
     <div className={`min-h-screen bg-white ${inter.variable} font-light`}>
@@ -1425,7 +1426,7 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                   {/* Confirmed: This uses the hospital group's established year */}
                   <StatCard icon={Calendar} value={branch.yearEstablished || 'N/A'} label="Established" showPlus={false} />
-                  <StatCard icon={Heart} value={firstSpecialtyName} label="Specialty" showPlus={false} />
+                  <StatCard icon={HeartPulse} value={firstSpecialityName} label="Speciality" showPlus={false} />
                   <StatCard icon={Bed} value={branch.totalBeds || 'N/A'} label="Beds" showPlus={true} />
                   <StatCard icon={Users} value={branch.noOfDoctors || 'N/A'} label=" Doctors" showPlus={true} />
 

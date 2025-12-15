@@ -310,7 +310,7 @@ const StatBox = ({ value, label, showPlus = true }: { value: string | number, la
       {value}
       {value !== 'N/A' && showPlus && '+'}
     </p>
-    <p className="text-xs font-light text-gray-600 mt-0.5 flex items-center gap-1">
+    <p className="text-sm font-medium text-gray-800 leading-tight">
       {label}
     </p>
   </div>
@@ -420,17 +420,19 @@ const DoctorCard = ({ doctor }: { doctor: any }) => {
 
   return (
     <Link href={`/doctors/${doctorSlug}`}
-      className={`group flex flex-col h-full bg-white border border-gray-100 rounded-xl shadow-md overflow-hidden transform hover:shadow-lg transition-all duration-300 hover:border-gray-300 font-light`}
+      className={`block h-full border border-gray-100 rounded-xs shadow-xs bg-white hover:shadow-sm transition-all duration-300 relative flex flex-col overflow-hidden group transform hover:-translate-y-0.5`}
     >
       <div className="relative h-60 overflow-hidden bg-gray-50">
         <ImageWithFallback src={doctorImage} alt={`Dr. ${doctor.doctorName}`} fallbackIcon={User} className="object-cover w-full h-full group-hover:scale-[1.05] transition-transform duration-500" fallbackClassName="bg-gray-50" />
       </div>
       <div className={`flex flex-col flex-1 p-4 font-light`}>
-        <h5 className="text-lg font-semibold text-gray-900 leading-snug group-hover:text-gray-700 transition-colors">
+        <h5 className="text-lg font-medium text-gray-800 leading-snug group-hover:text-gray-700 transition-colors">
           {doctor.doctorName}
         </h5>
-        <p className="text-sm font-medium text-gray-700 line-clamp-1">{specializationNames}</p>
-        <p className="text-sm text-gray-500 mt-1 line-clamp-1">{expText}</p>
+      <div className="flex gap-x-1 items-center">
+          <p className="text-sm font-medium text-gray-800 line-clamp-1">{specializationNames},</p>
+        <p className="text-sm text-gray-800  line-clamp-1">{expText}</p>
+      </div>
       </div>
     </Link>
   )
@@ -443,7 +445,7 @@ const TreatmentCard = ({ treatment }: { treatment: any }) => {
 
   return (
     <Link href={`/treatments/${treatmentSlug}`}
-      className={`group flex flex-col h-full bg-white border border-gray-100 rounded-xl shadow-md overflow-hidden transform hover:shadow-lg transition-all duration-300 hover:border-gray-300 font-light`}
+      className={`block h-full border border-gray-100 rounded-xs shadow-xs bg-white hover:shadow-sm transition-all duration-300 relative flex flex-col overflow-hidden group transform hover:-translate-y-0.5`}
     >
       <div className="relative h-40 overflow-hidden bg-gray-50">
         <ImageWithFallback src={treatmentImage} alt={treatment.name} fallbackIcon={Scissors} className="object-cover w-full h-full group-hover:scale-[1.05] transition-transform duration-500" fallbackClassName="bg-gray-50" />
@@ -481,7 +483,7 @@ const SimilarHospitalCard = ({ hospital }: { hospital: HospitalWithBranchPreview
 
   return (
     <Link href={`/search/${hospitalSlug}`}
-      className={`group flex flex-col h-full bg-white border border-gray-100 rounded-xl shadow-md overflow-hidden transform hover:shadow-lg transition-all duration-300 hover:border-gray-100 font-light`}
+      className={`block h-full border border-gray-100 rounded-xs shadow-xs bg-white hover:shadow-sm transition-all duration-300 relative flex flex-col overflow-hidden group transform hover:-translate-y-0.5`}
     >
       <div className="relative h-40 overflow-hidden bg-gray-100">
         <ImageWithFallback src={hospitalImage} alt={hospital.hospitalName} fallbackIcon={Hospital} className="object-cover w-full h-full group-hover:scale-[1.05] transition-transform duration-500" />
@@ -496,10 +498,10 @@ const SimilarHospitalCard = ({ hospital }: { hospital: HospitalWithBranchPreview
         )}
       </div>
       <div className={`flex flex-col flex-1 p-4 font-light`}>
-        <h5 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-gray-700 transition-colors">
+        <h5 className="text-lg font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-gray-700 transition-colors">
           {hospital.hospitalName}
         </h5>
-        <div className="flex flex-wrap items-center text-sm text-gray-600 gap-x-4 gap-y-1">
+        <div className="flex flex-wrap items-center text-sm text-gray-800 gap-x-4 gap-y-1">
           {hospitalCity && (
             <span className="flex items-center gap-1.5 font-medium">
               <MapPin className="w-4 h-4 text-red-500" />
@@ -508,7 +510,7 @@ const SimilarHospitalCard = ({ hospital }: { hospital: HospitalWithBranchPreview
           )}
           {branchCount > 0 && (
             <span className="flex items-center gap-1.5 font-medium">
-              <Building2 className="w-4 h-4 text-gray-500" />
+              <Building2 className="w-4 h-4 text-gray-800" />
               <span>{branchCount} {branchCount === 1 ? 'Branch' : 'Branches'}</span>
             </span>
           )}
@@ -565,8 +567,8 @@ const EmblaCarousel = ({ items, title, icon: Icon, type }: { items: any[], title
 
   return (
     <div className="relative">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className={`text-2xl font-semibold text-gray-900 flex items-center gap-3`}>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className={`text-2xl font-medium text-gray-900 flex items-center gap-3`}>
           <Icon className="w-6 h-6 text-gray-600" />
           {title}
         </h3>
@@ -622,7 +624,7 @@ const RichTextDisplay = ({ htmlContent, className = "" }: { htmlContent: string;
     // This is the SVG markup for the CheckCircle icon, stylized with inline CSS
     // to match the requested w-5 h-5 text-[#74BF44] flex-shrink-0.
     const iconSvgHtml = 
-      `<span style="display: inline-flex; align-items: flex-center; margin-top: 4px !important; margin-right: 0.75rem; flex-shrink: 0; min-width: 1.25rem; height: 1.25rem;">` +
+      `<span style="display: inline-flex; align-items: flex-start; margin-right: 0.75rem; flex-shrink: 0; min-width: 1.25rem; height: 1.25rem;">` +
       `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5" style="color:#74BF44; width: 1.25rem; height: 1.25rem;">` + 
       `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>` + 
       `</svg></span>`;
@@ -630,7 +632,8 @@ const RichTextDisplay = ({ htmlContent, className = "" }: { htmlContent: string;
     // 2. Define the new structure for the <li> content wrapper
     // We use a flex div inside the <li> to correctly position the icon next to the text.
     // The "min-w" and "height" styles on the span ensure the icon reserves space even if text wraps.
-    const liContentWrapperStart = `<div style="display: flex; align-items: flex-center;">${iconSvgHtml}<span style="flex: 1;">`;
+    // MODIFIED: align-items changed from flex-center to flex-start for better multi-line text alignment.
+    const liContentWrapperStart = `<div style="display: flex; align-items: flex-start;">${iconSvgHtml}<span style="flex: 1;">`;
     const liContentWrapperEnd = `</span></div>`;
 
     // 3. Regex to replace content inside <li>...</li> tags.
@@ -811,8 +814,8 @@ const BranchesSection = ({ hospital, selectedCity, allCityOptions, visibleBranch
 
   return (
     <section className="space-y-4 bg-white rounded-xl border border-gray-100 p-4 md:p-8 shadow-md">
-      <div className="flex flex-wrap justify-between items-center gap-4">
-        <h2 className={`text-2xl font-semibold text-gray-900 flex items-center gap-3`}>
+      <div className="flex flex-wrap justify-between items-center gap-x-4">
+        <h2 className={`text-2xl font-medium text-gray-900 flex items-center gap-3`}>
           <Building2 className="w-6 h-6 text-gray-600" />
           Our Branches ({filteredBranches.length})
         </h2>
@@ -825,7 +828,7 @@ const BranchesSection = ({ hospital, selectedCity, allCityOptions, visibleBranch
               id="city-filter"
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className={`w-full sm:w-48 p-3 border border-gray-300 rounded-full shadow-sm text-sm font-semibold bg-white focus:ring-gray-500 focus:border-gray-500 transition-colors appearance-none pr-8`}
+              className={`w-full sm:w-48 p-2 border border-gray-300 rounded-xs shadow-xs text-sm font-medium bg-white focus:ring-gray-500 focus:border-gray-500 transition-colors appearance-none pr-8`}
             >
               <option value="">All Cities</option>
               {allCityOptions.map(city => (
@@ -837,7 +840,7 @@ const BranchesSection = ({ hospital, selectedCity, allCityOptions, visibleBranch
         )}
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:pt-0 pt-4">
         {visibleBranches.map(branch => (
           <BranchCard key={branch._id} branch={branch} hospitalSlug={hospitalSlug} />
         ))}
@@ -847,7 +850,7 @@ const BranchesSection = ({ hospital, selectedCity, allCityOptions, visibleBranch
         <div className="flex justify-center pt-4">
           <button
             onClick={() => setShowAllBranches(!showAllBranches)}
-            className={`text-gray-700 font-medium text-md hover:text-gray-800 transition-colors flex items-center gap-2 px-6 py-2 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 shadow-sm`}
+            className={`text-gray-700 font-medium text-md hover:text-gray-800 transition-colors flex items-center gap-2 px-6 py-2 rounded-xs border border-gray-200 bg-gray-50 hover:bg-gray-100 shadow-sm`}
             aria-expanded={showAllBranches}
             aria-controls="hospital-branches"
           >
@@ -1083,10 +1086,11 @@ export default function HospitalDetail({ params }: { params: Promise<{ slug: str
 
             </main>
 
-            {/* Sidebar */}
+            {/* Sidebar (MODIFIED: Added sticky classes for the contact form container) */}
             <aside className="lg:col-span-3 space-y-10 mt-10 lg:mt-0">
               {/* Contact Form Container (Elevated Container) */}
-              <div >
+              {/* New classes: sticky top-10 lg:sticky */}
+              <div className="lg:sticky lg:top-16">
                 <ContactForm />
               </div>
             </aside>
