@@ -222,7 +222,7 @@ export default function Header() {
               alt="Medivisor India Treatment Logo"
               width={220}
               height={55}
-              className={`w-full object-contain transition-all duration-300 ${isScrolled ? 'h-12' : 'h-14'
+              className={`w-full object-contain transition-all duration-300 ${isScrolled ? 'h-14' : 'h-14'
                 }`}
               priority // Add this line
             />
