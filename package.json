@@ -73,6 +73,7 @@
     "install": "^0.13.0",
     "js-cookie": "^3.0.5",
     "jsdom": "^26.1.0",
+    "jspdf": "^4.0.0",
     "keen-slider": "^6.8.6",
     "libphonenumber-js": "^1.12.15",
     "lucide": "^0.544.0",

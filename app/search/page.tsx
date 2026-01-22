@@ -1343,10 +1343,10 @@ const FilterSidebar = ({
           </div>
 
           {hasAppliedFilters && (
-            <div className="mt-8 pt-6 border-t border-gray-100">
+            <div className="mt-8 pt-6 px-4 border-t border-gray-100">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-sm font-medium text-gray-900">Applied</h4>
-                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">
                   {filterOptions.filter(opt => getFilterValueDisplay(opt.value, filters, availableOptions)).length + (cityValue ? 1 : 0) + (stateValue ? 1 : 0)}
                 </span>
               </div>
@@ -2404,7 +2404,7 @@ function HospitalsPageContent() {
 
           <main className="flex-1  min-w-0 lg:pb-0 min-h-screen">
             <div className=" md:flex justify-between items-center bg-gray-50">
-              <div className="flex flex-col lg:flex-row lg:items-center  gap-4">
+              <div className="flex flex-col lg:flex-row lg:items-center ml-4  gap-4">
                 <ViewToggle view={filters.view} setView={setView} />
                 <FilterDropdown
                   placeholder="Search by City or State"

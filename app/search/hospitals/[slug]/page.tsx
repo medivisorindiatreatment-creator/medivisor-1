@@ -35,7 +35,7 @@ import { useRouter } from "next/navigation"
 import classNames from "classnames"
 import ContactForm from "@/components/ContactForm"
 import { Inter } from "next/font/google"
-import useEmblaCarousel, { EmblaOptionsType } from 'embla-carousel-react'
+import useEmblaCarousel from 'embla-carousel-react'
 
 const inter = Inter({
   subsets: ["latin"],
@@ -796,28 +796,26 @@ export default function BranchDetail({ params }: { params: Promise<{ slug: strin
   }, [currentCity, branch, hospital?._id])
 
   useEffect(() => {
-    if (currentCity) {
-      // Fetch all branches for search dropdown
-      fetch(`/api/hospitals?city=${encodeURIComponent(currentCity)}&minimal=true&pageSize=100`, { cache: 'no-store' })
-        .then(res => res.json())
-        .then(data => {
-          if (data.items) {
-            const allBranches = data.items
-              .flatMap((h: any) => (h.branches || []).map((b: any) => ({
-                ...b,
-                hospitalName: h.hospitalName,
-                yearEstablished: h.yearEstablished,
-                logo: h.logo,
-                accreditation: b.accreditation || h.accreditation
-              })))
-              .filter((b: any) => b?.branchName)
-              .sort((a: any, b: any) => (a.branchName || '').localeCompare(b.branchName || ''))
-            setAllHospitalBranches(allBranches)
-          }
-        })
-        .catch(err => console.warn('Failed to fetch all branches:', err))
-    }
-  }, [currentCity])
+    // Fetch all branches for search dropdown (not limited to current city)
+    fetch(`/api/hospitals?minimal=true&pageSize=500`, { cache: 'no-store' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.items) {
+          const allBranches = data.items
+            .flatMap((h: any) => (h.branches || []).map((b: any) => ({
+              ...b,
+              hospitalName: h.hospitalName,
+              yearEstablished: h.yearEstablished,
+              logo: h.logo,
+              accreditation: b.accreditation || h.accreditation
+            })))
+            .filter((b: any) => b?.branchName)
+            .sort((a: any, b: any) => (a.branchName || '').localeCompare(b.branchName || ''))
+          setAllHospitalBranches(allBranches)
+        }
+      })
+      .catch(err => console.warn('Failed to fetch all branches:', err))
+  }, [])
 
   const handleDoctorSelect = useCallback((id: string) => {
     const doctor = branch?.doctors?.find((d: any) => d._id === id)

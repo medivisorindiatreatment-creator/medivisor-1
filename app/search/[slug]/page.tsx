@@ -678,8 +678,8 @@ const SimilarHospitalCard = ({ hospital }: { hospital: HospitalWithBranchPreview
     <Link href={`/search/${hospitalSlug}`}
       className={`group block h-full border border-gray-100 rounded-xs shadow-xs bg-white hover:shadow-sm transition-all duration-300 relative flex flex-col overflow-hidden transform hover:-translate-y-0.5`}
     >
-      <div className="relative h-40 overflow-hidden bg-gray-100">
-        <ImageWithFallback src={hospitalImage} alt={hospital.hospitalName} fallbackIcon={Hospital} className="object-cover w-full h-full group-hover:scale-[1.05] transition-transform duration-500" />
+      <div className="relative h-48 overflow-hidden bg-gray-100">
+        <ImageWithFallback src={hospitalImage} alt={hospital.hospitalName} fallbackIcon={Hospital} className="object-cover w-full h-full " />
         {/* Accreditation Badges */}
         {hospital.accreditations && hospital.accreditations.length > 0 && (
           <div className="absolute top-2 right-2 flex flex-col gap-1">
@@ -1205,32 +1205,95 @@ export default function HospitalDetail({ params }: { params: Promise<{ slug: str
   if (loading) return <HospitalDetailSkeleton />
   if (error || !hospital) {
     return (
-      <div className={`min-h-screen bg-gray-50`}>
-        <Breadcrumb hospitalName="All Hospitals" hospitalSlug="" />
+        <div className={`min-h-screen bg-gray-50 `}>
+      <HeroSection hospital={hospital} accreditations={uniqueAccreditations} />
 
-        <section className="pt-8 pb-10 md:pb-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="lg:grid lg:grid-cols-12 lg:gap-8">
-              <main className="lg:col-span-9 space-y-10 md:space-y-8">
+      <Breadcrumb
+        hospitalName={hospital.hospitalName}
+        hospitalSlug={hospitalSlugFromParams}
+      />
+
+      <section className="pt-8 pb-10 md:pb-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+            {/* Main Content Area */}
+            <main className="lg:col-span-9 space-y-10 md:space-y-8">
+              {/* Description Section */}
+              {rawDescription && (
                 <section className="bg-white rounded-xl border border-gray-100 p-4 md:p-8 shadow-md">
-                  <h2 className="text-2xl font-medium text-gray-900 mb-4">All Hospitals</h2>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {allHospitals.map(h => (
-                      <SimilarHospitalCard key={h._id} hospital={{...h, city: getHospitalCity(h)}} />
-                    ))}
-                  </div>
+                  {/* MODIFIED: Changed heading to use serif font for visual consistency */}
+             
+                  <RichTextDisplay
+                    htmlContent={rawDescription}
+                    className="mt-0"
+                  />
                 </section>
-              </main>
+              )}
 
-              <aside className="lg:col-span-3 space-y-10 mt-10 lg:mt-0">
-                <div className="lg:sticky lg:top-16">
-                  <ContactForm />
-                </div>
-              </aside>
-            </div>
+              {/* Branches Section */}
+              {hospital.branches && hospital.branches.length > 0 && (
+                <BranchesSection
+                  hospital={hospital}
+                  selectedCity={selectedCity}
+                  allCityOptions={allCityOptions}
+                  visibleBranches={visibleBranches}
+                  filteredBranches={filteredBranches}
+                  setShowAllBranches={setShowAllBranches}
+                  showAllBranches={showAllBranches}
+                  setSelectedCity={setSelectedCity}
+                  hospitalSlug={hospitalSlugFromParams}
+                />
+              )}
+
+              {/* Doctors Section */}
+              {uniqueDoctors.length > 0 && (
+                <section className="bg-white rounded-xl border border-gray-100 p-4 md:p-8 shadow-md">
+                  <EmblaCarousel
+                    items={uniqueDoctors}
+                    title="Featured Specialist Doctors"
+                    icon={Users}
+                    type="doctors"
+                  />
+                </section>
+              )}
+
+              {/* Treatments Section */}
+              {uniqueTreatments.length > 0 && (
+                <section className="bg-white rounded-xl border border-gray-100 p-4 md:p-8 shadow-md">
+                  <EmblaCarousel
+                    items={uniqueTreatments}
+                    title="Popular Treatments & Procedures"
+                    icon={Heart}
+                    type="treatments"
+                  />
+                </section>
+              )}
+
+              {/* Similar Hospitals Section */}
+              {similarHospitals.length > 0 && (
+                <section className="bg-white rounded-xl border border-gray-100 p-4 md:p-8 shadow-md">
+                  <EmblaCarousel
+                    items={similarHospitals}
+                    title="Similar Hospitals Nearby"
+                    icon={Hospital}
+                    type="hospitals"
+                  />
+                </section>
+              )}
+            </main>
+
+            {/* Sidebar (MODIFIED: Added sticky classes for the contact form container) */}
+            <aside className="lg:col-span-3 space-y-10 mt-10 lg:mt-0">
+              {/* Contact Form Container (Elevated Container) */}
+              {/* New classes: sticky top-10 lg:sticky */}
+              <div className="lg:sticky lg:top-16">
+                <ContactForm />
+              </div>
+            </aside>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+    </div>
     )
   }
 
