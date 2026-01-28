@@ -321,7 +321,7 @@ const getAllExtendedTreatments = (hospitals: Hospital[]): Treatment[] => {
       branchTreatments.forEach((item) => {
         const treatmentDepartments: Department[] = []
         b.specialists?.forEach(spec => {
-          const hasThisTreatment = spec.treatments?.some(t => t._id === item._id)
+          const hasThisTreatment = spec.treatments?.some((t: any) => t._id === item._id)
           if (hasThisTreatment && spec.department) treatmentDepartments.push(...spec.department)
         })
         processTreatment(item, b, treatmentDepartments)
@@ -1156,6 +1156,37 @@ export default function TreatmentPage({ params }: TreatmentPageProps) {
               {treatment.category || 'Specialized Treatment'}
               {totalDoctors > 0 && ` - ${filteredDoctors.length} Specialist Doctors Available`}
             </p>
+
+            {/* Search Treatments Input */}
+            <div className="mt-6 max-w-md">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search treatments by name or specialist..."
+                  className="w-full pl-4 pr-12 py-3 bg-white/90 backdrop-blur-sm border border-white/20 rounded-sm text-sm text-gray-900 placeholder-gray-600 focus:bg-white focus:ring-2 focus:ring-[#74BF44]/50 focus:border-[#74BF44]/50 transition-all"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const query = (e.target as HTMLInputElement).value.trim()
+                      if (query) {
+                        router.push(`/search?view=treatments&treatment=${encodeURIComponent(query)}`)
+                      }
+                    }
+                  }}
+                />
+                <button
+                  onClick={(e) => {
+                    const input = e.currentTarget.previousElementSibling as HTMLInputElement
+                    const query = input.value.trim()
+                    if (query) {
+                      router.push(`/search?view=treatments&treatment=${encodeURIComponent(query)}`)
+                    }
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-[#74BF44] transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
 
           </div>
         </div>

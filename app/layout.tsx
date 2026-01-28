@@ -11,6 +11,7 @@ import 'slick-carousel/slick/slick-theme.css';
 
 import Script from 'next/script';
 import { WixAuthProvider } from '@/components/wix-auth-provider';
+import { ReactQueryProvider } from '@/app/providers';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Metadata } from 'next';
@@ -44,9 +45,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
           />
         </noscript>
 
-        <WixAuthProvider>
-          {/* Global Scripts: Using strategy="afterInteractive" is good for TBT/performance */}
-          <Script id="gtm-script" strategy="afterInteractive">
+        <ReactQueryProvider>
+          <WixAuthProvider>
+            {/* Global Scripts: Using strategy="afterInteractive" is good for TBT/performance */}
+            <Script id="gtm-script" strategy="afterInteractive">
             {`
               (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -65,10 +67,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
             `}
           </Script>
 
-          <Header />
-          {children}
-          <Footer />
-        </WixAuthProvider>
+            <Header />
+            {children}
+            <Footer />
+          </WixAuthProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

@@ -96,8 +96,9 @@ const mapWixItemToHospital = (item: any): Hospital => {
 
 const fetchHospitalsFromCollection = async (): Promise<Hospital[]> => {
     try {
-        // Wix Data query without explicit filters/sorting for simplicity
-        const response = await wixClient.data.query(COLLECTION_ID)
+        // Wix Data query with ShowHospital filter
+        const response = await wixClient.items.query(COLLECTION_ID)
+            .ne("ShowHospital", false) // Only show hospitals where ShowHospital is not false
             .limit(100) // Adjust limit as necessary
             .find()
 

@@ -1,6 +1,7 @@
 // app/api/hospitals/route.ts - UPDATED: Department Data Fix
 import { NextResponse } from "next/server";
 import { wixClient } from "@/lib/wixClient";
+import { shouldShowHospital, shouldShowHospitalForHospital } from "../utils";
 
 const COLLECTIONS = {
   BRANCHES: "BranchesMaster",
@@ -110,15 +111,46 @@ function getValue(item: any, ...keys: string[]): string | null {
 
 // DATA MAPPERS - UPDATED: REMOVED OFFEREDBYSPECIALISTS FROM TREATMENT
 const DataMappers = {
-  hospital: (item: any) => ({
-    _id: item._id || item.ID,
-    hospitalName: getValue(item, "hospitalName", "Hospital Name") || "Hospital",
-    description: extractRichText(item.description || item.data?.description || item.Description),
-    specialty: ReferenceMapper.multiReference(item.specialty, "specialty", "Specialty Name", "title", "name"),
-    yearEstablished: getValue(item, "yearEstablished", "Year Established"),
-    hospitalImage: item.hospitalImage || item.data?.hospitalImage || item["hospitalImage"],
-    logo: item.logo || item.data?.logo || item.Logo,
-  }),
+  hospital: (item: any, isFromBranch: boolean = false) => {
+    if (isFromBranch) {
+      const branchLogo =
+        item.logo ||
+        item.data?.logo ||
+        item.Logo ||
+        item.data?.Logo ||
+        item.branchLogo ||
+        item.data?.branchLogo ||
+        item.hospitalLogo ||
+        item.data?.hospitalLogo
+
+      return {
+        _id: `standalone-${item._id || item.ID}`,
+        hospitalName: getValue(item, "branchName", "hospitalName", "Hospital Name") || "Unknown Hospital",
+        description: extractRichText(item.description || item.data?.description || item.Description),
+        specialty: ReferenceMapper.multiReference(item.specialty, "specialty", "Specialty Name", "title", "name"),
+        yearEstablished: getValue(item, "yearEstablished", "Year Established"),
+        hospitalImage: item.branchImage || item.hospitalImage || item.data?.branchImage || item.data?.hospitalImage || item["Branch Image"],
+        logo: branchLogo,
+        isStandalone: true,
+        originalBranchId: item._id || item.ID,
+        branches: [],
+        doctors: [],
+        specialists: [],
+        treatments: [],
+        accreditations: [],
+      }
+    }
+
+    return {
+      _id: item._id || item.ID,
+      hospitalName: getValue(item, "hospitalName", "Hospital Name") || "Hospital",
+      description: extractRichText(item.description || item.data?.description || item.Description),
+      specialty: ReferenceMapper.multiReference(item.specialty, "specialty", "Specialty Name", "title", "name"),
+      yearEstablished: getValue(item, "yearEstablished", "Year Established"),
+      hospitalImage: item.hospitalImage || item.data?.hospitalImage || item["hospitalImage"],
+      logo: item.logo || item.data?.logo || item.Logo,
+    }
+  },
 
   branch: (item: any) => ({
     _id: item._id || item.ID,
@@ -169,6 +201,7 @@ const DataMappers = {
       }))
     ],
     popular: getValue(item, "popular") === "true",
+    
   }),
 
   // UPDATED: Doctor mapper with proper specialization mapping based on CSV
@@ -647,8 +680,8 @@ export async function GET(req: Request, { params }: { params: { slug: string } }
       .limit(1000);
 
     const branchResult = await branchQuery.find();
-    let foundBranch = null;
-    let foundHospital = null;
+    let foundBranch: any = null;
+    let foundHospital: any = null;
 
     // Search for matching branch
     for (const branch of branchResult.items) {
@@ -672,8 +705,10 @@ export async function GET(req: Request, { params }: { params: { slug: string } }
         const hospitalName = hospital.hospitalName || hospital["Hospital Name"] || "";
         const expectedSlug = generateSlug(hospitalName);
         if (expectedSlug === slug || hospitalName.toLowerCase().includes(slug.replace(/-/g, ' '))) {
-          foundHospital = hospital;
-          break;
+          if (shouldShowHospitalForHospital(hospital)) {
+            foundHospital = hospital;
+            break;
+          }
         }
       }
 
@@ -723,6 +758,11 @@ export async function GET(req: Request, { params }: { params: { slug: string } }
     }
 
     foundHospital = hospitalResult.items[0];
+
+    // Check if hospital should be shown
+    if (!shouldShowHospitalForHospital(foundHospital)) {
+      return NextResponse.json({ error: "Hospital not found" }, { status: 404 });
+    }
 
     // Get all branches for this hospital
     const allBranchesForHospital = branchResult.items.filter(b =>
@@ -869,7 +909,6 @@ async function enrichStandaloneBranch(branch: any) {
     doctors: mappedBranch.doctors.map((d: any) => doctors[d._id] || d),
     city: mappedBranch.city.map((c: any) => cities[c._id] || c),
     accreditation: mappedBranch.accreditation.map((a: any) => accreditations[a._id] || a),
-    specialists: mappedBranch.specialists.map((s: any) => enrichedSpecialists[s._id] || s),
     treatments: mappedBranch.treatments.map((t: any) => treatments[t._id] || t),
     specialization: mappedBranch.specialization.map((s: any) => {
       if (s.isTreatment) {
@@ -889,7 +928,7 @@ async function enrichStandaloneBranch(branch: any) {
   const uniqueTreatments = new Map();
 
   enrichedBranch.doctors.forEach((d: any) => d._id && uniqueDoctors.set(d._id, d));
-  enrichedBranch.specialists.forEach((s: any) => s._id && uniqueSpecialists.set(s._id, s));
+  enrichedBranch.specialization.filter((s: any) => !s.isTreatment && !s.isDepartment).forEach((s: any) => s._id && uniqueSpecialists.set(s._id, s));
   enrichedBranch.treatments.forEach((t: any) => t._id && uniqueTreatments.set(t._id, t));
 
   return {
