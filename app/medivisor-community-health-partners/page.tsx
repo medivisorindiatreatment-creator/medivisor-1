@@ -22,19 +22,19 @@ export default function Home() {
 
                 {/* RIGHT side text */}
                 <div className="relative z-30 flex h-full items-start mt-20 justify-end">
-                    <div className="w-[44%] px-6 md:pl-20 text-left">
-                        <p className="mb-2 inline-flex items-center gap-2 text-base md:text-xl font-medium">
-                            <MapPin className="w-5 h-5 text-white" />
-                            Papua New Guinea
-                        </p>
+                    <div className="w-[44%] px-6 md:pl-28 text-left">
+                      
 
-                        <h1 className="text-3xl md:text-[40px] font-medium leading-tight">
-                            Medivisor Expanded Patient Support Programme
+                        <h1 className="text-3xl md:text-[55px] font-medium leading-tight">
+                            Medivisor Expanded Patient Support Programme (PNG)
                         </h1>
 
                         <p className="mt-3 text-sm md:text-base text-gray-200">
-                            Helping Patients. Guiding Families. Saving Lives.
+                          
+Helping Patients. Guiding Families. Saving Lives.
+
                         </p>
+                        
                     </div>
                 </div>
 
