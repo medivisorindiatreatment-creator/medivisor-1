@@ -254,15 +254,16 @@ const BranchFilter = ({ allHospitals, initialSearch = "" }: BranchFilterProps) =
       })
 
       // Add treatments
-      const treatments = new Map<string, { name: string; hospitalName: string; city: string }>()
+      const treatments = new Map<string, { name: string; hospitalName: string; city: string; _id?: string }>()
       allHospitals.forEach(hospital => {
         const hospitalName = hospital.hospitalName || ''
         
         // Treatments directly under hospital
-        hospital.treatments?.forEach((treatment: TreatmentData) => {
-          if (treatment.name) {
-            const id = treatment._id || generateSlug(treatment.name)
-            treatments.set(id, { name: treatment.name, hospitalName, city: '' })
+        hospital.treatments?.forEach((treatment: any) => {
+          const name = extractProperName(treatment)
+          if (name && name !== 'Unknown') {
+            const id = treatment._id || generateSlug(name)
+            treatments.set(id, { name, hospitalName, city: '', _id: treatment._id })
           }
         })
         
@@ -272,9 +273,9 @@ const BranchFilter = ({ allHospitals, initialSearch = "" }: BranchFilterProps) =
           
           branch.treatments?.forEach((treatment: any) => {
             const name = extractProperName(treatment)
-            const id = treatment?._id || generateSlug(name)
-            if (name !== 'Unknown') {
-              treatments.set(id, { name, hospitalName, city: branchCity })
+            if (name && name !== 'Unknown') {
+              const id = treatment._id || generateSlug(name)
+              treatments.set(id, { name, hospitalName, city: branchCity, _id: treatment._id })
             }
           })
 
@@ -282,17 +283,17 @@ const BranchFilter = ({ allHospitals, initialSearch = "" }: BranchFilterProps) =
           branch.specialists?.forEach((specialist: SpecialistData) => {
             specialist.treatments?.forEach((treatment: TreatmentData) => {
               const name = extractProperName(treatment)
-              const id = treatment?._id || generateSlug(name)
-              if (name !== 'Unknown') {
-                treatments.set(id, { name, hospitalName, city: branchCity })
+              if (name && name !== 'Unknown') {
+                const id = treatment._id || generateSlug(name)
+                treatments.set(id, { name, hospitalName, city: branchCity, _id: treatment._id })
               }
             })
           })
         })
       })
-      treatments.forEach(({ name, hospitalName, city }, id) => {
+      treatments.forEach(({ name, hospitalName, city, _id }, id) => {
         options.push({ 
-          id, 
+          id: _id || id, 
           name, 
           type: 'treatment', 
           label: 'Treatment',
@@ -348,7 +349,10 @@ const BranchFilter = ({ allHospitals, initialSearch = "" }: BranchFilterProps) =
         url = `/search/?view=doctors&specialization=${encodeURIComponent(slug)}`
         break
       case 'treatment':
-        url = `/search/?view=doctors&treatment=${encodeURIComponent(slug)}`
+        // Use the option's actual ID if it's a UUID, otherwise use slug as query
+        const isUUID = (str: string): boolean => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str)
+        const treatmentParam = isUUID(option.id) ? option.id : slug
+        url = `/search/?view=treatments&treatment=${encodeURIComponent(treatmentParam)}`
         break
       case 'city':
         // This case will not be hit if city options are removed, but kept for type completeness.

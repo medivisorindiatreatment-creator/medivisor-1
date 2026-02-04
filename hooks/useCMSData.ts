@@ -351,9 +351,18 @@ const getDoctorsByTreatment = (
   if (!hospitals?.length) return []
   if (!treatmentId) return getAllExtendedDoctors(hospitals)
 
+  // Check if treatmentId is a UUID or a query slug
+  const isUUID = (str: string): boolean => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str)
+  const isTreatmentQuery = !isUUID(treatmentId)
+
   const treatmentBranchIds = new Set<string>()
+  const lowerTreatmentQuery = isTreatmentQuery ? treatmentId.toLowerCase() : ''
+
   allTreatments.forEach((t) => {
-    if (t._id === treatmentId) {
+    const matchesId = !isTreatmentQuery && t._id === treatmentId
+    const matchesQuery = isTreatmentQuery && t.name && t.name.toLowerCase().includes(lowerTreatmentQuery)
+    
+    if (matchesId || matchesQuery) {
       t.branchesAvailableAt?.forEach((loc) => {
         if (loc.branchId) treatmentBranchIds.add(loc.branchId)
       })
@@ -472,15 +481,25 @@ export const useCMSData = () => {
 
   const filteredDoctors = useMemo(() => {
     if (filters.treatment.id || filters.treatment.query) {
-      return getDoctorsByTreatment(allHospitals, filters.treatment.id || '', allTreatments)
+      // Use treatment ID if available, otherwise use the query
+      const treatmentParam = filters.treatment.id || filters.treatment.query
+      return getDoctorsByTreatment(allHospitals, treatmentParam, allTreatments)
     }
     return getAllExtendedDoctors(allHospitals)
   }, [allHospitals, filters.treatment, allTreatments])
 
   const filteredTreatments = useMemo(() => {
-    // If a specific treatment is selected, show only that treatment
+    // If a specific treatment ID is selected, show only that treatment
     if (filters.treatment.id) {
       return allTreatments.filter((t) => t._id === filters.treatment.id)
+    }
+
+    // If a treatment query (slug) is provided, filter by treatment name
+    if (filters.treatment.query) {
+      const lowerQuery = filters.treatment.query.toLowerCase()
+      return allTreatments.filter((t) => 
+        t.name && t.name.toLowerCase().includes(lowerQuery)
+      )
     }
 
     // If a doctor is selected, show only treatments related to that doctor

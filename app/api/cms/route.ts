@@ -39,12 +39,7 @@ export async function GET(req: Request) {
           )
         }
         const result = await getHospitalBySlug(slug)
-        // Also fetch all hospitals for SimilarHospitalsSection
-        const allData = await getAllCMSData()
-        return NextResponse.json({
-          hospital: result,
-          hospitals: allData.hospitals  // Include all hospitals for similar hospitals section
-        }, {
+        return NextResponse.json(result, {
           headers: {
             ...CACHE_HEADERS,
             'X-Request-Id': requestId,

@@ -43,7 +43,14 @@ function getValue(item: any, ...keys: string[]): string | null {
   for (const key of keys) {
     const value = item?.[key] ?? item?.data?.[key]
     if (value !== undefined && value !== null && value !== '') {
-      return typeof value === 'string' ? value : String(value)
+      if (typeof value === 'string') {
+        return value
+      }
+      if (typeof value === 'object') {
+        // Handle Wix CMS reference objects - try to get name/title from common fields
+        return value.name || value.title || value.state || value.StateName || value.stateName || value['State Name'] || null
+      }
+      return String(value)
     }
   }
   return null
@@ -164,6 +171,61 @@ export function generateSlug(name: string | null | undefined): string {
 // =============================================================================
 // DATA MAPPERS
 // =============================================================================
+
+// =============================================================================
+// STATE & CITY MAPPING
+// =============================================================================
+
+// Enhanced mapCity function that resolves state from StateMaster
+function mapCityWithStateRef(item: any, stateMap: Record<string, { _id: string; name: string }>): CityData {
+  const cityName = getValue(item, 'cityName', 'city name', 'name', 'City Name') || 'Unknown City'
+  
+  // Try to get state from reference first (Wix CMS stores state as a reference)
+  let state = 'Unknown State'
+  let stateId: string | undefined = undefined
+  
+  const stateRef = item.state || item.State || item.stateRef || item.state_master || item.stateMaster || item.StateMaster || item.StateMaster_state
+  
+  if (stateRef) {
+    if (typeof stateRef === 'object') {
+      // Direct state object with name
+      state = getValue(stateRef, 'state', 'State Name', 'name', 'title', 'State', 'stateName', 'StateName') || 'Unknown State'
+      stateId = stateRef._id || stateRef.ID
+    } else if (typeof stateRef === 'string') {
+      // It's an ID reference - lookup in stateMap
+      stateId = stateRef
+      const resolvedState = stateMap[stateRef]
+      if (resolvedState) {
+        state = resolvedState.name
+      }
+    }
+  }
+  
+  // Direct string fallback
+  if (state === 'Unknown State') {
+    state = getValue(item, 'state', 'State Name', 'stateName') || 'Unknown State'
+  }
+  
+  // Gujarat fallback cities including Navsari (for cities without proper state reference)
+  const lowerCityName = cityName.toLowerCase()
+  if (state === 'Unknown State') {
+    if (lowerCityName.includes("navsari") || lowerCityName.includes("ahmedabad") || 
+        lowerCityName.includes("surat") || lowerCityName.includes("vadodara") ||
+        lowerCityName.includes("rajkot") || lowerCityName.includes("bharuch") ||
+        lowerCityName.includes("jamnagar") || lowerCityName.includes("gandhinagar") ||
+        lowerCityName.includes(" Anand") || lowerCityName.includes("anand")) {
+      state = "Gujarat"
+    }
+  }
+  
+  return {
+    _id: item._id || item.ID,
+    cityName,
+    state,
+    stateId,
+    country: getValue(item, 'country', 'Country Name') || 'India',
+  }
+}
 
 function mapCity(item: any): CityData {
   return {
@@ -353,13 +415,43 @@ async function fetchAllTreatments(): Promise<any[]> {
   })
 }
 
+async function fetchAllStates(): Promise<Record<string, { _id: string; name: string }>> {
+  const cacheKey = 'all_states_map'
+  const cached = memoryCache.get<Record<string, { _id: string; name: string }>>(cacheKey)
+  if (cached) return cached
+
+  return memoryCache.dedupe(cacheKey, async () => {
+    const res = await wixClient.items
+      .query(COLLECTIONS.STATES)
+      .limit(500)
+      .find()
+
+    const stateMap: Record<string, { _id: string; name: string }> = {}
+    res.items.forEach((item: any) => {
+      const id = item._id || item.ID
+      const name = getValue(item, 'state', 'State Name', 'name', 'title', 'stateName', 'StateName') || 'Unknown State'
+      if (id) {
+        stateMap[id] = { _id: id, name }
+      }
+    })
+
+    memoryCache.set(cacheKey, stateMap, CACHE_CONFIG.HOSPITALS * 1000)
+    return stateMap
+  })
+}
+
 async function fetchAllCities(): Promise<any[]> {
   const cacheKey = 'all_cities'
   const cached = memoryCache.get<any[]>(cacheKey)
   if (cached) return cached
 
   return memoryCache.dedupe(cacheKey, async () => {
-    const res = await wixClient.items.query(COLLECTIONS.CITIES).limit(500).find()
+    // Fetch cities with state reference included
+    const res = await wixClient.items
+      .query(COLLECTIONS.CITIES)
+      .include('state', 'State', 'stateRef', 'stateMaster')
+      .limit(500)
+      .find()
 
     memoryCache.set(cacheKey, res.items, CACHE_CONFIG.CITIES * 1000)
     return res.items
@@ -432,9 +524,12 @@ async function enrichBranchesWithRelatedData(
     return mapped
   })
 
+  // Fetch states for proper city-state mapping
+  const stateMap = loadCities ? await fetchAllStates() : {}
+
   const [doctors, cities, accreditations] = await Promise.all([
     loadDoctors ? fetchByIds(COLLECTIONS.DOCTORS, Array.from(doctorIds), mapDoctor) : {} as Record<string, DoctorData>,
-    loadCities ? fetchByIds(COLLECTIONS.CITIES, Array.from(cityIds), mapCity) : {} as Record<string, CityData>,
+    loadCities ? fetchByIds(COLLECTIONS.CITIES, Array.from(cityIds), (item) => mapCityWithStateRef(item, stateMap)) : {} as Record<string, CityData>,
     loadAccreditations ? fetchByIds(COLLECTIONS.ACCREDITATIONS, Array.from(accreditationIds), mapAccreditation) : {} as Record<string, AccreditationData>,
   ])
 
@@ -460,7 +555,7 @@ export async function getAllCMSData(): Promise<CMSDataResponse> {
   if (cached) return cached
 
   return memoryCache.dedupe(cacheKey, async () => {
-    // Fetch all base data in parallel
+    // Fetch all base data in parallel including states
     const [rawHospitals, rawBranches, rawTreatments, rawCities, rawSpecialists] = await Promise.all([
       fetchAllHospitals(),
       fetchAllBranches(),
@@ -469,11 +564,14 @@ export async function getAllCMSData(): Promise<CMSDataResponse> {
       fetchAllSpecialists(),
     ])
 
-    // Build cities map
+    // Fetch all states for proper city-state mapping
+    const stateMap = await fetchAllStates()
+
+    // Build cities map with proper state resolution
     const citiesMap = new Map<string, CityData>()
     rawCities.forEach((city: any) => {
       if (city._id) {
-        citiesMap.set(city._id, mapCity(city))
+        citiesMap.set(city._id, mapCityWithStateRef(city, stateMap))
       }
     })
 

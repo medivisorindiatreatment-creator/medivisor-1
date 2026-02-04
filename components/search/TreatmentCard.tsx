@@ -95,13 +95,14 @@ const ScrollableTitle = ({ text, className, isHovered }: { text: string; classNa
 };
 
 const TreatmentCard = ({ treatment }: TreatmentCardProps) => {
-  const [isHovered, setIsHovered] = useState(false); // ADDED hover state
-  const slug = generateSlug(treatment.name)
+  const [isHovered, setIsHovered] = useState(false)
+  const slug = generateSlug(treatment.name || '')
   const imageUrl = getWixImageUrl(treatment.treatmentImage)
 
-  // ⭐ UPDATED: Location logic to include state name and display count
+  // Location logic to include state name and display count
   const primaryLocation = useMemo(() => {
-    const availLocs = treatment.filteredBranchesAvailableAt || treatment.branchesAvailableAt
+    // Handle both ExtendedTreatmentData and regular treatment data
+    const availLocs = (treatment as any).filteredBranchesAvailableAt || treatment.branchesAvailableAt
 
     if (!availLocs || availLocs.length === 0) {
       return { name: "Location Varies", cost: treatment.cost }
@@ -119,12 +120,15 @@ const TreatmentCard = ({ treatment }: TreatmentCardProps) => {
     }
   }, [treatment])
 
+  const handleMouseEnter = () => setIsHovered(true)
+  const handleMouseLeave = () => setIsHovered(false)
+
   return (
     <Link href={`/treatment/${slug}`} className="block">
       <article
         className="group bg-white rounded-xs md:mb-0 mb-5 shadow-sm md:shadow-xs transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col hover:shadow-sm border border-gray-100"
-        onMouseEnter={() => setIsHovered(true)} // ADDED handler
-        onMouseLeave={() => setIsHovered(false)} // ADDED handler
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <div className="relative h-72 md:h-48 overflow-hidden bg-gray-50">
           {treatment.popular && (

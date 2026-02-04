@@ -29,19 +29,7 @@ const EMBLA_SLIDE_SIZES = {
   lg: "lg:w-1/3",
 }
 
-const SimilarHospitalsSection = ({ 
-  currentHospitalId, 
-  currentBranchId, 
-  currentCity, 
-  displayCityName,
-  allHospitals // NEW: Pre-fetched hospitals data from server
-}: { 
-  currentHospitalId: string; 
-  currentBranchId: string; 
-  currentCity: string; 
-  displayCityName: string;
-  allHospitals?: any[]
-}) => {
+const SimilarHospitalsSection = ({ currentHospitalId, currentBranchId, currentCity, displayCityName }: { currentHospitalId: string; currentBranchId: string; currentCity: string; displayCityName: string }) => {
   const router = useRouter()
   const [branches, setBranches] = useState<any[]>([])
   const [allBranches, setAllBranches] = useState<any[]>([])
@@ -60,46 +48,7 @@ const SimilarHospitalsSection = ({
     setNextBtnDisabled(!emblaApi.canScrollNext())
   }, [])
 
-  // Process pre-fetched data on mount
-  useEffect(() => {
-    if (allHospitals && allHospitals.length > 0) {
-      // Extract all branches with hospital info from pre-fetched data
-      const allHospitalBranches = allHospitals
-        .flatMap((h: any) => (h.branches || []).map((b: any) => ({
-          ...b,
-          hospitalName: h.hospitalName,
-          yearEstablished: b.yearEstablished || h.yearEstablished,
-          logo: b.logo || h.logo,
-          accreditation: b.accreditation || h.accreditation
-        })))
-        .filter((b: any) => b?.branchName)
-        .sort((a: any, b: any) => (a.branchName || '').localeCompare(b.branchName || ''))
-
-      // Filter similar branches (same city, different hospital)
-      const similarBranches = allHospitalBranches
-        .filter((b: any) => {
-          const isInSameCity = b.city?.some((c: any) => 
-            c?.cityName?.toLowerCase().includes(currentCity.toLowerCase()) || 
-            currentCity.toLowerCase().includes(c?.cityName?.toLowerCase())
-          )
-          const isDifferentBranch = b._id !== currentBranchId
-          return isInSameCity && isDifferentBranch
-        })
-        .slice(0, 10)
-
-      setBranches(similarBranches)
-      setAllBranches(allHospitalBranches)
-      setLoading(false)
-    }
-  }, [allHospitals, currentHospitalId, currentBranchId, currentCity])
-
   const fetchData = useCallback(async (retryCount = 0) => {
-    // Skip if we already have data from pre-fetch
-    if (allHospitals && allHospitals.length > 0) {
-      setLoading(false)
-      return
-    }
-    
     try {
       setLoading(true)
       setError(false)

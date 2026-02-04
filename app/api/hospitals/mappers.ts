@@ -202,7 +202,7 @@ export const DataMappers = {
         stateName = "West Bengal"
         countryName = "India"
       } else if (lowerCityName.includes("ahmedabad") || lowerCityName.includes("surat") ||
-                 lowerCityName.includes("vadodara")) {
+                 lowerCityName.includes("vadodara") || lowerCityName.includes("navsari") || lowerCityName.includes("rajkot") || lowerCityName.includes("jamnagar") || lowerCityName.includes("bharuch") || lowerCityName.includes("gandhinagar")) {
         stateName = "Gujarat"
         countryName = "India"
       } else if (lowerCityName.includes("jaipur") || lowerCityName.includes("jodhpur") ||

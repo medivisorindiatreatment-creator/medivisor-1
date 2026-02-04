@@ -95,21 +95,50 @@ const ScrollableTitle = ({ text, className, isHovered }: { text: string; classNa
 };
 
 const HospitalCard = ({ branch }: HospitalCardProps) => {
-  const [isHovered, setIsHovered] = useState(false); // ADDED hover state
-  const slug = generateSlug(`${branch.branchName}`)
+  const [isHovered, setIsHovered] = useState(false)
+  
+  // Generate slug from branch name
+  const slug = generateSlug(`${branch.branchName || ''}`)
+  
+  // Get branch image URL
   const imageUrl = getWixImageUrl(branch.branchImage)
+  
+  // Get primary city for location display
   const primaryCity = branch.city?.[0] || null
-  const locationDisplay = formatLocation(primaryCity) // Format: "City, State, Country"
-  const hospitalLogoUrl = getWixImageUrl(branch.hospitalLogo)
-  const primarySpecialty = branch.specialization?.[0]?.name || "General Care"
+  const locationDisplay = formatLocation(primaryCity)
+  
+  // Get hospital logo URL - use the enriched hospitalLogo field or fallback to branch logo
+  const hospitalLogoUrl = getWixImageUrl(branch.hospitalLogo || branch.logo)
+  
+  // Get primary specialty - check both specialization and specialty fields
+  const getPrimarySpecialty = () => {
+    // Try specialization first (from enriched data)
+    if (branch.specialization && Array.isArray(branch.specialization) && branch.specialization.length > 0) {
+      const spec = branch.specialization[0]
+      return spec.name || "General Care"
+    }
+    // Fallback to specialty field
+    if (branch.specialty && Array.isArray(branch.specialty) && branch.specialty.length > 0) {
+      const spec = branch.specialty[0]
+      return spec.name || "General Care"
+    }
+    return "General Care"
+  }
+  
+  const primarySpecialty = getPrimarySpecialty()
+  
+  // Get accreditation logo URL
   const accreditationLogoUrl = getWixImageUrl(branch.accreditation?.[0]?.image)
 
+  const handleMouseEnter = () => setIsHovered(true)
+  const handleMouseLeave = () => setIsHovered(false)
+
   return (
-    <Link href={`/search/hospitals/${slug}`} prefetch className="block">
+    <Link href={`/search/hospitals/${slug}`} className="block">
       <article
         className="group bg-white rounded-xs shadow-sm md:mb-0 mb-5 md:shadow-xs transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col hover:shadow-sm border border-gray-300 md:border-gray-100"
-        onMouseEnter={() => setIsHovered(true)} // ADDED handler
-        onMouseLeave={() => setIsHovered(false)} // ADDED handler
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <div className="relative h-72 md:h-48 overflow-hidden bg-gray-50">
           {hospitalLogoUrl && (

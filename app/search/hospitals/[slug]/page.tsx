@@ -1,7 +1,7 @@
 import React from "react"
 import ContactForm from "@/components/ContactForm"
 import { Inter } from "next/font/google"
-import { extractUniqueTreatments, getBranchImage, getHospitalImage, getHospitalLogo, getWixImageUrl, generateSlug, fetchHospitalBySlug } from "./utils"
+import { extractUniqueTreatments, extractTreatmentsFromAllBranches, getBranchImage, getHospitalImage, getHospitalLogo, getWixImageUrl, generateSlug, fetchHospitalBySlug } from "./utils"
 import HeroSection from "./components/HeroSection"
 import Breadcrumb from "./components/Breadcrumb"
 import OverviewSection from "./components/OverviewSection"
@@ -133,23 +133,9 @@ export default async function BranchDetail({ params }: { params: Promise<{ slug:
   // Calculate derived data with validation
   // For group hospitals (multiple branches), collect treatments from ALL branches
   const isGroupHospital = Array.isArray(hospitalData.branches) && hospitalData.branches.length > 1
-  
-  // Use enriched treatments from hospital level (already mapped with all fields)
-  // Fall back to extracting from branches if hospital.treatments is empty
-  const hospitalTreatments = hospitalData?.treatments || []
-  
-  // For group hospitals, use enriched treatments from hospital level
-  // For single branch, extract from branch + specialists
-  const allTreatments = isGroupHospital
-    ? hospitalTreatments  // Use pre-enriched treatments from hospital
-    : (branch ? extractUniqueTreatments(branch) : [])
-  
-  // Debug: log treatment counts
-  console.log('Treatment debug:', {
-    isGroupHospital,
-    hospitalTreatmentsCount: hospitalTreatments.length,
-    allTreatmentsCount: allTreatments.length
-  })
+  const allTreatments = isGroupHospital 
+    ? extractTreatmentsFromAllBranches(hospitalData)  // Get treatments from ALL branches
+    : (branch ? extractUniqueTreatments(branch) : [])  // Single branch or standalone
   
   // Build unified specialists list from all branches for group hospitals
   const allSpecialists = (() => {
@@ -254,13 +240,7 @@ export default async function BranchDetail({ params }: { params: Promise<{ slug:
                   searchPlaceholder="Search doctors by name or Speciality..." 
                 />
               )}
-              <SimilarHospitalsSection 
-                currentHospitalId={hospital._id} 
-                currentBranchId={branch._id} 
-                currentCity={currentCity} 
-                displayCityName={displayCityName}
-                allHospitals={hospitalData.allHospitals}
-              />
+              <SimilarHospitalsSection currentHospitalId={hospital._id} currentBranchId={branch._id} currentCity={currentCity} displayCityName={displayCityName} />
             </div>
             <aside className="lg:col-span-3 space-y-8"><ContactForm /></aside>
           </div>

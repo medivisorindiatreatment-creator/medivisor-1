@@ -107,6 +107,16 @@ export const getValue = (item: any, ...keys: string[]): string | undefined => {
   for (const key of keys) {
     const val = item?.[key] ?? item?.data?.[key]
     if (val !== undefined && val !== null && val !== "") {
+      if (typeof val === 'string') {
+        return val.trim()
+      }
+      if (typeof val === 'object') {
+        // Handle Wix CMS reference objects - try to get name/title from common fields
+        const name = val.name || val.title || val.state || val.StateName || val.stateName || val['State Name'] || null
+        if (name) {
+          return String(name).trim()
+        }
+      }
       return String(val).trim()
     }
   }

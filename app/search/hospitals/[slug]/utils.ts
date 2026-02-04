@@ -255,11 +255,7 @@ export const fetchHospitalBySlug = async (slug: string) => {
       
       if (data.hospital) {
         console.timeEnd('fetchHospitalBySlug total')
-        // Return hospital with allHospitals for SimilarHospitalsSection
-        return { 
-          ...data.hospital, 
-          allHospitals: data.hospitals || [] 
-        }
+        return data.hospital
       }
     }
 
@@ -285,11 +281,7 @@ export const fetchHospitalBySlug = async (slug: string) => {
 
         if (matchingHospital) {
           console.timeEnd('fetchHospitalBySlug total')
-          // Return with allHospitals for SimilarHospitalsSection
-          return { 
-            ...matchingHospital, 
-            allHospitals: broadData.hospitals 
-          }
+          return matchingHospital
         }
 
         // If still not found, look for branches with matching names
@@ -304,8 +296,7 @@ export const fetchHospitalBySlug = async (slug: string) => {
             if (matchingBranch) {
               const result = {
                 ...hospital,
-                branches: [matchingBranch], // Return only the matching branch
-                allHospitals: broadData.hospitals // Include all hospitals for SimilarHospitalsSection
+                branches: [matchingBranch] // Return only the matching branch
               }
               console.timeEnd('fetchHospitalBySlug total')
               return result

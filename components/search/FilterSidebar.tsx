@@ -83,17 +83,22 @@ const FilterSidebar = ({
     const filter = filters[key]
     const options = availableOptions[key]
 
+    // Always show if filter is already applied
     if (filter.id || filter.query) return true
+    
+    // Check if key is in visible filter keys for current view
     if (!visibleFilterKeys.includes(key)) return false
-    if (options.length === 0) return false
+    
+    // If no options available, don't show
+    if (!options || options.length === 0) return false
 
+    // For primary filters (branch, doctor, treatment), show if there's at least 1 option
     if (isPrimaryFilter) {
-      return options.length >= 2
+      return options.length >= 1
     }
 
-    if (options.length < 2) return false
-
-    return true
+    // For secondary filters, show if there are at least 2 options
+    return options.length >= 2
   }, [filters, availableOptions, visibleFilterKeys])
 
   const cityValue = getFilterValueDisplay('city', filters, availableOptions)

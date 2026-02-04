@@ -95,21 +95,22 @@ const ScrollableTitle = ({ text, className, isHovered }: { text: string; classNa
 };
 
 const DoctorCard = ({ doctor }: DoctorCardProps) => {
-  const [isHovered, setIsHovered] = useState(false); // ADDED hover state
+  const [isHovered, setIsHovered] = useState(false)
+  
   // Helper to safely extract the name/title from a specialization object or return the string
   const getSpecializationName = (s: any): string => {
     if (typeof s === "object" && s !== null) {
-      return (s as any).name || (s as any).title || "";
+      return (s as any).name || (s as any).title || ""
     }
-    return String(s);
-  };
+    return String(s)
+  }
 
   // 1. Convert specialization data into a clean array of names
   const specializationArray = useMemo(() => {
     return (Array.isArray(doctor.specialization) ? doctor.specialization : [doctor.specialization])
       .map(getSpecializationName)
-      .filter(Boolean);
-  }, [doctor.specialization]);
+      .filter(Boolean)
+  }, [doctor.specialization])
 
   // 2. Determine the display string: Primary specialization + Count (+N)
   const specializationDisplay = useMemo(() => {
@@ -137,26 +138,29 @@ const DoctorCard = ({ doctor }: DoctorCardProps) => {
   // Location display: Format "City, State, Country"
   // All data fetched from Wix CMS, Delhi NCR cities normalized
   const primaryLocationDisplay = useMemo(() => {
-    const locations = doctor.filteredLocations || doctor.locations;
+    // Handle both ExtendedDoctorData and regular doctor data
+    const locations = (doctor as any).filteredLocations || doctor.locations
 
     if (!locations || locations.length === 0) {
-      return "Location not specified";
+      return "Location not specified"
     }
 
-    const first = locations[0];
-    const cityData = first?.cities?.[0];
+    const first = locations[0]
+    const cityData = first?.cities?.[0]
     
     // Format: "City, State, Country" (e.g., "Gurugram, Delhi NCR, India")
-    return formatLocation(cityData);
-  }, [doctor.filteredLocations, doctor.locations]);
+    return formatLocation(cityData)
+  }, [doctor])
 
+  const handleMouseEnter = () => setIsHovered(true)
+  const handleMouseLeave = () => setIsHovered(false)
 
   return (
     <Link href={`/doctors/${slug}`} className="block">
       <article
         className="group bg-white xs md:mb-0 mb-5 rounded-xs shadow-lg md:shadow-xs transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col hover:shadow-sm border border-gray-100"
-        onMouseEnter={() => setIsHovered(true)} // ADDED handler
-        onMouseLeave={() => setIsHovered(false)} // ADDED handler
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <div className="relative h-72 md:h-48 overflow-hidden bg-gray-50">
           {doctor.popular && (
