@@ -53,8 +53,8 @@ const SimilarHospitalsSection = ({ currentHospitalId, currentBranchId, currentCi
       setLoading(true)
       setError(false)
 
-      // Use pagination for large datasets - fetch only needed data
-      const res = await fetch(`/api/cms?action=all&page=0&pageSize=50`)
+      // Use pagination for large datasets - fetch all hospitals for similarity matching
+      const res = await fetch(`/api/cms?action=all&page=0&pageSize=100`)
       if (!res.ok) throw new Error('Failed to fetch hospitals')
       const data = await res.json()
       const hospitals = data.hospitals || []
@@ -98,8 +98,7 @@ const SimilarHospitalsSection = ({ currentHospitalId, currentBranchId, currentCi
           const isDifferentBranch = b._id !== currentBranchId
           return (isInSameCity || isInSameState) && isDifferentBranch
         })
-        // Limit to 12 similar hospitals for carousel display
-        .slice(0, 12)
+        // Show ALL similar hospitals (no limit)
 
       setBranches(similarBranches)
       setAllBranches(allHospitalBranches)

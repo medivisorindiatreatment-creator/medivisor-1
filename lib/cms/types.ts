@@ -38,6 +38,8 @@ export interface TreatmentData {
   cost?: string | null
   treatmentImage?: string | null
   popular?: boolean
+  // Branch references - populated from CMS via treatmentBranchMap
+  branchesAvailableAt?: TreatmentLocation[] | null
 }
 
 export interface DoctorData {

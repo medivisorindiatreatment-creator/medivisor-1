@@ -218,13 +218,13 @@ export default function Header() {
       >
         <nav className="flex justify-between container mx-auto items-center px-4 lg:px-0">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0 w-[260px] mr-10 ">
+          <Link href="/" className="flex-shrink-0 w-[150px] md:w-[260px] md:mr-10 ">
             <Image
               src="/logo-10.png"
               alt="Medivisor India Treatment Logo"
               width={260}
               height={85}
-              className={`w-full  object-contain transition-all duration-300 ${isScrolled ? 'h-16' : 'h-16'
+              className={`w-full  object-contain transition-all duration-300 ${isScrolled ? 'md:h-16 h-10' : 'm:h-16 h-10'
                 }`}
               priority // Add this line
             />
@@ -335,9 +335,9 @@ export default function Header() {
 
 
           </div>
-          <div className='w-[60%]'>
+          {/* <div className='md:w-[60%]  w-[70%]'>
             <BranchFilter allHospitals={allHospitals} />
-        </div>
+        </div> */}
           {/* CTA & Mobile Menu Toggle */}
           <div className="flex w-full md:w-1/6 items-center justify-end gap-3">
               {/* <button

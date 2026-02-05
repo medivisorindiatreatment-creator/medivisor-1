@@ -884,8 +884,27 @@ export async function getAllCMSData(): Promise<CMSDataResponse> {
     const treatmentBranchMap = new Map<string, Map<string, TreatmentLocation>>()
 
     // Then map branches to treatments (using treatmentNameToId from above)
-    hospitals.forEach((hospital) => {
-      hospital.branches.forEach((branch) => {
+  hospitals.forEach((hospital) => {
+    console.log(`[CMS] Processing hospital: ${hospital.hospitalName} with ${hospital.branches?.length || 0} branches`)
+    
+    hospital.branches.forEach((branch) => {
+      console.log(`[CMS] Branch: ${branch.branchName}, treatments count: ${branch.treatments?.length || 0}`)
+      console.log(`[CMS] Branch specialists count: ${branch.specialists?.length || 0}`)
+      
+      // Debug: Log treatment IDs
+      if (branch.treatments?.length > 0) {
+        console.log(`[CMS] Branch treatment IDs:`, branch.treatments.map(t => ({ id: t._id, name: t.name })))
+      }
+      
+      // Debug: Log specialist treatment info
+      branch.specialists?.forEach((spec: any, idx: number) => {
+        if (spec.treatments?.length > 0) {
+          console.log(`[CMS] Specialist[${idx}] ${spec.name} has ${spec.treatments?.length || 0} treatments`) 
+          if (spec.treatments?.length > 0) {
+            console.log(`[CMS] Specialist[${idx}] treatments:`, spec.treatments.map((t: any) => ({ id: t._id, name: t.name })))
+          }
+        }
+      })
         // Map treatments by ID
         branch.treatments.forEach((treatment: TreatmentData) => {
           if (!treatmentBranchMap.has(treatment._id)) {
@@ -1054,7 +1073,26 @@ export async function getAllCMSData(): Promise<CMSDataResponse> {
     // Build extended treatments from rawTreatments
     const treatments: ExtendedTreatmentData[] = rawTreatments.map((item: any) => {
       const treatment = mapTreatment(item)
-      const branchesMap = treatmentBranchMap.get(treatment._id)
+      
+      // Try to find branches by ID first
+      let branchesMap = treatmentBranchMap.get(treatment._id)
+      
+      // If not found by ID, try by treatment name
+      if (!branchesMap && treatment.name) {
+        const treatmentNameSlug = generateSlug(treatment.name)
+        
+        // Search through all treatmentBranchMap entries to find matching name
+        for (const [key, value] of treatmentBranchMap.entries()) {
+          // Check if the key matches the treatment name
+          if (key === treatmentNameSlug || key === treatment.name?.toLowerCase()) {
+            branchesMap = value
+            break
+          }
+        }
+      }
+      
+      console.log(`[CMS] Treatment "${treatment.name}" branches: ${branchesMap?.size || 0}`)
+      
       return {
         ...treatment,
         branchesAvailableAt: branchesMap ? Array.from(branchesMap.values()) : [],
@@ -1090,7 +1128,23 @@ export async function getAllCMSData(): Promise<CMSDataResponse> {
       totalTreatments: treatments.length,
       lastUpdated: new Date().toISOString(),
     }
-
+    
+    // Debug logging
+    console.log(`[CMS] Final - Hospitals: ${hospitals.length}, Treatments: ${treatments.length}`)
+    
+    // Debug: Check first hospital's branch treatments
+    if (hospitals.length > 0 && hospitals[0].branches?.length > 0) {
+      const firstBranch = hospitals[0].branches[0]
+      console.log(`[CMS] First branch (${firstBranch.branchName}) treatments: ${firstBranch.treatments?.length || 0}`)
+      
+      // Also check treatments from specialists
+      let specialistTreatmentsCount = 0
+      firstBranch.specialists?.forEach((spec: any) => {
+        specialistTreatmentsCount += spec.treatments?.length || 0
+      })
+      console.log(`[CMS] First branch specialist treatments: ${specialistTreatmentsCount}`)
+    }
+    
     memoryCache.set(cacheKey, response, CACHE_CONFIG.HOSPITALS * 1000)
     return response
   })
@@ -1182,7 +1236,6 @@ export async function getHospitalBySlug(slug: string): Promise<HospitalDetailRes
       
       return hasMatchingCity || hasMatchingState || hasMatchingAccreditation
     })
-    .slice(0, 6)
 
   return { hospital, similarHospitals }
 }

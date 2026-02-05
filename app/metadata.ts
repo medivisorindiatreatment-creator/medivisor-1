@@ -146,7 +146,7 @@ export const aboutMetadata: Metadata = {
 };
 
 export const pngExpendedMetadata: Metadata = {
-  title: 'Medivisor Community Health Partners PNG | Join Our Healthcare Network',
+  title: 'Serve PNG. Save Lives.',
   description:
     'Join the Medivisor Expanded Patient Support Network (PNG) as a Community Health Partner. Help bridge healthcare gaps between Papua New Guinea and India.',
 
@@ -171,7 +171,7 @@ export const pngExpendedMetadata: Metadata = {
   },
 
   openGraph: {
-    title: 'Medivisor Community Health Partners PNG | Join Our Healthcare Network',
+    title: 'Serve PNG. Save Lives.',
     description:
       'Join the Medivisor Expanded Patient Support Network (PNG) as a Community Health Partner.',
     url: 'https://medivisorindiatreatment.com/medivisor-expanded-patient-support-network-png',
@@ -193,7 +193,7 @@ export const pngExpendedMetadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Medivisor Community Health Partners PNG | Join Our Healthcare Network',
+    title: 'Serve PNG. Save Lives.',
     description:
       'Join the Medivisor Expanded Patient Support Network (PNG) as a Community Health Partner.',
     images: ['https://medivisorindiatreatment.com/PNG-Web-Banner-fb.jpg'],
@@ -593,7 +593,7 @@ export const contactMetadata: Metadata = {
 };
 
 export const pngNetworkMetadata: Metadata = {
-  title: 'Medivisor Community Health Partners PNG | Join Our Healthcare Network',
+  title: 'Serve PNG. Save Lives.',
   description: 'Join the Medivisor Expanded Patient Support Network (PNG) as a Community Health Partner. Help bridge healthcare gaps between Papua New Guinea and India. Earn respect, purpose, skills, and sustainable livelihood while saving lives.',
   keywords: [
     'Medivisor Community Health Partners',
@@ -612,7 +612,7 @@ export const pngNetworkMetadata: Metadata = {
     canonical: 'https://medivisorindiatreatment.com/medivisor-expanded-patient-support-network-png',
   },
   openGraph: {
-    title: 'Medivisor Community Health Partners PNG | Join Our Healthcare Network',
+    title: 'Serve PNG. Save Lives.',
     description: 'Join the Medivisor Expanded Patient Support Network (PNG) as a Community Health Partner. Help bridge healthcare gaps between Papua New Guinea and India.',
     url: 'https://medivisorindiatreatment.com/medivisor-expanded-patient-support-network-png',
     siteName: 'Medivisor India Treatment',
@@ -629,7 +629,7 @@ export const pngNetworkMetadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Medivisor Community Health Partners PNG | Join Our Healthcare Network',
+    title: 'Serve PNG. Save Lives.',
     description: 'Join the Medivisor Expanded Patient Support Network (PNG) as a Community Health Partner.',
     site: '@MedivisorIndia',
     images: ['https://medivisorindiatreatment.com/PNG-Web-Banner-fb.jpg'],

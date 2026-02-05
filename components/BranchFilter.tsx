@@ -27,6 +27,16 @@ interface WixTreatment {
 
 interface BranchFilterProps { allHospitals: HospitalData[]; initialSearch?: string }
 
+// Combined treatment type for all treatment sources
+interface AllTreatmentOption {
+  id: string
+  name: string
+  type: 'treatment'
+  label: string
+  hospitalName?: string
+  city?: string
+}
+
 // --- Utilities ---
 const slug = (v: string) => v.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-')
 
@@ -220,11 +230,112 @@ const SearchDropdown = ({
 const BranchFilter = ({ allHospitals, initialSearch = "" }: BranchFilterProps) => {
   const router = useRouter()
   const [query, setQuery] = useState(initialSearch)
-  const [wixTreatments, setWixTreatments] = useState<WixTreatment[]>([])
+  const [allTreatments, setAllTreatments] = useState<AllTreatmentOption[]>([])
+
+  // Fetch treatments from multiple sources
+  const fetchAllTreatments = useCallback(async () => {
+    try {
+      // 1. Fetch from Wix API (main TreatmentMaster collection)
+      const wixRes = await fetch('/api/treatments')
+      const wixData = await wixRes.json()
+      const wixTreatmentsData = (wixData.items || []) as WixTreatment[]
+
+      // 2. Collect treatments from all sources
+      const allTreatmentOptions: AllTreatmentOption[] = []
+      const seen = new Set<string>()
+
+      const addTreatment = (opt: AllTreatmentOption) => {
+        const key = `${opt.type}-${opt.id}`
+        if (!seen.has(key)) {
+          allTreatmentOptions.push(opt)
+          seen.add(key)
+        }
+      }
+
+      // Process Wix treatments
+      wixTreatmentsData.forEach((t) => {
+        if (t._id && t.name) {
+          const loc = t.branchesAvailableAt?.[0]
+          addTreatment({
+            id: t._id,
+            name: t.name,
+            type: 'treatment',
+            label: 'Treatment',
+            hospitalName: loc?.hospitalName || '',
+            city: loc?.cities?.[0]?.cityName || ''
+          })
+        }
+      })
+
+      // Process treatments from all hospitals and their branches/specialists
+      allHospitals.forEach(h => {
+        const hname = h.hospitalName || ''
+
+        // Hospital-level treatments
+        h.treatments?.forEach((t) => {
+          const name = getName(t)
+          if (name && name !== 'Unknown') {
+            const id = t._id || t.id || slug(name)
+            addTreatment({
+              id,
+              name,
+              type: 'treatment',
+              label: 'Treatment',
+              hospitalName: hname,
+              city: ''
+            })
+          }
+        })
+
+        h.branches?.forEach(b => {
+          const city = getCity(b.city)
+
+          // Branch-level treatments
+          b.treatments?.forEach((t) => {
+            const name = getName(t)
+            if (name && name !== 'Unknown') {
+              const id = t._id || t.id || slug(name)
+              addTreatment({
+                id,
+                name,
+                type: 'treatment',
+                label: 'Treatment',
+                hospitalName: hname,
+                city
+              })
+            }
+          })
+
+          // Specialist-level treatments
+          b.specialists?.forEach((s) => {
+            s.treatments?.forEach((t) => {
+              const name = getName(t)
+              if (name && name !== 'Unknown') {
+                const id = t._id || t.id || slug(name)
+                addTreatment({
+                  id,
+                  name,
+                  type: 'treatment',
+                  label: 'Treatment',
+                  hospitalName: hname,
+                  city
+                })
+              }
+            })
+          })
+        })
+      })
+
+      setAllTreatments(allTreatmentOptions)
+    } catch (error) {
+      console.error('Error fetching treatments:', error)
+      setAllTreatments([])
+    }
+  }, [allHospitals])
 
   useEffect(() => {
-    fetch('/api/treatments').then(r => r.json()).then(d => setWixTreatments(d.items || [])).catch(console.error)
-  }, [])
+    fetchAllTreatments()
+  }, [fetchAllTreatments])
 
   const options = useMemo(() => {
     const opts: UniversalOption[] = []
@@ -235,7 +346,7 @@ const BranchFilter = ({ allHospitals, initialSearch = "" }: BranchFilterProps) =
     // Specialties
     const specs = new Map<string, string>()
     allHospitals.forEach(h => {
-      h.doctors?.forEach(d => {
+      h.doctors?.forEach((d: DoctorData) => {
         (Array.isArray(d.specialization) ? d.specialization : [d.specialization]).forEach(s => {
           if (s) { const id = s._id || slug(s.name || ''); if (id) specs.set(id, s.name || '') }
         })
@@ -249,22 +360,26 @@ const BranchFilter = ({ allHospitals, initialSearch = "" }: BranchFilterProps) =
     // Doctors
     allHospitals.forEach(h => {
       const hname = h.hospitalName || ''
-      h.doctors?.forEach(d => { if (d._id && d.doctorName) add({ id: d._id, name: getName(d.doctorName), type: 'doctor', label: 'Doctor', hospitalName: hname }) })
+      h.doctors?.forEach((d: DoctorData) => { if (d._id && d.doctorName) add({ id: d._id, name: getName(d.doctorName), type: 'doctor', label: 'Doctor', hospitalName: hname }) })
     })
 
-    // Wix Treatments
-    wixTreatments.forEach(t => {
-      if (t._id && t.name) {
-        const loc = t.branchesAvailableAt?.[0]
-        add({ id: t._id, name: t.name, type: 'treatment', label: 'Treatment', hospitalName: loc?.hospitalName || '', city: loc?.cities?.[0]?.cityName || '' })
-      }
+    // Treatments from all sources (Wix API + hospitals + branches + specialists)
+    allTreatments.forEach((t) => {
+      add({
+        id: t.id,
+        name: t.name,
+        type: 'treatment',
+        label: 'Treatment',
+        hospitalName: t.hospitalName || '',
+        city: t.city || ''
+      })
     })
 
-    // Hospital Treatments
+    // Hospital Treatments (fallback - in case any were missed)
     const treatments = new Map<string, UniversalOption>()
     allHospitals.forEach(h => {
       const hname = h.hospitalName || ''
-      h.treatments?.forEach(t => {
+      h.treatments?.forEach((t: TreatmentData) => {
         const name = getName(t)
         if (name && name !== 'Unknown') {
           const id = t._id || t.id || slug(name)
@@ -302,7 +417,7 @@ const BranchFilter = ({ allHospitals, initialSearch = "" }: BranchFilterProps) =
     })
 
     return opts.sort((a, b) => a.name.localeCompare(b.name))
-  }, [allHospitals, wixTreatments])
+  }, [allHospitals, allTreatments])
 
   const handleSelect = useCallback((id: string, type: UniversalOption['type']) => {
     const opt = options.find(o => o.id === id && o.type === type)
