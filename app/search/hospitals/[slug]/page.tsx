@@ -310,7 +310,7 @@ export default async function BranchDetail({ params }: { params: Promise<{ slug:
                   title="Available Treatments" 
                   items={allTreatments} 
                   type="treatment" 
-                  searchPlaceholder="Search treatments by name or specialist..." 
+                  searchPlaceholder="Search treatment by name" 
                 />
               )}
               {(isGroupHospital ? allDoctors.length > 0 : branch.doctors?.length > 0) && (

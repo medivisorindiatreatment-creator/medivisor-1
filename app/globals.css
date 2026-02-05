@@ -106,6 +106,7 @@ body {
 .first-heading .font_4:first-child {
    font-weight: 400;
   font-size: 28px;
+  margin-bottom: 5px;
 }
 
 .font_8 strong{

@@ -146,7 +146,7 @@ const SimilarHospitalsSection = ({ currentHospitalId, currentBranchId, currentCi
             Similar Hospitals in {displayCityName}
           </h2>
           <div className="relative w-full md:w-80">
-            <SearchDropdown value={searchTerm} onChange={setSearchTerm} placeholder="Search hospital by name and city" options={searchOptions} onOptionSelect={handleSelect} onClear={() => setSearchTerm("")} type="branch" />
+            <SearchDropdown value={searchTerm} onChange={setSearchTerm} placeholder="Search hospital by name or city" options={searchOptions} onOptionSelect={handleSelect} onClear={() => setSearchTerm("")} type="branch" />
           </div>
         </div>
       </div>

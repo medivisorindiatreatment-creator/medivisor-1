@@ -37,12 +37,7 @@ const SimilarHospitalCard = ({ hospital }: { hospital: HospitalWithBranchPreview
             {hospital.hospitalName}
           </InfiniteHoverScroll>
         </div>
-        {hospitalCity && (
-          <p className="text-sm text-gray-600 flex items-center gap-1.5">
-            <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
-            <span className="truncate">{hospitalCity}</span>
-          </p>
-        )}
+       
       </div>
     </Link>
   )

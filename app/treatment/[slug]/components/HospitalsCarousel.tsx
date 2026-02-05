@@ -61,9 +61,9 @@ export default function HospitalsCarousel({ title, hospitals, totalHospitals }: 
 
   return (
     <section className="bg-white rounded-sm border border-gray-100 p-4 md:p-6 shadow-sm">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
         <h3 className="text-xl font-medium text-gray-900">
-          {totalHospitals} Hospital{totalHospitals !== 1 ? "s" : ""} Offering {title}
+         Related Hospitals
         </h3>
       </div>
 

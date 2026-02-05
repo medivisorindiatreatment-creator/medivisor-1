@@ -428,7 +428,7 @@ const BranchFilter = ({ allHospitals, initialSearch = "" }: BranchFilterProps) =
     switch (type) {
       case 'doctor': url = `/doctors/${s}`; break
       case 'specialty': url = `/search/?view=doctors&specialization=${s}`; break
-      case 'treatment': url = `/search/?view=treatments&treatment=${isUUID(opt.id) ? opt.id : s}`; break
+      case 'treatment': url = `/search/?treatment/=${isUUID(opt.id) ? opt.id : s}`; break
       case 'city': url = `/search/?view=hospitals&city=${s}`; break  // City now shows only hospitals
       case 'branch': url = `/search/hospitals/${s}`; break
     }

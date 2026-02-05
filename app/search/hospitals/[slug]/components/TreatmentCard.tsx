@@ -38,11 +38,7 @@ const TreatmentCard = ({ item }: { item: any }) => {
         </div>
         
         {/* Specialist Name */}
-        {specialistName && (
-          <p className="text-sm text-gray-500 mt-1 truncate">
-            {specialistName}
-          </p>
-        )}
+        
         
         {/* Cost */}
         {cost && (

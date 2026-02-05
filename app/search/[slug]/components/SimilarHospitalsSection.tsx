@@ -11,7 +11,7 @@ const SimilarHospitalsSection = ({ similarHospitals }: { similarHospitals: Hospi
     <section className="bg-white rounded-xl border border-gray-100 p-4 md:p-8 shadow-md">
       <EmblaCarousel
         items={similarHospitals}
-        title="Similar Hospitals Nearby"
+        title="Similar Hospital Groups"
         icon={Hospital}
         type="hospitals"
       />

@@ -331,7 +331,7 @@ export default function ContactForm() {
       case "doctor":
         return "Submit Doctor Request";
       case "group_hospital": // 5. NEW TEXT
-        return "Submit Group Hospital Request";
+        return "Submit";
       case "medivisor":
       default:
         return "Submit Consultation Request";
