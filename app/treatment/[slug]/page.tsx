@@ -17,14 +17,17 @@ export const revalidate = 3600 // Revalidate every hour
 
 interface TreatmentPageProps {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ tid?: string }>
 }
 
-export default async function TreatmentPage({ params }: TreatmentPageProps) {
+export default async function TreatmentPage({ params, searchParams }: TreatmentPageProps) {
   const resolvedParams = await params
+  const resolvedSearchParams = await searchParams
   const { slug } = resolvedParams
+  const treatmentId = resolvedSearchParams.tid
 
-  // Fetch treatment data on server
-  const treatmentData = await findTreatmentWithHospitalsAndDoctors(slug)
+  // Fetch treatment data on server (pass treatmentId for reliable matching)
+  const treatmentData = await findTreatmentWithHospitalsAndDoctors(slug, treatmentId)
 
   // Handle loading/error states
   if (!treatmentData) {

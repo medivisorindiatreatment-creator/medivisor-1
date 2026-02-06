@@ -6,17 +6,32 @@ import { Scissors } from "lucide-react"
 import MarqueeHeading from "./MarqueeHeading"
 import { generateSlug, getTreatmentImage } from "../utils"
 
-const TreatmentCard = ({ item }: { item: any }) => {
+interface TreatmentCardProps {
+  item: any
+  showSpecialty?: boolean
+}
+
+const TreatmentCard = ({ item, showSpecialty = false }: TreatmentCardProps) => {
   const [isHovered, setIsHovered] = useState(false)
   const treatmentImage = getTreatmentImage(item.treatmentImage || item.image)
   const itemName = item.name || item.title || 'N/A Treatment'
   const itemSlug = generateSlug(itemName)
+  const treatmentId = item._id || item.id || ''
   const specialistName = item.specialistName
   const cost = item.startingCost || item.cost
+  const specialty = item.specialty || item.category || ''
+
+  // Build redirect URL - use treatment ID if available for reliable matching
+  const getHref = () => {
+    if (treatmentId) {
+      return `/treatment/${itemSlug}?tid=${treatmentId}`
+    }
+    return `/treatment/${itemSlug}`
+  }
 
   return (
     <Link
-      href={`/treatment/${itemSlug}`}
+      href={getHref()}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="group flex flex-col h-full bg-white border md:border-gray-100 border-gray-200 rounded-xs shadow-lg md:shadow-sm hover:shadow-md overflow-hidden transition-all focus:outline-none focus:ring-2 focus:ring-gray-400/50"
@@ -38,7 +53,18 @@ const TreatmentCard = ({ item }: { item: any }) => {
         </div>
         
         {/* Specialist Name */}
-        
+        {/* {specialistName && (
+          <p className="text-sm text-gray-500 mt-1">
+            By: {specialistName}
+          </p>
+        )}
+         */}
+        {/* Specialty/Category */}
+        {showSpecialty && specialty && (
+          <p className="text-xs text-gray-400 mt-1 uppercase tracking-wide">
+            {specialty}
+          </p>
+        )}
         
         {/* Cost */}
         {cost && (

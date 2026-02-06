@@ -89,7 +89,8 @@ const CarouselSection = ({ title, items, type, searchPlaceholder, onSearchSelect
             <SearchDropdown value={searchTerm} onChange={setSearchTerm} placeholder={searchPlaceholder} options={searchOptions} onOptionSelect={(id) => {
               if (type === 'treatment') {
                 const slug = getSlugById(id);
-                router.push(`/search?treatment=${slug}&view=treatments`);
+                // Redirect to treatment page with treatment ID for reliable matching
+                router.push(`/treatment/${slug}?tid=${id}`);
               } else {
                 onSearchSelect?.(id);
               }

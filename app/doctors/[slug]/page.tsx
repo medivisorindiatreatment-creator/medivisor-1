@@ -1,6 +1,7 @@
 // app/doctors/[slug]/page.tsx
 "use client"
 import { useState, useEffect, useMemo, useCallback, useRef } from "react"
+import type { ReactNode } from "react"
 import type { HospitalType, ExtendedDoctorType, BranchType, CityType, SpecialtyType, TreatmentType } from "@/types/hospital"
 import {
   Users,
@@ -40,6 +41,7 @@ import ContactForm from "@/components/ContactForm"
 import { Inter } from "next/font/google"
 import useEmblaCarousel, { EmblaOptionsType } from 'embla-carousel-react'
 import { findDoctorBySlug, getAllHospitalsData, getAllDoctorsWithLocations } from "./utils"
+import RichTextDisplay from "@/lib/ui/RichTextDisplay"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -118,16 +120,16 @@ const getShortDescription = (richContent: any, maxLength: number = 200): string 
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 }
 
-const renderRichText = (richContent: any): JSX.Element | null => {
+const renderRichText = (richContent: any): ReactNode | null => {
   // Handle null/undefined
   if (!richContent) return null
   
   // Handle plain HTML string from Wix CMS
   if (typeof richContent === 'string') {
     return (
-      <div 
-        className={`text-base text-gray-700 leading-relaxed space-y-3 prose prose-sm max-w-none font-light wix-rich-text ${inter.variable}`}
-        dangerouslySetInnerHTML={{ __html: richContent }} 
+      <RichTextDisplay 
+        htmlContent={richContent} 
+        className={`text-base text-gray-700 leading-relaxed space-y-3 prose prose-sm max-w-none font-light wix-rich-text ${inter.variable}`} 
       />
     )
   }
@@ -144,9 +146,9 @@ const renderRichText = (richContent: any): JSX.Element | null => {
   // Handle other object formats (e.g., HTML in 'html' property)
   if (richContent.html && typeof richContent.html === 'string') {
     return (
-      <div 
-        className={`text-base text-gray-700 leading-relaxed space-y-3 prose prose-sm max-w-none font-light wix-rich-text ${inter.variable}`}
-        dangerouslySetInnerHTML={{ __html: richContent.html }} 
+      <RichTextDisplay 
+        htmlContent={richContent.html} 
+        className={`text-base text-gray-700 leading-relaxed space-y-3 prose prose-sm max-w-none font-light wix-rich-text ${inter.variable}`} 
       />
     )
   }
@@ -154,7 +156,7 @@ const renderRichText = (richContent: any): JSX.Element | null => {
   return null
 }
 
-const renderNode = (node: any, index: number): JSX.Element | null => {
+const renderNode = (node: any, index: number): ReactNode | null => {
   if (!node) return null
   
   // Handle text node directly
@@ -287,7 +289,7 @@ const renderNode = (node: any, index: number): JSX.Element | null => {
   }
 }
 
-const renderListItemNode = (node: any, index: number): JSX.Element | null => {
+const renderListItemNode = (node: any, index: number): ReactNode | null => {
   if (!node) return null
   
   // If it's already a list item

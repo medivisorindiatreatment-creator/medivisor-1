@@ -216,6 +216,9 @@ function buildTreatmentToBranchesMap(treatments: ExtendedTreatmentData[]): Map<s
         treatmentToBranches.set(treatmentName, branches)
       }
       
+      // Also store by original slug variation
+      treatmentToBranches.set(treatmentName.replace(/\s+/g, '-'), branches)
+      
       console.log(`[TreatmentPage] Treatment "${treatment.name}" -> branches: ${branches.length}`)
     }
   })
@@ -228,7 +231,8 @@ function buildTreatmentToBranchesMap(treatments: ExtendedTreatmentData[]): Map<s
  * Uses direct CMS library for efficient data access
  */
 export async function findTreatmentWithHospitalsAndDoctors(
-  slug: string
+  slug: string,
+  treatmentId?: string
 ): Promise<TreatmentWithHospitalsAndDoctors | null> {
   try {
     // Fetch all CMS data using the centralized service
@@ -241,15 +245,29 @@ export async function findTreatmentWithHospitalsAndDoctors(
     
     console.log("[TreatmentPage] Total treatments:", treatments.length)
     console.log("[TreatmentPage] Total hospitals:", hospitals.length)
+    console.log("[TreatmentPage] Looking for treatment with ID:", treatmentId)
     
     // Normalize slug
     const normalizedSlug = normalizeSlug(slug)
     
-    // Find treatment by slug
-    const treatment = treatments.find((t: ExtendedTreatmentData) => {
-      const treatmentSlug = generateSlug(t.name)
-      return treatmentSlug === normalizedSlug || treatmentSlug === slug
-    })
+    // Find treatment by ID first (most reliable), then by slug
+    let treatment: ExtendedTreatmentData | undefined
+    
+    if (treatmentId) {
+      // Try to find by ID first
+      treatment = treatments.find((t: ExtendedTreatmentData) => t._id === treatmentId)
+      if (treatment) {
+        console.log("[TreatmentPage] Found treatment by ID:", treatment.name)
+      }
+    }
+    
+    // If not found by ID, try slug
+    if (!treatment) {
+      treatment = treatments.find((t: ExtendedTreatmentData) => {
+        const treatmentSlug = generateSlug(t.name)
+        return treatmentSlug === normalizedSlug || treatmentSlug === slug
+      })
+    }
     
     if (!treatment) {
       console.warn("[TreatmentPage] Treatment not found for slug:", slug)

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Inter } from "next/font/google"
-import RichTextDisplay from "./RichTextDisplay"
+import RichTextDisplay from "@/lib/ui/RichTextDisplay"
 
 const inter = Inter({
   subsets: ["latin"],
