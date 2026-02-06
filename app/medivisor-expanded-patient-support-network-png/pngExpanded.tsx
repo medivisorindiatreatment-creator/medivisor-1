@@ -73,7 +73,7 @@ export default function Home() {
                                     </p>
                                 </div>
                                 <p className="font-semibold text-gray-900 mt-6">Our Services Include:</p>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                <div className="grid grid-cols-1 gap-3 mt-3">
                                     {[
                                         "Hospital and doctor selection",
                                         "Treatment planning with transparent costing",
@@ -98,55 +98,21 @@ export default function Home() {
 
                         {/* Section 3: What Is This Programme About? */}
                         <section className="rounded-xl bg-white p-4 md:p-8 shadow-xs border border-gray-100">
+                           
                             <div className="flex items-center mb-6">
+                                
                                 <div className="h-10 w-1 bg-[#E22026] rounded-full mr-4"></div>
                                 <h2 className="text-2xl font-bold text-gray-900">
                                     What Is This Network About?
                                 </h2>
                             </div>
                             <div className="space-y-4 text-gray-700 leading-relaxed">
-                                <p className="font-semibold text-gray-900">
-                                    The Medivisor Expanded Patient Support Network (PNG) is a community-based initiative created to:
+                                <p className="font-normal text-gray-900">
+                                    The Medivisor Expanded Patient Support Network (PNG) is a community-based support initiative created to assist patients across Papua New Guinea who struggle to access timely and appropriate medical treatment due to limited local resources or specialised expertise.
                                 </p>
-                                <ul className="space-y-3">
-                                    {[
-                                        "Provide trusted guidance to patients and families",
-                                        "Help them reach the right doctors and hospitals",
-                                        "Protect them from wrong advice and wasted money",
-                                        "Support them throughout the entire treatment journey"
-                                    ].map((item, index) => (
-                                        <li key={index} className="flex items-start">
-                                            <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-3 mt-0.5">
-                                                <div className="h-2 w-2 rounded-full bg-gray-600"></div>
-                                            </div>
-                                            <span>{item}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <p className="font-semibold text-gray-900 mt-6">A Medivisor Community Health Partner Is:</p>
-                                <ul className="space-y-3">
-                                    {[
-                                        "A guide for patients",
-                                        "A support system for families",
-                                        "A bridge between the community and reliable treatment",
-                                        "A trusted local point of contact"
-                                    ].map((item, index) => (
-                                        <li key={index} className="flex items-start">
-                                            <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-3 mt-0.5">
-                                                <div className="h-2 w-2 rounded-full bg-gray-600"></div>
-                                            </div>
-                                            <span>{item}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <div className="mt-6 p-6 bg-gray-50 rounded-xl border border-gray-200">
-                                    <p className="font-semibold text-gray-900 text-lg">
-                                        You are not an agent. You are not a broker.
-                                    </p>
-                                    <p className="mt-2 text-gray-700">
-                                        You are a community health guide and support person.
-                                    </p>
-                                </div>
+                            
+                            
+                            
                             </div>
                         </section>
 
@@ -163,14 +129,14 @@ export default function Home() {
                                     As a Medivisor Community Health Partner and Health Ambassador, you are not just performing a role — you are serving a purpose.
                                 </p>
                                 <p className="font-semibold text-gray-900 mt-4">You will:</p>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                <div className="grid grid-cols-1  gap-3 mt-3">
                                     {[
-                                        "Meet and listen to patients and their families",
-                                        "Help collect and organize medical reports",
-                                        "Arrange online consultations with doctors in India",
-                                        "Guide patients through documentation and travel processes",
+                                         "Meet and listen to patients and their families in need",
+                                        "Collect medical reports and share them via WhatsApp at +91 8340780250",
+                                        "Receive the treatment plan and cost quotation from Medivisor and help families understand the details clearly",
+                                        "Guide patients through documentation and travel processes (Medivisor will support you at every step)",
                                         "Stay connected with families throughout the treatment journey",
-                                        "Act as their local support and guidance point"
+                                        "Act as their trusted local support and guidance point"
                                     ].map((item, index) => (
                                         <div key={index} className="flex items-start">
                                             <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-3 mt-0.5">
@@ -196,7 +162,7 @@ export default function Home() {
                                 <ul className="space-y-3">
                                     {[
                                         "Review and guide all medical cases",
-                                        "Connect patients to the right hospitals and doctors",
+                                        "Provide clear treatment plans and cost breakdowns for each case",
                                         "Plan and manage treatment in India",
                                         "Handle hospital coordination, stay, and local support",
                                         "Provide training, guidance, and working materials",
@@ -228,7 +194,7 @@ export default function Home() {
                             </div>
                             <div className="space-y-4 text-gray-700 leading-relaxed">
                                 <p>
-                                    To help Community Health Partners serve patients full-time and continue this work sustainably, Medivisor provides a simple and transparent support structure per patient.
+                                    To help Community Health Partners serve patients full-time and continue this work sustainably, Medivisor provides a simple and transparent support structure (500 PGK) per patient.
                                 </p>
                                 <div className="flex items-center space-x-4 my-4">
                                     <div className="flex items-center">
@@ -262,7 +228,7 @@ export default function Home() {
                                 <p className="font-semibold text-gray-900">
                                     We welcome individuals and organizations who:
                                 </p>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <div className="grid grid-cols-1  gap-4 mt-4">
                                     {[
                                         "Are socially motivated and respected in their community",
                                         "Have a service-oriented mindset",

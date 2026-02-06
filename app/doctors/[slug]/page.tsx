@@ -157,7 +157,7 @@ const renderRichText = (richContent: any): ReactNode | null => {
 }
 
 const renderNode = (node: any, index: number): ReactNode | null => {
-  if (!node) return null
+  if (!node) return null``
   
   // Handle text node directly
   if (node.type === 'TEXT' || !node.type) {

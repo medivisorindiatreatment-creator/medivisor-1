@@ -23,7 +23,7 @@ export default function PNGBanner() {
 
                 {/* Right Content */}
                 <div className="absolute right-20 top-10 z-30 max-w-xl text-white">
-                    <h1 className="text-4xl lg:text-5xl font-bold leading-tight uppercase">
+                    <h1 className="text-6xl lg:text-5xl font-bold leading-tight uppercase">
                         Medivisor Expanded <br />
                         Patient Support <br />
                         Network (PNG)
@@ -62,8 +62,8 @@ export default function PNGBanner() {
                 />
 
                 {/* Overlay Content */}
-                <div className="absolute top-5 right-2 w-[85%] flex flex-col justify-end px-5 pb-6 text-right">
-                    <h1 className="text-lg  text-right font-bold text-white leading-snug uppercase">
+                <div className="absolute top-1 right-1 w-[85%] flex flex-col justify-end px-2 pb-6 text-right">
+                    <h1 className="text-3xl  text-right font-bold text-white leading-snug uppercase">
                         Medivisor Expanded Patient Support Network (PNG)
                     </h1>
 
