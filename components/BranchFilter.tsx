@@ -174,8 +174,8 @@ const SearchDropdown = ({
   }
 
   return (
-    <div ref={ref} className="relative w-full max-w-xl mx-auto">
-      <div className="relative">
+    <div ref={ref} className="md:relative w-full max-w-xl mx-auto">
+      <div className="md:relative">
         <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
         <input
           type="text" value={value} autoComplete="off"
@@ -191,7 +191,7 @@ const SearchDropdown = ({
         )}
       </div>
       {isOpen && filtered.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-y-auto">
+        <div className="absolute w-[98%] mx-auto left-0 right-0 z-50 md:mt-1.5 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-y-auto md:left-auto md:right-auto md:w-full">
           {filtered.map(opt => (
             <button
               key={`${opt.type}-${opt.id}`}

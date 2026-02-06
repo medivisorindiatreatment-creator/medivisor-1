@@ -56,32 +56,12 @@ export default function PNGBanner() {
             <div className="relative md:hidden w-full">
                 {/* Mobile Image */}
                 <img
-                    src="/png-banner-mobile.png"
+                    src="/PNG-Web-Banner-fb.jpg"
                     alt="Medivisor PNG Mobile Banner"
                     className="w-full h-auto object-cover"
                 />
 
-                {/* Overlay Content */}
-                <div className="absolute top-1 right-1 w-[85%] flex flex-col justify-end px-2 pb-6 text-right">
-                    <h1 className="text-3xl  text-right font-bold text-white leading-snug uppercase">
-                        Medivisor Expanded Patient Support Network (PNG)
-                    </h1>
-
-                    <button
-                        className="mt-4  text-right ml-auto  text-right w-fit bg-green-500 text-white font-semibold px-6 py-2 rounded-md"
-                    >
-                        JOIN US
-                    </button>
-                </div>
-
-                {/* Mobile Logo */}
-                <div className="absolute top-0 left-4">
-                    <img
-                        src="/icon/Whale-logo.png"
-                        alt="Whale Certified"
-                        className="w-12"
-                    />
-                </div>
+               
             </div>
         </section>
     );

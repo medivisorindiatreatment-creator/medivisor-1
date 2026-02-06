@@ -98,21 +98,22 @@ export default function Home() {
 
                         {/* Section 3: What Is This Programme About? */}
                         <section className="rounded-xl bg-white p-4 md:p-8 shadow-xs border border-gray-100">
-                           
+
                             <div className="flex items-center mb-6">
-                                
+
                                 <div className="h-10 w-1 bg-[#E22026] rounded-full mr-4"></div>
                                 <h2 className="text-2xl font-bold text-gray-900">
                                     What Is This Network About?
                                 </h2>
                             </div>
                             <div className="space-y-4 text-gray-700 leading-relaxed">
-                                <p className="font-normal text-gray-900">
-                                    The Medivisor Expanded Patient Support Network (PNG) is a community-based support initiative created to assist patients across Papua New Guinea who struggle to access timely and appropriate medical treatment due to limited local resources or specialised expertise.
+                              
+                                     <p className="font-normal text-gray-900">
+                                    The Medivisor Expanded Patient Support Network (PNG) is a community-based support initiative created to assist patients across Papua New Guinea who struggle to access timely and appropriate medical treatment due to limited local resources or specialised expertise. Through this Network, patients are guided and supported in accessing affordable, world-class medical treatment in India.
                                 </p>
-                            
-                            
-                            
+
+
+
                             </div>
                         </section>
 
@@ -131,7 +132,7 @@ export default function Home() {
                                 <p className="font-semibold text-gray-900 mt-4">You will:</p>
                                 <div className="grid grid-cols-1  gap-3 mt-3">
                                     {[
-                                         "Meet and listen to patients and their families in need",
+                                        "Meet and listen to patients and their families in need",
                                         "Collect medical reports and share them via WhatsApp at +91 8340780250",
                                         "Receive the treatment plan and cost quotation from Medivisor and help families understand the details clearly",
                                         "Guide patients through documentation and travel processes (Medivisor will support you at every step)",
