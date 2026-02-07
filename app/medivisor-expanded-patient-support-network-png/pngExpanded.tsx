@@ -3,7 +3,7 @@ import MedivisorForm from "@/components/EspeForm";
 
 export default function Home() {
     return (
-        <main className="md:min-h-screen h-full bg-gray-50">
+        <main className="md:min-h-screen h-full bg-white md:bg-gray-50">
             {/* Header */}
             <PNGBanner />
 
@@ -19,7 +19,7 @@ export default function Home() {
                                     An Invitation to Serve
                                 </h2>
                             </div>
-                            <div className="space-y-5 text-gray-700 leading-relaxed md:text-lg text-lg">
+                            <div className="md:space-y-5 space-y-3 text-gray-700 leading-relaxed md:text-lg text-lg">
                                 <p className="text-left">
                                     Over the last one year, Medivisor India Treatment has walked alongside more than a hundred families from Papua New Guinea and helped them access life-changing treatment in India. Behind every number is a human story — a mother, a father, a child — and a family that was once afraid, confused, and searching for hope.
                                 </p>
@@ -35,7 +35,7 @@ export default function Home() {
                                 <p className="text-left">
                                     Since Medivisor alone cannot go deep and wide, we now invite compassionate, service-minded individuals and organizations across Papua New Guinea to join hands with us as:
                                 </p>
-                                <div className="mt-6 p-5 bg-gray-50 rounded-lg">
+                                <div className="mt-6 p-5 bg-gray-50 md:bg-gray-50 rounded-lg">
                                     <p className="text-lg font-semibold text-gray-900 text-left">
                                         Medivisor Community Health Partners
                                     </p>
@@ -53,7 +53,7 @@ export default function Home() {
                                     Who We Are
                                 </h2>
                             </div>
-                            <div className="space-y-5 text-gray-700 leading-relaxed md:text-lg text-lg">
+                            <div className="md:space-y-5 space-y-3 text-gray-700 leading-relaxed md:text-lg text-lg">
                                 <p className="text-left">
                                     Medivisor India Treatment is a patient guidance and medical support organization based in New Delhi, India. For more than ten years, we have helped over 2500 patients from Papua New Guinea, Fiji, Vanuatu, Solomon Islands, and other countries access safe, ethical, and affordable medical treatment in India.
                                 </p>
@@ -62,7 +62,7 @@ export default function Home() {
                                         We do not merely coordinate treatment. We walk with patients and families like family — from their first question until their safe return home.
                                     </p>
                                 </div>
-                                <p className="font-semibold text-gray-900 mt-6 text-left">Our Services Include:</p>
+                                <p className="font-normal text-gray-900 mt-6 text-left">Our Services Include:</p>
                                 <div className="space-y-3 mt-4 pl-1">
                                     {[
                                         "Hospital and doctor selection",
@@ -91,7 +91,7 @@ export default function Home() {
                                     What Is This Network About?
                                 </h2>
                             </div>
-                            <div className="space-y-5 text-gray-700 leading-relaxed md:text-lg text-lg">
+                            <div className="md:space-y-5 space-y-3 text-gray-700 leading-relaxed md:text-lg text-lg">
                                 <p className="font-normal text-gray-900 text-left">
                                     The Medivisor Expanded Patient Support Network (PNG) is a community-based support initiative created to assist patients across Papua New Guinea who struggle to access timely and appropriate medical treatment due to limited local resources or specialised expertise. Through this Network, patients are guided and supported in accessing affordable, world-class medical treatment in India.
                                 </p>
@@ -105,7 +105,7 @@ export default function Home() {
                                     What You Will Do
                                 </h2>
                             </div>
-                            <div className="space-y-5 text-gray-700 leading-relaxed md:text-lg text-lg">
+                            <div className="md:space-y-5 space-y-3 text-gray-700 leading-relaxed md:text-lg text-lg">
                                 <p className="text-left">
                                     As a Medivisor Community Health Partner and Health Ambassador, you will be not just performing a role — you will be serving a purpose.
                                 </p>
@@ -131,14 +131,14 @@ export default function Home() {
                         </section>
 
                         {/* Section 5: How Medivisor Supports You */}
-                       <section className="md:rounded-xl md:bg-white p-2 md:p-8 md:shadow-xs md:border md:border-gray-100">
+                       <section className="md:rounded-xl bg-white p-2 md:p-8 md:shadow-xs md:border md:border-gray-100">
                             <div className="md:mb-6 mb-2">
                                 <h2 className="text-2xl font-bold text-gray-900">
                                     How Medivisor Supports You
                                 </h2>
                             </div>
-                            <div className="space-y-5 text-gray-700 leading-relaxed md:text-lg text-lg">
-                                <p className="font-semibold text-gray-900 text-left">Medivisor India will:</p>
+                            <div className="md:space-y-5 space-y-3 text-gray-700 leading-relaxed md:text-lg text-lg">
+                                <p className="font-normal text-gray-900 text-left">Medivisor India will:</p>
                                 <ul className="space-y-3 mt-4 pl-1">
                                     {[
                                         "Review and guide all medical cases",
@@ -156,7 +156,7 @@ export default function Home() {
                                         </li>
                                     ))}
                                 </ul>
-                                <div className="mt-8 p-5 bg-gray-50 rounded-lg border border-green-100">
+                                <div className="mt-8 p-5 bg-gray-50 md:bg-gray-50 rounded-lg border border-gray-200">
                                     <p className="font-normal text-gray-900 text-left">
                                         You are never alone in this journey.
                                     </p>
@@ -171,7 +171,7 @@ export default function Home() {
                                     Sustainability
                                 </h2>
                             </div>
-                            <div className="space-y-5 text-gray-700 leading-relaxed md:text-lg text-lg">
+                            <div className="md:space-y-5 space-y-3 text-gray-700 leading-relaxed md:text-lg text-lg">
                                 <p className="text-left">
                                     To help Community Health Partners serve patients full-time and continue this work sustainably, Medivisor provides a simple and transparent support structure (500 PGK) per patient.
                                 </p>
@@ -198,7 +198,7 @@ export default function Home() {
                                     Who Can Join?
                                 </h2>
                             </div>
-                            <div className="space-y-5 text-gray-700 leading-relaxed md:text-lg text-lg">
+                            <div className="md:space-y-5 space-y-3 text-gray-700 leading-relaxed md:text-lg text-lg">
                                 <p className="font-normal text-gray-900 text-left">
                                     We welcome individuals and organizations who:
                                 </p>
@@ -262,7 +262,7 @@ export default function Home() {
                                 ))}
                             </div>
 
-                            <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                            <div className="mt-4 p-4 bg-gray-50 md:bg-gray-50 rounded-xl border border-gray-200">
                                 
                                 <p className=" text-gray-700 text-lg text-left">
                                     You will earn respect, purpose, skills, and a sustainable livelihood — while helping save lives.
@@ -277,11 +277,11 @@ export default function Home() {
                                     A Shared Mission
                                 </h2>
                             </div>
-                            <div className="space-y-5 text-gray-700 leading-relaxed md:text-lg text-lg">
+                            <div className="md:space-y-5 space-y-3 text-gray-700 leading-relaxed md:text-lg text-lg">
                                 <p className="text-left">
                                     By joining this network, you will become part of a compassionate mission to reduce suffering and restore hope.
                                 </p>
-                                <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-blue-100">
+                                <div className="mt-4 p-4 bg-gray-50 md:bg-gray-50 rounded-xl border border-gray-200">
                                     <p className="font-normal text-gray-900 text-lg text-left">
                                         Together, let us build a trusted healthcare bridge between Papua New Guinea and India.
                                     </p>
